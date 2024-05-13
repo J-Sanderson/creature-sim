@@ -49,7 +49,7 @@ const goals = {
       return 3;
     },
     execute: function (self) {
-      if (self.getMotive('fullness') >= self.getMaxMotive()) {
+      if (self.getMotive("fullness") >= self.getMaxMotive()) {
         self.deleteGoal(Creature.goalList.eat);
       }
       const adj = Entity.adjectiveList.tasty;
@@ -76,7 +76,7 @@ const goals = {
       return 3;
     },
     execute: function (self) {
-      if (self.getMotive('hydration') >= self.getMaxMotive()) {
+      if (self.getMotive("hydration") >= self.getMaxMotive()) {
         self.deleteGoal(Creature.goalList.drink);
       }
       const adj = Entity.adjectiveList.wet;
@@ -99,7 +99,7 @@ const goals = {
       return 3;
     },
     execute: function (self) {
-      if (self.getMotive('energy') >= self.getMaxMotive()) {
+      if (self.getMotive("energy") >= self.getMaxMotive()) {
         self.deleteGoal(Creature.goalList.sleep);
       }
       const adj = Entity.adjectiveList.restful;
@@ -111,16 +111,21 @@ const goals = {
     },
   },
   goalBePetted: {
-    filter: function(self) {
-      return 1; //temp
+    filter: function (self) {
+      return 1;
     },
-    execute: function(self) {
-      if (self.status.state === Creature.stateList.sleep) {
+    execute: function (self) {
+      if (
+        self.status.state === Creature.stateList.drink ||
+        self.status.state === Creature.stateList.eat ||
+        self.status.state === Creature.stateList.sleep ||
+        self.status.state === Creature.stateList.petAnnoyed
+      ) {
         self.plans.planPetAnnoyed(self);
       } else {
         self.plans.planPetHappy(self);
       }
-    }
+    },
   },
 };
 
@@ -141,7 +146,7 @@ const plans = {
     ];
     const bounds = self.getBounds();
     let validDirections = [];
-    
+
     directions.forEach((direction) => {
       const newX = position.x + direction.dx;
       const newY = position.y + direction.dy;
@@ -149,7 +154,7 @@ const plans = {
         validDirections.push(direction);
       }
     });
-    
+
     if (validDirections.length > 0) {
       const randomDirection = Math.floor(
         Math.random() * validDirections.length
@@ -159,14 +164,14 @@ const plans = {
       const newX = position.x + dx;
       const newY = position.y + dy;
 
-      self.states.stateMoveRandomly(self, {x: newX, y: newY});
+      self.states.stateMoveRandomly(self, { x: newX, y: newY });
     } else {
       console.error("No valid movement direction available");
     }
   },
   planSeekItem: function (self, adjective, motive) {
     self.setPlan(Creature.planList.seekItem);
-    
+
     const position = self.getPosition();
     const world = worldManager.getWorld(self.world);
     const entities = world.getEntities();
@@ -174,7 +179,7 @@ const plans = {
     const interestingItems = entities.items.filter((item) => {
       return item.adjectives.includes(adjective);
     });
-    
+
     // get the closest of these
     let minDistance = Infinity;
     let closestItem = null;
@@ -188,20 +193,20 @@ const plans = {
         closestItem = item;
       }
     });
-    
+
     if (closestItem === null) {
       // TODO expand on this, it currently stops moving.
       // should probably have some sort of feedback to show its state.
       console.error("No valid item found");
       return;
     }
-    
+
     const itemPos = closestItem.getPosition();
     self.states.stateSeekItem(self, motive, itemPos);
   },
   planDrink: function (self) {
     self.setPlan(Creature.planList.drink);
-    const hydration = self.getMotive('hydration');
+    const hydration = self.getMotive("hydration");
     const maxVal = self.getMaxMotive();
     if (hydration >= maxVal) {
       return;
@@ -216,7 +221,7 @@ const plans = {
     }
     self.setPlan(Creature.planList.eat);
     if (motives.hydration < 10) {
-      self.addGoal(Creature.goalList.drink, {priority: 1, suspended: false});
+      self.addGoal(Creature.goalList.drink, { priority: 1, suspended: false });
       self.suspendGoal(Creature.goalList.eat);
     }
     const maxVal = self.getMaxMotive();
@@ -233,11 +238,11 @@ const plans = {
     }
     self.setPlan(Creature.planList.sleep);
     if (motives.hydration < 10) {
-      self.addGoal(Creature.goalList.drink, {priority: 1, suspended: false});
+      self.addGoal(Creature.goalList.drink, { priority: 1, suspended: false });
       self.suspendGoal(Creature.goalList.sleep);
     }
     if (motives.fullness < 10) {
-      self.addGoal(Creature.goalList.eat, {priority: 1, suspended: false});
+      self.addGoal(Creature.goalList.eat, { priority: 1, suspended: false });
       self.suspendGoal(Creature.goalList.sleep);
     }
     const maxVal = self.getMaxMotive();
@@ -246,15 +251,36 @@ const plans = {
     }
     self.states.stateSleep(self, motives.energy, maxVal);
   },
-  planPetHappy: function(self) {
+  planPetHappy: function (self) {
     self.setPlan(Creature.planList.petHappy);
+    if (self.queries.amIHungry(self) || self.queries.amIThirsty(self) || self.queries.amITired(self)) {
+      let goalTokens = self.getGoalTokens();
+      if (!goalTokens[Creature.goalList.pet]) {
+        console.error(
+          `Error: no relevant goal token found for ${Creature.goalList.pet}`
+        );
+      }
+      goalTokens[Creature.goalList.pet].decrementTicks();
+      if (goalTokens[Creature.goalList.pet].getTicks() <= 0) {
+        self.deleteGoal(Creature.goalList.pet);
+      }
+    }
     self.states.statePetHappy(self);
   },
-  planPetAnnoyed: function(self) {
-    // decrement counter
-    self.setPlan(Creature.planList.planPetAnnoyed);
+  planPetAnnoyed: function (self) {
+    self.setPlan(Creature.planList.petAnnoyed);
+    let goalTokens = self.getGoalTokens();
+    if (!goalTokens[Creature.goalList.pet]) {
+      console.error(
+        `Error: no relevant goal token found for ${Creature.goalList.pet}`
+      );
+    }
+    goalTokens[Creature.goalList.pet].decrementTicks();
+    if (goalTokens[Creature.goalList.pet].getTicks() <= 0) {
+      self.deleteGoal(Creature.goalList.pet);
+    }
     self.states.statePetAnnoyed(self);
-  }
+  },
 };
 
 const states = {
@@ -344,15 +370,15 @@ const queries = {
     });
   },
   amIHungry(self) {
-    return self.getMotive('fullness') < self.maxMotive / 2;
+    return self.getMotive("fullness") < self.maxMotive / 2;
   },
   amIThirsty(self) {
-    return self.getMotive('hydration') < self.maxMotive / 2;
+    return self.getMotive("hydration") < self.maxMotive / 2;
   },
   amITired(self) {
-    return self.getMotive('energy') < self.maxMotive / 5;
+    return self.getMotive("energy") < self.maxMotive / 5;
   },
-}
+};
 
 class WorldManager {
   constructor() {
@@ -385,8 +411,8 @@ class World {
     showStatus: false,
     showSliders: false,
   };
-  
-  static statusOutputs = ["goals", "currentGoal", "plan", "state"]
+
+  static statusOutputs = ["goalTokens", "currentGoal", "plan", "state"];
 
   constructor(el, params = {}) {
     if (!(el instanceof HTMLElement)) {
@@ -653,6 +679,58 @@ class World {
   }
 }
 
+class GoalToken {
+  static defaults = {
+    priority: 1,
+    suspended: false,
+    ticks: -1,
+  };
+
+  constructor(name, params = {}) {
+    if (!name) {
+      console.error("GoalToken must have a valid name");
+      return;
+    }
+    this.name = name;
+
+    for (let param in GoalToken.defaults) {
+      this[param] = params.hasOwnProperty(param)
+        ? params[param]
+        : GoalToken.defaults[param];
+    }
+  }
+
+  suspend() {
+    this.suspended = true;
+  }
+
+  unsuspend() {
+    this.suspended = false;
+  }
+
+  getIsSuspended() {
+    return this.suspended;
+  }
+
+  setPriority(priority) {
+    this.priority = priority;
+  }
+
+  getPriority() {
+    return this.priority;
+  }
+
+  decrementTicks() {
+    if (this.ticks > 0) {
+      this.ticks--;
+    }
+  }
+
+  getTicks() {
+    return this.ticks;
+  }
+}
+
 class Entity {
   static adjectiveList = {
     inanimate: "inanimate",
@@ -789,7 +867,7 @@ class Creature extends Entity {
     eat: "goalEat",
     sleep: "goalSleep",
     wander: "goalWander",
-    pet: 'goalBePetted',
+    pet: "goalBePetted",
   };
 
   static planList = {
@@ -798,18 +876,18 @@ class Creature extends Entity {
     sleep: "planSleep",
     eat: "planEat",
     drink: "planDrink",
-    petHappy: 'planPetHappy',
-    petAnnoyed: 'planPetAnnoyed',
+    petHappy: "planPetHappy",
+    petAnnoyed: "planPetAnnoyed",
   };
-  
+
   static stateList = {
     wander: "stateMoveRandomly",
     seekItem: "stateSeekItem",
     sleep: "stateSleep",
     eat: "stateEat",
     drink: "stateDrink",
-    petHappy: 'statePetHappy',
-    petAnnoyed: 'statePetAnnoyed',
+    petHappy: "statePetHappy",
+    petAnnoyed: "statePetAnnoyed",
   };
 
   static motiveIcons = {
@@ -819,8 +897,8 @@ class Creature extends Entity {
     drink: "&#x1F445;",
     eat: "&#x1F37D;",
     sleep: "&#x1F4A4;",
-    petHappy: '&#x2764;',
-    petAnnoyed: '&#x1F620;',
+    petHappy: "&#x2764;",
+    petAnnoyed: "&#x1F620;",
   };
 
   constructor(world, params = {}) {
@@ -834,9 +912,9 @@ class Creature extends Entity {
       hydration: utilities.rand(this.maxMotive),
       energy: utilities.rand(this.maxMotive),
     };
-    
-    this.status.goals = {};
-    this.addGoal(Creature.goalList.wander, {priority: 1, suspended: false});
+
+    this.status.goalTokens = {};
+    this.addGoal(Creature.goalList.wander, { priority: 1, suspended: false });
     this.status.currentGoal = Creature.goalList.wander;
     this.status.plan = Creature.planList.moving;
     this.status.state = Creature.stateList.wander;
@@ -850,23 +928,30 @@ class Creature extends Entity {
 
     this.icon = "&#x1F415;";
     this.setIcon();
-    
+
     this.eventHandlers.petStart = () => {
-      this.addGoal(Creature.goalList.pet, {priority: 1, suspended: false});
-    }
-    this.outputs.icon.addEventListener('mousedown', this.eventHandlers.petStart);
-    
+      this.addGoal(Creature.goalList.pet, {
+        priority: 1,
+        suspended: false,
+        ticks: 1,
+      });
+    };
+    this.outputs.icon.addEventListener(
+      "mousedown",
+      this.eventHandlers.petStart
+    );
+
     this.eventHandlers.petStop = () => {
       this.deleteGoal(Creature.goalList.pet);
-    }
-    this.outputs.icon.addEventListener('mouseup', this.eventHandlers.petStop);
+    };
+    this.outputs.icon.addEventListener("mouseup", this.eventHandlers.petStop);
   }
 
   update() {
     this.metabolismManager();
     this.goalManager();
   }
-  
+
   metabolismManager() {
     for (let motive in this.status.motives) {
       if (
@@ -878,22 +963,34 @@ class Creature extends Entity {
         this.status.motives[motive]--;
       }
     }
-    
+
     const priority = this.getPriority();
     switch (priority) {
       case "fullness":
-        if (!(Creature.goalList.eat in this.status.goals)) {
-          this.addGoal(Creature.goalList.eat, {priority: 1, suspended: false}, false);
+        if (!(Creature.goalList.eat in this.status.goalTokens)) {
+          this.addGoal(
+            Creature.goalList.eat,
+            { priority: 1, suspended: false },
+            false
+          );
         }
         break;
       case "hydration":
-        if (!(Creature.goalList.drink in this.status.goals)) {
-          this.addGoal(Creature.goalList.drink, {priority: 1, suspended: false}, false);
+        if (!(Creature.goalList.drink in this.status.goalTokens)) {
+          this.addGoal(
+            Creature.goalList.drink,
+            { priority: 1, suspended: false },
+            false
+          );
         }
         break;
       case "energy":
-        if (!(Creature.goalList.sleep in this.status.goals)) {
-          this.addGoal(Creature.goalList.sleep, {priority: 1, suspended: false}, false);
+        if (!(Creature.goalList.sleep in this.status.goalTokens)) {
+          this.addGoal(
+            Creature.goalList.sleep,
+            { priority: 1, suspended: false },
+            false
+          );
         }
         break;
       default:
@@ -901,43 +998,51 @@ class Creature extends Entity {
   }
 
   goalManager() {
-    for(let goal in this.status.goals) {
-      if (goal) {
-        const priority = this.goals[goal].filter(this);
+    for (let goalToken in this.status.goalTokens) {
+      if (goalToken) {
+        const priority = this.goals[goalToken].filter(this);
         if (priority < 0) {
-          delete(this.status.goals[goal]);
+          delete this.status.goalTokens[goalToken];
         } else {
-          this.status.goals[goal].priority = priority;
+          this.status.goalTokens[goalToken].setPriority(priority);
         }
       }
     }
-    let current = this.status.goals[this.status.currentGoal];
-    if (!current || current.suspended) {
-      if (Object.keys(this.status.goals).length) {
+    let current = this.status.goalTokens[this.status.currentGoal];
+    if (!current || current.getIsSuspended()) {
+      if (Object.keys(this.status.goalTokens).length) {
         // find another goal to execute
         let priority = -1;
-        let newGoal = '';
-        for (let goal in this.status.goals) {
-          if(!this.status.goals[goal].suspended && this.status.goals[goal].priority > priority) {
-            priority = this.status.goals[goal].priority;
+        let newGoal = "";
+        for (let goal in this.status.goalTokens) {
+          let goalPriority = this.status.goalTokens[goal].getPriority();
+          if (
+            !this.status.goalTokens[goal].getIsSuspended() &&
+            goalPriority > priority
+          ) {
+            priority = goalPriority;
             newGoal = goal;
           }
         }
         if (!newGoal) {
-          for (let goal in this.status.goals) {
-            if(this.status.goals[goal].priority > priority) {
-              priority = this.status.goals[goal].priority;
+          for (let goal in this.status.goalTokens) {
+            let goalPriority = this.status.goalTokens[goal].getPriority();
+            if (goalPriority > priority) {
+              priority = goalPriority;
               newGoal = goal;
             }
           }
         }
-        if (this.status.goals[newGoal].suspended) {
+        if (this.status.goalTokens[newGoal].getIsSuspended()) {
           this.unsuspendGoal(newGoal);
         }
         this.status.currentGoal = newGoal;
       } else {
-        // no goals left, add the basic wander goal
-        this.addGoal(Creature.goalList.wander, {priority: 1, suspended: false});
+        // no goal tokens left, add the basic wander goal
+        this.addGoal(Creature.goalList.wander, {
+          priority: 1,
+          suspended: false,
+        });
       }
     }
     this.goals[this.status.currentGoal].execute(this);
@@ -953,15 +1058,15 @@ class Creature extends Entity {
   }
 
   getPriority() {
-    let priority = 'none';
+    let priority = "none";
     if (this.queries.amITired(this)) {
-      priority = 'energy';
+      priority = "energy";
     }
     if (this.queries.amIHungry(this)) {
-      priority = 'fullness';
+      priority = "fullness";
     }
     if (this.queries.amIThirsty(this)) {
-      priority = 'hydration';
+      priority = "hydration";
     }
     return priority;
   }
@@ -973,7 +1078,7 @@ class Creature extends Entity {
   getMotives() {
     return this.status.motives;
   }
-  
+
   getMotive(motive) {
     if (!(motive in this.status.motives)) {
       console.error(`Error: no ${motive} motive found`);
@@ -993,7 +1098,11 @@ class Creature extends Entity {
     }
     this.status.motives[motive] = value;
   }
-  
+
+  getGoalTokens() {
+    return this.status.goalTokens;
+  }
+
   setState(state) {
     this.status.state = state;
   }
@@ -1003,28 +1112,31 @@ class Creature extends Entity {
   }
 
   addGoal(name, goal, isCurrent = true) {
+    if (this.status.goalTokens.hasOwnProperty(name)) {
+      return;
+    }
     if (isCurrent) {
       this.status.currentGoal = name;
     }
-    this.status.goals[name] = goal;
+    this.status.goalTokens[name] = new GoalToken(name, goal);
   }
 
   suspendGoal(goalName) {
-    let toSuspend = this.status.goals[goalName];
+    let toSuspend = this.status.goalTokens[goalName];
     if (toSuspend) {
-      toSuspend.suspended = true;
+      toSuspend.suspend();
     }
   }
 
   unsuspendGoal(goalName) {
-    let toUnsuspend = this.status.goals[goalName];
+    let toUnsuspend = this.status.goalTokens[goalName];
     if (toUnsuspend) {
-      toUnsuspend.suspended = false;
+      toUnsuspend.unsuspend();
     }
   }
 
   deleteGoal(goalName) {
-    delete(this.status.goals[goalName]);
+    delete this.status.goalTokens[goalName];
   }
 
   setOutputEl(type, el) {
@@ -1043,7 +1155,7 @@ class Creature extends Entity {
 let worldEl = document.getElementById("world");
 if (worldEl) {
   const world = new World(worldEl, {
-    speed: 500,
+    speed: 750,
     width: 10,
     height: 10,
     cellSize: 70,

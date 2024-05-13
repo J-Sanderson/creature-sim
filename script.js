@@ -110,6 +110,18 @@ const goals = {
       }
     },
   },
+  goalBePetted: {
+    filter: function(self) {
+      return 1; //temp
+    },
+    execute: function(self) {
+      if (self.status.state === Creature.stateList.sleep) {
+        self.plans.planPetAnnoyed(self);
+      } else {
+        self.plans.planPetHappy(self);
+      }
+    }
+  },
 };
 
 const plans = {
@@ -168,6 +180,15 @@ const plans = {
     }
     self.states.stateSleep(self, motives.energy, maxVal);
   },
+  planPetHappy: function(self) {
+    self.setPlan(Creature.planList.petHappy);
+    self.states.statePetHappy(self);
+  },
+  planPetAnnoyed: function(self) {
+    // decrement counter
+    self.setPlan(Creature.planList.planPetAnnoyed);
+    self.states.statePetAnnoyed(self);
+  }
 };
 
 const states = {
@@ -291,6 +312,14 @@ const states = {
       newVal = maxVal;
     }
     self.setMotive("energy", newVal);
+  },
+  statePetHappy(self) {
+    self.setState(Creature.stateList.petHappy);
+    self.showMotive(Creature.motiveIcons.petHappy);
+  },
+  statePetAnnoyed(self) {
+    self.setState(Creature.stateList.petAnnoyed);
+    self.showMotive(Creature.motiveIcons.petAnnoyed);
   },
 };
 
@@ -755,6 +784,7 @@ class Creature extends Entity {
     eat: "goalEat",
     sleep: "goalSleep",
     wander: "goalWander",
+    pet: 'goalBePetted',
   };
 
   static planList = {
@@ -763,6 +793,8 @@ class Creature extends Entity {
     sleep: "planSleep",
     eat: "planEat",
     drink: "planDrink",
+    petHappy: 'planPetHappy',
+    petAnnoyed: 'planPetAnnoyed',
   };
   
   static stateList = {
@@ -771,6 +803,8 @@ class Creature extends Entity {
     sleep: "stateSleep",
     eat: "stateEat",
     drink: "stateDrink",
+    petHappy: 'statePetHappy',
+    petAnnoyed: 'statePetAnnoyed',
   };
 
   static motiveIcons = {
@@ -780,6 +814,8 @@ class Creature extends Entity {
     drink: "&#x1F445;",
     eat: "&#x1F37D;",
     sleep: "&#x1F4A4;",
+    petHappy: '&#x2764;',
+    petAnnoyed: '&#x1F620;',
   };
 
   constructor(world, params = {}) {
@@ -809,6 +845,16 @@ class Creature extends Entity {
 
     this.icon = "&#x1F415;";
     this.setIcon();
+    
+    this.eventHandlers.petStart = () => {
+      this.addGoal(Creature.goalList.pet, {priority: 1, suspended: false});
+    }
+    this.outputs.icon.addEventListener('mousedown', this.eventHandlers.petStart);
+    
+    this.eventHandlers.petStop = () => {
+      this.deleteGoal(Creature.goalList.pet);
+    }
+    this.outputs.icon.addEventListener('mouseup', this.eventHandlers.petStop);
   }
 
   update() {

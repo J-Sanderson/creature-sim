@@ -127,11 +127,77 @@ const goals = {
 const plans = {
   planWander: function (self) {
     self.setPlan(Creature.planList.wander);
-    self.states.stateMoveRandomly(self);
+    const position = self.getPosition();
+
+    const directions = [
+      { dx: -1, dy: -1 }, // NW
+      { dx: 0, dy: -1 }, // N
+      { dx: 1, dy: -1 }, // NE
+      { dx: 1, dy: 0 }, // E
+      { dx: 1, dy: 1 }, // SE
+      { dx: 0, dy: 1 }, // S
+      { dx: -1, dy: 1 }, // SW
+      { dx: -1, dy: 0 }, // W
+    ];
+    const bounds = self.getBounds();
+    let validDirections = [];
+    
+    directions.forEach((direction) => {
+      const newX = position.x + direction.dx;
+      const newY = position.y + direction.dy;
+      if (newX >= 0 && newX < bounds.x && newY >= 0 && newY < bounds.y) {
+        validDirections.push(direction);
+      }
+    });
+    
+    if (validDirections.length > 0) {
+      const randomDirection = Math.floor(
+        Math.random() * validDirections.length
+      );
+      const { dx, dy } = validDirections[randomDirection];
+
+      const newX = position.x + dx;
+      const newY = position.y + dy;
+
+      self.states.stateMoveRandomly(self, {x: newX, y: newY});
+    } else {
+      console.error("No valid movement direction available");
+    }
   },
   planSeekItem: function (self, adjective, motive) {
     self.setPlan(Creature.planList.seekItem);
-    self.states.stateSeekItem(self, Entity.adjectiveList[adjective], motive);
+    
+    const position = self.getPosition();
+    const world = worldManager.getWorld(self.world);
+    const entities = world.getEntities();
+    // get all items that are potentially of interest
+    const interestingItems = entities.items.filter((item) => {
+      return item.adjectives.includes(adjective);
+    });
+    
+    // get the closest of these
+    let minDistance = Infinity;
+    let closestItem = null;
+    interestingItems.forEach((item) => {
+      const itemPos = item.getPosition();
+      const distance = Math.sqrt(
+        (itemPos.x - itemPos.x) ** 2 + (position.y - position.y) ** 2
+      );
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestItem = item;
+      }
+    });
+    
+    if (closestItem === null) {
+      // TODO expand on this, it currently stops moving.
+      // should probably have some sort of feedback to show its state.
+      console.error("No valid item found");
+      return;
+    }
+    
+    const itemPos = closestItem.getPosition();
+    self.states.stateSeekItem(self, motive, itemPos);
   },
   planDrink: function (self) {
     self.setPlan(Creature.planList.drink);
@@ -192,83 +258,21 @@ const plans = {
 };
 
 const states = {
-  stateMoveRandomly: function (self) {
+  stateMoveRandomly: function (self, pos) {
     self.setState(Creature.stateList.wander);
     self.showMotive("");
-    const position = self.getPosition();
+    self.setXPosition(pos.x);
+    self.setYPosition(pos.y);
 
-    const directions = [
-      { dx: -1, dy: -1 }, // NW
-      { dx: 0, dy: -1 }, // N
-      { dx: 1, dy: -1 }, // NE
-      { dx: 1, dy: 0 }, // E
-      { dx: 1, dy: 1 }, // SE
-      { dx: 0, dy: 1 }, // S
-      { dx: -1, dy: 1 }, // SW
-      { dx: -1, dy: 0 }, // W
-    ];
-    const bounds = self.getBounds();
-    let validDirections = [];
-
-    directions.forEach((direction) => {
-      const newX = position.x + direction.dx;
-      const newY = position.y + direction.dy;
-      if (newX >= 0 && newX < bounds.x && newY >= 0 && newY < bounds.y) {
-        validDirections.push(direction);
-      }
-    });
-    if (validDirections.length > 0) {
-      const randomDirection = Math.floor(
-        Math.random() * validDirections.length
-      );
-      const { dx, dy } = validDirections[randomDirection];
-
-      const newX = position.x + dx;
-      const newY = position.y + dy;
-
-      self.setXPosition(newX);
-      self.setYPosition(newY);
-
-      const world = worldManager.getWorld(self.world);
-      world.moveEntity(self.outputs.icon, self.getPosition());
-    } else {
-      console.error("No valid movement direction available");
-    }
+    const world = worldManager.getWorld(self.world);
+    world.moveEntity(self.outputs.icon, self.getPosition());
   },
-  stateSeekItem: function (self, adjective, motive) {
+  stateSeekItem: function (self, motive, itemPos) {
     self.setState(Creature.stateList.seekItem);
     self.showMotive(motive);
-    const position = self.getPosition();
-    const world = worldManager.getWorld(self.world);
-    const entities = world.getEntities();
-    // get all items that are potentially of interest
-    const interestingItems = entities.items.filter((item) => {
-      return item.adjectives.includes(adjective);
-    });
-
-    // get the closest of these
-    let minDistance = Infinity;
-    let closestItem = null;
-    interestingItems.forEach((item) => {
-      const itemPos = item.getPosition();
-      const distance = Math.sqrt(
-        (itemPos.x - itemPos.x) ** 2 + (position.y - position.y) ** 2
-      );
-      if (distance < minDistance) {
-        minDistance = distance;
-        closestItem = item;
-      }
-    });
-
-    if (closestItem === null) {
-      // TODO expand on this, it currently stops moving.
-      // should probably have some sort of feedback to show its state.
-      console.error("No valid item found");
-      return;
-    }
 
     // move toward the item
-    const itemPos = closestItem.getPosition();
+    const position = self.getPosition();
     if (itemPos.x > position.x) {
       self.setXPosition(position.x + 1);
     }
@@ -281,6 +285,7 @@ const states = {
     if (itemPos.y < position.y) {
       self.setYPosition(position.y - 1);
     }
+    const world = worldManager.getWorld(self.world);
     world.moveEntity(self.outputs.icon, self.getPosition());
   },
   stateDrink(self, hydration, maxVal) {

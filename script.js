@@ -193,15 +193,8 @@ const plans = {
         closestItem = item;
       }
     });
-
-    if (closestItem === null) {
-      // TODO expand on this, it currently stops moving.
-      // should probably have some sort of feedback to show its state.
-      console.error("No valid item found");
-      return;
-    }
-
-    const itemPos = closestItem.getPosition();
+    
+    const itemPos = closestItem === null ? null : closestItem.getPosition();
     self.states.stateSeekItem(self, motive, itemPos);
   },
   planDrink: function (self) {
@@ -297,22 +290,24 @@ const states = {
     self.setState(Creature.stateList.seekItem);
     self.showMotive(motive);
 
-    // move toward the item
-    const position = self.getPosition();
-    if (itemPos.x > position.x) {
-      self.setXPosition(position.x + 1);
+    if(itemPos) {
+      // move toward the item
+      const position = self.getPosition();
+      if (itemPos.x > position.x) {
+        self.setXPosition(position.x + 1);
+      }
+      if (itemPos.x < position.x) {
+        self.setXPosition(position.x - 1);
+      }
+      if (itemPos.y > position.y) {
+        self.setYPosition(position.y + 1);
+      }
+      if (itemPos.y < position.y) {
+        self.setYPosition(position.y - 1);
+      }
+      const world = worldManager.getWorld(self.world);
+      world.moveEntity(self.outputs.icon, self.getPosition());
     }
-    if (itemPos.x < position.x) {
-      self.setXPosition(position.x - 1);
-    }
-    if (itemPos.y > position.y) {
-      self.setYPosition(position.y + 1);
-    }
-    if (itemPos.y < position.y) {
-      self.setYPosition(position.y - 1);
-    }
-    const world = worldManager.getWorld(self.world);
-    world.moveEntity(self.outputs.icon, self.getPosition());
   },
   stateDrink(self, hydration, maxVal) {
     self.setState(Creature.stateList.drink);

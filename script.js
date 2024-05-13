@@ -453,6 +453,11 @@ class World {
     this.elements.canvas = canvas;
     this.ctx = canvas.getContext("2d");
     this.drawWorld();
+    
+    let toybox = document.createElement('div');
+    toybox.classList.add('toybox');
+    this.elements.root.appendChild(toybox);
+    this.elements.toybox = toybox;
 
     if (this.params.showStatus) {
       let statusWrapper = document.createElement("div");
@@ -461,25 +466,29 @@ class World {
       this.elements.root.appendChild(statusWrapper);
       this.elements.statusWrapper = statusWrapper;
     }
-
-    this.entities.items.push(
-      new Water(this.guid, {
-        xPos: utilities.rand(this.params.width),
-        yPos: utilities.rand(this.params.height),
-      })
-    );
-    this.entities.items.push(
-      new Food(this.guid, {
-        xPos: utilities.rand(this.params.width),
-        yPos: utilities.rand(this.params.height),
-      })
-    );
-    this.entities.items.push(
-      new Bed(this.guid, {
-        xPos: utilities.rand(this.params.width),
-        yPos: utilities.rand(this.params.height),
-      })
-    );
+    
+    [Water, Food, Bed].forEach(item => {
+      let button = document.createElement('button');
+      button.innerHTML = item.icon;
+      button.style['font-size'] = `${this.params.cellSize}px`;
+      button.addEventListener('click', () => {
+        let existing = this.entities.items.findIndex(x => x instanceof item);
+        if (existing === -1) {
+            this.entities.items.push(
+            new item(this.guid, {
+              xPos: utilities.rand(this.params.width),
+              yPos: utilities.rand(this.params.height),
+            })
+          )
+          button.classList.add('item-active');
+        } else {
+          this.deleteEntity(existing);
+          button.classList.remove('item-active');
+        }
+      });
+      this.elements.toybox.appendChild(button);
+    });
+    
 
     this.entities.creatures.push(
       new Creature(this.guid, {
@@ -653,6 +662,11 @@ class World {
       position.y * this.params.cellSize + this.params.lineWidth
     }px`;
   }
+  
+  deleteEntity(index, type='items') {
+    this.entities[type][index].outputs.icon.remove();
+    this.entities[type].splice(index, 1);
+  }
 
   getParam(param) {
     if (!this.params.hasOwnProperty(param)) {
@@ -774,7 +788,6 @@ class Entity {
     icon.classList.add("entity");
     icon.style.width = `${cellSize}px`;
     icon.style.height = `${cellSize}px`;
-    icon.style["z-index"] = this.order;
     icon.style.left = `${this.status.position.x * cellSize + lineWidth}px`;
     icon.style.top = `${this.status.position.y * cellSize + lineWidth}px`;
     if (this instanceof Creature) {
@@ -813,6 +826,7 @@ class Entity {
     span.innerHTML = this.icon ? this.icon : "&#x2753;";
     this.outputs.icon.prepend(span);
     this.outputs.icon.style["font-size"] = `${cellSize}px`;
+    this.outputs.icon.style["z-index"] = this.order;
   }
 
   setXPosition(pos) {
@@ -832,30 +846,36 @@ class Item extends Entity {
 }
 
 class Water extends Item {
+  static icon = "&#x1F4A7;";
+
   constructor(world, params = {}) {
     super(world, params);
     this.adjectives.push(Entity.adjectiveList.wet);
-    this.icon = "&#x1F4A7;";
+    this.icon = Water.icon;
 
     this.setIcon();
   }
 }
 
 class Food extends Item {
+  static icon = "&#x1F969;";
+
   constructor(world, params = {}) {
     super(world, params);
     this.adjectives.push(Entity.adjectiveList.tasty);
-    this.icon = "&#x1F969;";
+    this.icon = Food.icon;
 
     this.setIcon();
   }
 }
 
 class Bed extends Item {
+  static icon = "&#x1F6CF;";
+
   constructor(world, params = {}) {
     super(world, params);
     this.adjectives.push(Entity.adjectiveList.restful);
-    this.icon = "&#x1F6CF;";
+    this.icon = Bed.icon;
 
     this.setIcon();
   }

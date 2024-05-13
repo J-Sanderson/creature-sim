@@ -13,6 +13,14 @@ body {
   cursor: grab;
 }
 
+.toybox button {
+  cursor: pointer;
+}
+
+.toybox button.item-active {
+  color:transparent; text-shadow: 0 0 0 grey;
+}
+
 .entity {
   position: absolute;
   display: flex;

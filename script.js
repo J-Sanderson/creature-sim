@@ -57,16 +57,22 @@ const goals = {
         return;
       }
       
-      if (self.queries.amIOnItem(self, goalTokens[Creature.goalList.eat].target)) {
-        self.plans.planEat(self);
-      } else {
+      let target = goalTokens[Creature.goalList.eat].target;
+      if (!target) {
         self.plans.planSeekItem(
           self,
           Entity.adjectiveList.tasty,
           Creature.motiveIcons.hunger,
           Creature.goalList.eat,
         );
+      } else {
+        if (self.queries.amIOnItem(self, target)) {
+          self.plans.planEat(self);
+        } else {
+          self.plans.planMoveToItem(self, target, Creature.goalList.eat);
+        }
       }
+      
     },
   },
   goalDrink: {
@@ -89,16 +95,22 @@ const goals = {
         return;
       }
       
-      if (self.queries.amIOnItem(self, goalTokens[Creature.goalList.drink].target)) {
-        self.plans.planDrink(self);
-      } else {
+      let target = goalTokens[Creature.goalList.drink].target;
+      if (!target) {
         self.plans.planSeekItem(
           self,
           Entity.adjectiveList.wet,
           Creature.motiveIcons.thirst,
           Creature.goalList.drink,
         );
+      } else {
+        if (self.queries.amIOnItem(self, target)) {
+          self.plans.planDrink(self);
+        } else {
+          self.plans.planMoveToItem(self, target, Creature.goalList.drink);
+        }
       }
+      
     },
   },
   goalSleep: {
@@ -121,16 +133,22 @@ const goals = {
         return;
       }
       
-      if (self.queries.amIOnItem(self, goalTokens[Creature.goalList.sleep].target)) {
-        self.plans.planSleep(self);
-      } else {
+      let target = goalTokens[Creature.goalList.sleep].target;
+      if (!target) {
         self.plans.planSeekItem(
           self,
           Entity.adjectiveList.restful,
           Creature.motiveIcons.tired,
           Creature.goalList.sleep,
         );
+      } else {
+        if (self.queries.amIOnItem(self, target)) {
+          self.plans.planSleep(self);
+        } else {
+          self.plans.planMoveToItem(self, target, Creature.goalList.sleep);
+        }
       }
+      
     },
   },
   goalBePetted: {
@@ -230,6 +248,16 @@ const plans = {
     const itemPos = closestItem === null ? null : closestItem.getPosition();
     self.states.stateSeekItem(self, motive, itemPos);
   },
+  planMoveToItem: function(self, id, goal) {
+    const world = worldManager.getWorld(self.world);
+    const items = world.getItems();
+    const item = items.get(id);
+    if(!item) {
+      self.deleteGoal(goal);
+    }
+    const itemPos = item.getPosition();
+    self.states.stateMoveToItem(self, itemPos);
+  },
   planDrink: function (self) {
     self.setPlan(Creature.planList.drink);
     const hydration = self.getMotive("hydration");
@@ -322,7 +350,12 @@ const states = {
   stateSeekItem: function (self, motive, itemPos) {
     self.setState(Creature.stateList.seekItem);
     self.showMotive(motive);
-
+  },
+  stateMoveToItem(self, itemPos) {
+    self.setState(Creature.stateList.moveToItem);
+    self.showMotive(Creature.motiveIcons.movingToTarget);
+    
+    
     if(itemPos) {
       // move toward the item
       const position = self.getPosition();
@@ -341,6 +374,7 @@ const states = {
       const world = worldManager.getWorld(self.world);
       world.moveEntity(self.outputs.icon, self.getPosition());
     }
+   
   },
   stateDrink(self, hydration, maxVal) {
     self.setState(Creature.stateList.drink);
@@ -933,6 +967,7 @@ class Creature extends Entity {
   static planList = {
     wander: "planWander",
     seekItem: "planSeekItem",
+    moveToItem: 'planMoveToItem',
     sleep: "planSleep",
     eat: "planEat",
     drink: "planDrink",
@@ -943,6 +978,7 @@ class Creature extends Entity {
   static stateList = {
     wander: "stateMoveRandomly",
     seekItem: "stateSeekItem",
+    moveToItem: 'stateMoveToItem',
     sleep: "stateSleep",
     eat: "stateEat",
     drink: "stateDrink",
@@ -959,6 +995,7 @@ class Creature extends Entity {
     sleep: "&#x1F4A4;",
     petHappy: "&#x2764;",
     petAnnoyed: "&#x1F620;",
+    movingToTarget: '&#x1F43E;',
   };
 
   constructor(world, params = {}) {

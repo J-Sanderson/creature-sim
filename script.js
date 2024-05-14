@@ -29,7 +29,7 @@ const goals = {
       // nothing else should be a priority
       // delete me if something else comes up.
       if (self.getPriority() === "none") {
-        return 1;
+        return 1;  
       }
       return -1;
     },
@@ -52,14 +52,19 @@ const goals = {
       if (self.getMotive("fullness") >= self.getMaxMotive()) {
         self.deleteGoal(Creature.goalList.eat);
       }
-      const adj = Entity.adjectiveList.tasty;
-      if (self.queries.amIOnItem(self, adj)) {
+      let goalTokens = self.getGoalTokens();
+      if (!goalTokens[Creature.goalList.eat]) {
+        return;
+      }
+      
+      if (self.queries.amIOnItem(self, goalTokens[Creature.goalList.eat].target)) {
         self.plans.planEat(self);
       } else {
         self.plans.planSeekItem(
           self,
           Entity.adjectiveList.tasty,
-          Creature.motiveIcons.hunger
+          Creature.motiveIcons.hunger,
+          Creature.goalList.eat,
         );
       }
     },
@@ -79,11 +84,20 @@ const goals = {
       if (self.getMotive("hydration") >= self.getMaxMotive()) {
         self.deleteGoal(Creature.goalList.drink);
       }
-      const adj = Entity.adjectiveList.wet;
-      if (self.queries.amIOnItem(self, adj)) {
+      let goalTokens = self.getGoalTokens();
+      if (!goalTokens[Creature.goalList.drink]) {
+        return;
+      }
+      
+      if (self.queries.amIOnItem(self, goalTokens[Creature.goalList.drink].target)) {
         self.plans.planDrink(self);
       } else {
-        self.plans.planSeekItem(self, adj, Creature.motiveIcons.thirst);
+        self.plans.planSeekItem(
+          self,
+          Entity.adjectiveList.wet,
+          Creature.motiveIcons.thirst,
+          Creature.goalList.drink,
+        );
       }
     },
   },
@@ -102,11 +116,20 @@ const goals = {
       if (self.getMotive("energy") >= self.getMaxMotive()) {
         self.deleteGoal(Creature.goalList.sleep);
       }
-      const adj = Entity.adjectiveList.restful;
-      if (self.queries.amIOnItem(self, adj)) {
+      let goalTokens = self.getGoalTokens();
+      if (!goalTokens[Creature.goalList.sleep]) {
+        return;
+      }
+      
+      if (self.queries.amIOnItem(self, goalTokens[Creature.goalList.sleep].target)) {
         self.plans.planSleep(self);
       } else {
-        self.plans.planSeekItem(self, adj, Creature.motiveIcons.tired);
+        self.plans.planSeekItem(
+          self,
+          Entity.adjectiveList.restful,
+          Creature.motiveIcons.tired,
+          Creature.goalList.sleep,
+        );
       }
     },
   },
@@ -169,15 +192,18 @@ const plans = {
       console.error("No valid movement direction available");
     }
   },
-  planSeekItem: function (self, adjective, motive) {
+  planSeekItem: function (self, adjective, motive, goal) {
     self.setPlan(Creature.planList.seekItem);
 
     const position = self.getPosition();
     const world = worldManager.getWorld(self.world);
     const entities = world.getEntities();
-    // get all items that are potentially of interest
-    const interestingItems = entities.items.filter((item) => {
-      return item.adjectives.includes(adjective);
+    
+    let interestingItems = [];
+    entities.items.forEach((item) => {
+      if(item.adjectives.includes(adjective)) {
+        interestingItems.push(item);
+      }
     });
 
     // get the closest of these
@@ -193,6 +219,13 @@ const plans = {
         closestItem = item;
       }
     });
+    
+    if (closestItem) {
+      let tokens = self.getGoalTokens();
+      if (tokens.hasOwnProperty(goal)) {
+        tokens[goal].setTarget(closestItem.guid);
+      }
+    }
     
     const itemPos = closestItem === null ? null : closestItem.getPosition();
     self.states.stateSeekItem(self, motive, itemPos);
@@ -350,19 +383,23 @@ const states = {
 };
 
 const queries = {
-  amIOnItem(self, adjective) {
+  amIOnItem(self, id) {
+    if (!id) {
+      return false;
+    }
+    
     const world = worldManager.getWorld(self.world);
-    const entities = world.getEntities();
-    const interestingItems = entities.items.filter((item) => {
-      return item.adjectives.includes(adjective);
-    });
-    return interestingItems.some((item) => {
-      const itemPos = item.getPosition();
-      return (
-        self.status.position.x === itemPos.x &&
-        self.status.position.y === itemPos.y
-      );
-    });
+    const items = world.getItems();
+    const item = items.get(id);
+    if(!item) {
+      return false;
+    }
+    
+    const itemPos = item.getPosition();
+    return (
+      self.status.position.x === itemPos.x &&
+      self.status.position.y === itemPos.y
+    );
   },
   amIHungry(self) {
     return self.getMotive("fullness") < self.maxMotive / 2;
@@ -427,8 +464,8 @@ class World {
     };
 
     this.entities = {
-      items: [],
-      creatures: [],
+      items: new Map(),
+      creatures: new Map(),
     };
 
     this.guid = utilities.generateGUID();
@@ -467,30 +504,29 @@ class World {
       button.innerHTML = item.icon;
       button.style['font-size'] = `${this.params.cellSize}px`;
       button.addEventListener('click', () => {
-        let existing = this.entities.items.findIndex(x => x instanceof item);
-        if (existing === -1) {
-            this.entities.items.push(
-            new item(this.guid, {
-              xPos: utilities.rand(this.params.width),
-              yPos: utilities.rand(this.params.height),
-            })
-          )
-          button.classList.add('item-active');
-        } else {
-          this.deleteEntity(existing);
+        let entityId = button.dataset.entityId;
+        if(entityId) {
+          button.dataset.entityId = '';
           button.classList.remove('item-active');
+          this.deleteEntity(entityId);
+        } else {
+          let newItem = new item(this.guid, {
+            xPos: utilities.rand(this.params.width),
+            yPos: utilities.rand(this.params.height),
+          });
+          this.entities.items.set(newItem.getGUID(), newItem);
+          button.classList.add('item-active');
+          button.dataset.entityId = newItem.getGUID();
         }
       });
       this.elements.toybox.appendChild(button);
     });
     
-
-    this.entities.creatures.push(
-      new Creature(this.guid, {
-        xPos: utilities.rand(this.params.width),
-        yPos: utilities.rand(this.params.height),
-      })
-    );
+    let creature = new Creature(this.guid, {
+      xPos: utilities.rand(this.params.width),
+      yPos: utilities.rand(this.params.height),
+    });
+    this.entities.creatures.set(creature.getGUID(), creature);
 
     if (this.params.showStatus) {
       this.entities.creatures.forEach((creature) => {
@@ -658,9 +694,9 @@ class World {
     }px`;
   }
   
-  deleteEntity(index, type='items') {
-    this.entities[type][index].outputs.icon.remove();
-    this.entities[type].splice(index, 1);
+  deleteEntity(id, type='items') {
+    this.entities[type].get(id).outputs.icon.remove();
+    this.entities[type].delete(id);
   }
 
   getParam(param) {
@@ -682,6 +718,10 @@ class World {
   getEntities() {
     return this.entities;
   }
+  
+  getItems() {
+    return this.entities.items;
+  }
 
   getBounds() {
     return { x: this.params.width, y: this.params.height };
@@ -693,6 +733,7 @@ class GoalToken {
     priority: 1,
     suspended: false,
     ticks: -1,
+    target: null,
   };
 
   constructor(name, params = {}) {
@@ -737,6 +778,10 @@ class GoalToken {
 
   getTicks() {
     return this.ticks;
+  }
+  
+  setTarget(target) {
+    this.target = target;
   }
 }
 

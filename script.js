@@ -52,15 +52,25 @@ const goals = {
       if (self.getMotive("fullness") >= self.getMaxMotive()) {
         self.deleteGoal(Creature.goalList.eat);
       }
-      const adj = Entity.adjectiveList.tasty;
-      if (self.queries.amIOnItem(self, adj)) {
-        self.plans.planEat(self);
-      } else {
+      let goalTokens = self.getGoalTokens();
+      if (!goalTokens[Creature.goalList.eat]) {
+        return;
+      }
+
+      let target = goalTokens[Creature.goalList.eat].target;
+      if (!target) {
         self.plans.planSeekItem(
           self,
           Entity.adjectiveList.tasty,
-          Creature.motiveIcons.hunger
+          Creature.motiveIcons.hunger,
+          Creature.goalList.eat
         );
+      } else {
+        if (self.queries.amIOnItem(self, target)) {
+          self.plans.planEat(self);
+        } else {
+          self.plans.planMoveToItem(self, target, Creature.goalList.eat);
+        }
       }
     },
   },
@@ -79,11 +89,25 @@ const goals = {
       if (self.getMotive("hydration") >= self.getMaxMotive()) {
         self.deleteGoal(Creature.goalList.drink);
       }
-      const adj = Entity.adjectiveList.wet;
-      if (self.queries.amIOnItem(self, adj)) {
-        self.plans.planDrink(self);
+      let goalTokens = self.getGoalTokens();
+      if (!goalTokens[Creature.goalList.drink]) {
+        return;
+      }
+
+      let target = goalTokens[Creature.goalList.drink].target;
+      if (!target) {
+        self.plans.planSeekItem(
+          self,
+          Entity.adjectiveList.wet,
+          Creature.motiveIcons.thirst,
+          Creature.goalList.drink
+        );
       } else {
-        self.plans.planSeekItem(self, adj, Creature.motiveIcons.thirst);
+        if (self.queries.amIOnItem(self, target)) {
+          self.plans.planDrink(self);
+        } else {
+          self.plans.planMoveToItem(self, target, Creature.goalList.drink);
+        }
       }
     },
   },
@@ -102,11 +126,25 @@ const goals = {
       if (self.getMotive("energy") >= self.getMaxMotive()) {
         self.deleteGoal(Creature.goalList.sleep);
       }
-      const adj = Entity.adjectiveList.restful;
-      if (self.queries.amIOnItem(self, adj)) {
-        self.plans.planSleep(self);
+      let goalTokens = self.getGoalTokens();
+      if (!goalTokens[Creature.goalList.sleep]) {
+        return;
+      }
+
+      let target = goalTokens[Creature.goalList.sleep].target;
+      if (!target) {
+        self.plans.planSeekItem(
+          self,
+          Entity.adjectiveList.restful,
+          Creature.motiveIcons.tired,
+          Creature.goalList.sleep
+        );
       } else {
-        self.plans.planSeekItem(self, adj, Creature.motiveIcons.tired);
+        if (self.queries.amIOnItem(self, target)) {
+          self.plans.planSleep(self);
+        } else {
+          self.plans.planMoveToItem(self, target, Creature.goalList.sleep);
+        }
       }
     },
   },
@@ -169,15 +207,18 @@ const plans = {
       console.error("No valid movement direction available");
     }
   },
-  planSeekItem: function (self, adjective, motive) {
+  planSeekItem: function (self, adjective, motive, goal) {
     self.setPlan(Creature.planList.seekItem);
 
     const position = self.getPosition();
     const world = worldManager.getWorld(self.world);
     const entities = world.getEntities();
-    // get all items that are potentially of interest
-    const interestingItems = entities.items.filter((item) => {
-      return item.adjectives.includes(adjective);
+
+    let interestingItems = [];
+    entities.items.forEach((item) => {
+      if (item.adjectives.includes(adjective)) {
+        interestingItems.push(item);
+      }
     });
 
     // get the closest of these
@@ -193,9 +234,26 @@ const plans = {
         closestItem = item;
       }
     });
-    
+
+    if (closestItem) {
+      let tokens = self.getGoalTokens();
+      if (tokens.hasOwnProperty(goal)) {
+        tokens[goal].setTarget(closestItem.guid);
+      }
+    }
+
     const itemPos = closestItem === null ? null : closestItem.getPosition();
     self.states.stateSeekItem(self, motive, itemPos);
+  },
+  planMoveToItem: function (self, id, goal) {
+    const world = worldManager.getWorld(self.world);
+    const items = world.getItems();
+    const item = items.get(id);
+    if (!item) {
+      self.deleteGoal(goal);
+    }
+    const itemPos = item.getPosition();
+    self.states.stateMoveToItem(self, itemPos);
   },
   planDrink: function (self) {
     self.setPlan(Creature.planList.drink);
@@ -246,7 +304,11 @@ const plans = {
   },
   planPetHappy: function (self) {
     self.setPlan(Creature.planList.petHappy);
-    if (self.queries.amIHungry(self) || self.queries.amIThirsty(self) || self.queries.amITired(self)) {
+    if (
+      self.queries.amIHungry(self) ||
+      self.queries.amIThirsty(self) ||
+      self.queries.amITired(self)
+    ) {
       let goalTokens = self.getGoalTokens();
       if (!goalTokens[Creature.goalList.pet]) {
         console.error(
@@ -286,48 +348,83 @@ const states = {
     const world = worldManager.getWorld(self.world);
     world.moveEntity(self.outputs.icon, self.getPosition());
   },
-  stateSeekItem: function (self, motive, itemPos) {
+  stateSeekItem: function (self, motive) {
     self.setState(Creature.stateList.seekItem);
     self.showMotive(motive);
+  },
+  stateMoveToItem(self, itemPos) {
+    self.setState(Creature.stateList.moveToItem);
+    self.showMotive(Creature.motiveIcons.movingToTarget);
 
-    if(itemPos) {
-      // move toward the item
-      const position = self.getPosition();
-      if (itemPos.x > position.x) {
-        self.setXPosition(position.x + 1);
-      }
-      if (itemPos.x < position.x) {
-        self.setXPosition(position.x - 1);
-      }
-      if (itemPos.y > position.y) {
-        self.setYPosition(position.y + 1);
-      }
-      if (itemPos.y < position.y) {
-        self.setYPosition(position.y - 1);
-      }
-      const world = worldManager.getWorld(self.world);
-      world.moveEntity(self.outputs.icon, self.getPosition());
+    // move toward the item
+    const position = self.getPosition();
+    if (itemPos.x > position.x) {
+      self.setXPosition(position.x + 1);
     }
+    if (itemPos.x < position.x) {
+      self.setXPosition(position.x - 1);
+    }
+    if (itemPos.y > position.y) {
+      self.setYPosition(position.y + 1);
+    }
+    if (itemPos.y < position.y) {
+      self.setYPosition(position.y - 1);
+    }
+    const world = worldManager.getWorld(self.world);
+    world.moveEntity(self.outputs.icon, self.getPosition());
   },
   stateDrink(self, hydration, maxVal) {
-    self.setState(Creature.stateList.drink);
-    self.showMotive(Creature.motiveIcons.drink);
-    let newVal = (hydration += 20);
-    if (newVal > maxVal) {
-      newVal = maxVal;
+    const world = worldManager.getWorld(self.world);
+    const items = world.getItems();
+    const item = items.get(
+      self.getGoalTokens()[Creature.goalList.drink].target
+    );
+    if (item) {
+      const amount = item.getMotive("amount");
+      if (amount > 0) {
+        self.setState(Creature.stateList.drink);
+        self.showMotive(Creature.motiveIcons.drink);
+        const transfer = 20;
+        let newVal = (hydration += transfer);
+        if (newVal > maxVal) {
+          newVal = maxVal;
+        }
+        self.setMotive("hydration", newVal);
+        item.setMotive("amount", amount - transfer);
+      } else {
+        world.deleteEntity(item.getGUID());
+        self.deleteGoal(Creature.goalList.drink);
+      }
+    } else {
+      self.deleteGoal(Creature.goalList.drink);
     }
-    self.setMotive("hydration", newVal);
   },
   stateEat(self, motives, maxVal) {
-    self.setState(Creature.stateList.eat);
-    self.showMotive(Creature.motiveIcons.eat);
-    let newVal = (motives.fullness += 10);
-    if (newVal > maxVal) {
-      newVal = maxVal;
-    }
-    self.setMotive("fullness", newVal);
-    if (motives.hydration > 0) {
-      self.setMotive("hydration", motives.hydration - 1);
+    const world = worldManager.getWorld(self.world);
+    const items = world.getItems();
+    const item = items.get(self.getGoalTokens()[Creature.goalList.eat].target);
+
+    if (item) {
+      const amount = item.getMotive("amount");
+      if (amount > 0) {
+        self.setState(Creature.stateList.eat);
+        self.showMotive(Creature.motiveIcons.eat);
+        const transfer = 10;
+        let newVal = (motives.fullness += transfer);
+        if (newVal > maxVal) {
+          newVal = maxVal;
+        }
+        self.setMotive("fullness", newVal);
+        item.setMotive("amount", amount - transfer);
+        if (motives.hydration > 0) {
+          self.setMotive("hydration", motives.hydration - 1);
+        }
+      } else {
+        world.deleteEntity(item.getGUID());
+        self.deleteGoal(Creature.goalList.eat);
+      }
+    } else {
+      self.deleteGoal(Creature.goalList.eat);
     }
   },
   stateSleep(self, energy, maxVal) {
@@ -350,19 +447,23 @@ const states = {
 };
 
 const queries = {
-  amIOnItem(self, adjective) {
+  amIOnItem(self, id) {
+    if (!id) {
+      return false;
+    }
+
     const world = worldManager.getWorld(self.world);
-    const entities = world.getEntities();
-    const interestingItems = entities.items.filter((item) => {
-      return item.adjectives.includes(adjective);
-    });
-    return interestingItems.some((item) => {
-      const itemPos = item.getPosition();
-      return (
-        self.status.position.x === itemPos.x &&
-        self.status.position.y === itemPos.y
-      );
-    });
+    const items = world.getItems();
+    const item = items.get(id);
+    if (!item) {
+      return false;
+    }
+
+    const itemPos = item.getPosition();
+    return (
+      self.status.position.x === itemPos.x &&
+      self.status.position.y === itemPos.y
+    );
   },
   amIHungry(self) {
     return self.getMotive("fullness") < self.maxMotive / 2;
@@ -427,8 +528,8 @@ class World {
     };
 
     this.entities = {
-      items: [],
-      creatures: [],
+      items: new Map(),
+      creatures: new Map(),
     };
 
     this.guid = utilities.generateGUID();
@@ -448,9 +549,9 @@ class World {
     this.elements.canvas = canvas;
     this.ctx = canvas.getContext("2d");
     this.drawWorld();
-    
-    let toybox = document.createElement('div');
-    toybox.classList.add('toybox');
+
+    let toybox = document.createElement("div");
+    toybox.classList.add("toybox");
     this.elements.root.appendChild(toybox);
     this.elements.toybox = toybox;
 
@@ -461,36 +562,33 @@ class World {
       this.elements.root.appendChild(statusWrapper);
       this.elements.statusWrapper = statusWrapper;
     }
-    
-    [Water, Food, Bed].forEach(item => {
-      let button = document.createElement('button');
+
+    [Water, Food, Bed].forEach((item) => {
+      let button = document.createElement("button");
       button.innerHTML = item.icon;
-      button.style['font-size'] = `${this.params.cellSize}px`;
-      button.addEventListener('click', () => {
-        let existing = this.entities.items.findIndex(x => x instanceof item);
-        if (existing === -1) {
-            this.entities.items.push(
-            new item(this.guid, {
-              xPos: utilities.rand(this.params.width),
-              yPos: utilities.rand(this.params.height),
-            })
-          )
-          button.classList.add('item-active');
+      button.style["font-size"] = `${this.params.cellSize}px`;
+      button.addEventListener("click", () => {
+        let entityId = button.dataset.entityId;
+        if (entityId) {
+          this.deleteEntity(entityId);
         } else {
-          this.deleteEntity(existing);
-          button.classList.remove('item-active');
+          let newItem = new item(this.guid, {
+            xPos: utilities.rand(this.params.width),
+            yPos: utilities.rand(this.params.height),
+          });
+          this.entities.items.set(newItem.getGUID(), newItem);
+          button.classList.add("item-active");
+          button.dataset.entityId = newItem.getGUID();
         }
       });
       this.elements.toybox.appendChild(button);
     });
-    
 
-    this.entities.creatures.push(
-      new Creature(this.guid, {
-        xPos: utilities.rand(this.params.width),
-        yPos: utilities.rand(this.params.height),
-      })
-    );
+    let creature = new Creature(this.guid, {
+      xPos: utilities.rand(this.params.width),
+      yPos: utilities.rand(this.params.height),
+    });
+    this.entities.creatures.set(creature.getGUID(), creature);
 
     if (this.params.showStatus) {
       this.entities.creatures.forEach((creature) => {
@@ -657,10 +755,15 @@ class World {
       position.y * this.params.cellSize + this.params.lineWidth
     }px`;
   }
-  
-  deleteEntity(index, type='items') {
-    this.entities[type][index].outputs.icon.remove();
-    this.entities[type].splice(index, 1);
+
+  deleteEntity(id, type = "items") {
+    let button = this.elements.toybox.querySelector(`[data-entity-id="${id}"]`);
+    if (button) {
+      button.dataset.entityId = "";
+      button.classList.remove("item-active");
+    }
+    this.entities[type].get(id).outputs.icon.remove();
+    this.entities[type].delete(id);
   }
 
   getParam(param) {
@@ -683,6 +786,10 @@ class World {
     return this.entities;
   }
 
+  getItems() {
+    return this.entities.items;
+  }
+
   getBounds() {
     return { x: this.params.width, y: this.params.height };
   }
@@ -693,6 +800,7 @@ class GoalToken {
     priority: 1,
     suspended: false,
     ticks: -1,
+    target: null,
   };
 
   constructor(name, params = {}) {
@@ -738,6 +846,10 @@ class GoalToken {
   getTicks() {
     return this.ticks;
   }
+
+  setTarget(target) {
+    this.target = target;
+  }
 }
 
 class Entity {
@@ -764,11 +876,13 @@ class Entity {
     this.eventHandlers = {};
     this.adjectives = [];
 
+    this.maxMotive = worldManager.getWorld(this.world).getParam("maxMotive");
     this.status = {
       position: {
         x: params.hasOwnProperty("xPos") ? params.xPos : 0,
         y: params.hasOwnProperty("yPos") ? params.yPos : 0,
       },
+      motives: {},
     };
 
     this.init();
@@ -814,6 +928,30 @@ class Entity {
     return this.status;
   }
 
+  getMaxMotive() {
+    return this.maxMotive;
+  }
+
+  getMotives() {
+    return this.status.motives;
+  }
+
+  getMotive(motive) {
+    if (!(motive in this.status.motives)) {
+      console.error(`Error: no ${motive} motive found`);
+      return;
+    }
+    return this.status.motives[motive];
+  }
+
+  setMotive(motive, value) {
+    if (!this.status.motives.hasOwnProperty(motive)) {
+      console.error("Invalid motive");
+      return;
+    }
+    this.status.motives[motive] = value;
+  }
+
   setIcon() {
     let world = worldManager.getWorld(this.world);
     let cellSize = world.getParam("cellSize");
@@ -848,6 +986,8 @@ class Water extends Item {
     this.adjectives.push(Entity.adjectiveList.wet);
     this.icon = Water.icon;
 
+    this.status.motives.amount = this.maxMotive * 2.5;
+
     this.setIcon();
   }
 }
@@ -859,6 +999,8 @@ class Food extends Item {
     super(world, params);
     this.adjectives.push(Entity.adjectiveList.tasty);
     this.icon = Food.icon;
+
+    this.status.motives.amount = this.maxMotive * 1.5;
 
     this.setIcon();
   }
@@ -888,6 +1030,7 @@ class Creature extends Entity {
   static planList = {
     wander: "planWander",
     seekItem: "planSeekItem",
+    moveToItem: "planMoveToItem",
     sleep: "planSleep",
     eat: "planEat",
     drink: "planDrink",
@@ -898,6 +1041,7 @@ class Creature extends Entity {
   static stateList = {
     wander: "stateMoveRandomly",
     seekItem: "stateSeekItem",
+    moveToItem: "stateMoveToItem",
     sleep: "stateSleep",
     eat: "stateEat",
     drink: "stateDrink",
@@ -914,6 +1058,7 @@ class Creature extends Entity {
     sleep: "&#x1F4A4;",
     petHappy: "&#x2764;",
     petAnnoyed: "&#x1F620;",
+    movingToTarget: "&#x1F43E;",
   };
 
   constructor(world, params = {}) {
@@ -921,12 +1066,9 @@ class Creature extends Entity {
     this.order = 2;
     this.adjectives.push(Entity.adjectiveList.animate);
 
-    this.maxMotive = worldManager.getWorld(this.world).getParam("maxMotive");
-    this.status.motives = {
-      fullness: utilities.rand(this.maxMotive),
-      hydration: utilities.rand(this.maxMotive),
-      energy: utilities.rand(this.maxMotive),
-    };
+    ["fullness", "hydration", "energy"].forEach((motive) => {
+      this.status.motives[motive] = utilities.rand(this.maxMotive);
+    });
 
     this.status.goalTokens = {};
     this.addGoal(Creature.goalList.wander, { priority: 1, suspended: false });
@@ -1088,30 +1230,6 @@ class Creature extends Entity {
 
   getOutputs() {
     return this.outputs;
-  }
-
-  getMotives() {
-    return this.status.motives;
-  }
-
-  getMotive(motive) {
-    if (!(motive in this.status.motives)) {
-      console.error(`Error: no ${motive} motive found`);
-      return;
-    }
-    return this.status.motives[motive];
-  }
-
-  getMaxMotive() {
-    return this.maxMotive;
-  }
-
-  setMotive(motive, value) {
-    if (!this.status.motives.hasOwnProperty(motive)) {
-      console.error("Invalid motive");
-      return;
-    }
-    this.status.motives[motive] = value;
   }
 
   getGoalTokens() {

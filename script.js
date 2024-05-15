@@ -246,9 +246,7 @@ const plans = {
     self.states.stateSeekItem(self, motive, itemPos);
   },
   planMoveToItem: function (self, id, goal) {
-    const world = worldManager.getWorld(self.world);
-    const items = world.getItems();
-    const item = items.get(id);
+    const item = self.queries.getItemFromWorld(self, id);
     if (!item) {
       self.deleteGoal(goal);
     }
@@ -374,11 +372,7 @@ const states = {
     world.moveEntity(self.outputs.icon, self.getPosition());
   },
   stateDrink(self, hydration, maxVal) {
-    const world = worldManager.getWorld(self.world);
-    const items = world.getItems();
-    const item = items.get(
-      self.getGoalTokens()[Creature.goalList.drink].target
-    );
+    const item = self.queries.getItemFromWorld(self, self.getGoalTokens()[Creature.goalList.drink].target);
     if (item) {
       const amount = item.getMotive("amount");
       if (amount > 0) {
@@ -392,6 +386,7 @@ const states = {
         self.setMotive("hydration", newVal);
         item.setMotive("amount", amount - transfer);
       } else {
+        const world = worldManager.getWorld(self.world);
         world.deleteEntity(item.getGUID());
         self.deleteGoal(Creature.goalList.drink);
       }
@@ -400,9 +395,7 @@ const states = {
     }
   },
   stateEat(self, motives, maxVal) {
-    const world = worldManager.getWorld(self.world);
-    const items = world.getItems();
-    const item = items.get(self.getGoalTokens()[Creature.goalList.eat].target);
+    const item = self.queries.getItemFromWorld(self, self.getGoalTokens()[Creature.goalList.eat].target);
 
     if (item) {
       const amount = item.getMotive("amount");
@@ -420,6 +413,7 @@ const states = {
           self.setMotive("hydration", motives.hydration - 1);
         }
       } else {
+        const world = worldManager.getWorld(self.world);
         world.deleteEntity(item.getGUID());
         self.deleteGoal(Creature.goalList.eat);
       }
@@ -452,9 +446,7 @@ const queries = {
       return false;
     }
 
-    const world = worldManager.getWorld(self.world);
-    const items = world.getItems();
-    const item = items.get(id);
+    const item = self.queries.getItemFromWorld(self, id);
     if (!item) {
       return false;
     }
@@ -473,6 +465,11 @@ const queries = {
   },
   amITired(self) {
     return self.getMotive("energy") < self.maxMotive / 5;
+  },
+  getItemFromWorld(self, id) {
+    const world = worldManager.getWorld(self.world);
+    const items = world.getItems();
+    return items.get(id);
   },
 };
 

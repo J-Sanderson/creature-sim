@@ -9,4 +9,4 @@ The Creature object has different motives that can be satisfied by moving toward
 References:
 
 * https://web.archive.org/web/20121001022009/http://www.interactivestory.net/papers/PetzAndBabyz.html
-* https://web.archive.org/web/20121001022009/http://www.interactivestory.net/papers/PetzAndBabyz.html
+* https://ratshack.neocities.org/text/petz/statemachine

@@ -1144,14 +1144,40 @@ class Creature extends Entity {
   }
 
   metabolismManager() {
-    for (let motive in this.status.motives) {
+    const personality = this.getPersonality();
+    
+    // fullness decay
+    if(this.status.state !== Creature.stateList.eat) {
       if (
         (this.status.state !== Creature.stateList.sleep ||
           Math.random() > 0.75) &&
-        this.status.motives[motive] > 0 &&
+        this.status.motives.fullness > 0 &&
         Math.random() > 0.5
       ) {
-        this.status.motives[motive]--;
+        const dropChance = 1 - (personality.metabolism / 100);
+        if (Math.random() > dropChance) {
+          this.setMotive('fullness',  Math.max(0, this.status.motives.fullness - 1));
+        }
+      }
+    }
+    
+    // hydration decay
+    if(this.status.state !== Creature.stateList.drink) {
+      if (
+        (this.status.state !== Creature.stateList.sleep ||
+          Math.random() > 0.75) &&
+        this.status.motives.hydration > 0 &&
+        Math.random() > 0.5
+      ) {
+        this.status.motives.hydration --;
+      }
+    }
+    
+    // energy decay
+    if(this.status.state !== Creature.stateList.sleep) {
+      const dropChance = 1 - (personality.metabolism / 100);
+      if (Math.random() < dropChance) {
+        this.setMotive('energy',  Math.max(0, this.status.motives.energy - 1));
       }
     }
 
@@ -1272,6 +1298,14 @@ class Creature extends Entity {
   
   getPersonality() {
     return this.personality;
+  }
+  
+  getPersonalityValue(value) {
+    if (!(value in this.personality)) {
+      console.error(`Error: no ${value} personality value found`);
+      return;
+    }
+    return this.personality[value];
   }
 
   setState(state) {

@@ -1107,15 +1107,20 @@ class Creature extends Entity {
     this.personality = {
       values: {},
     };
+
     let maxPersonalityValue = 100;
     Creature.personalityValues.forEach(value => {
       this.personality.values[value] = utilities.rand(maxPersonalityValue);
     });
+
     this.personality.decayThresholds = {
       fullness: this.getPersonalityValues().metabolism / 100,
+      hydration: 0.4 + (this.getPersonalityValues().liveliness / 300),
       energy: 1 - (1 - (this.getPersonalityValues().metabolism / 100)) * (1 + (this.getPersonalityValues().liveliness / 100)), 
     };
-    this.personality.decayThresholds.energy =  Math.max(0, Math.min(1, this.personality.decayThresholds.energy));
+    for (let threshold in this.personality.decayThresholds) {
+      this.personality.decayThresholds[threshold] = Math.max(0, Math.min(1, this.personality.decayThresholds[threshold]));
+    }
 
     this.states = states;
     this.plans = plans;
@@ -1158,7 +1163,7 @@ class Creature extends Entity {
     if(this.status.state !== Creature.stateList.eat) {
       if (
         (this.status.state !== Creature.stateList.sleep ||
-          Math.random() > 0.75) &&
+          Math.random() < 0.25) &&
         this.status.motives.fullness > 0
       ) {
         if (Math.random() < decayThresholds.fullness) {
@@ -1171,9 +1176,9 @@ class Creature extends Entity {
     if(this.status.state !== Creature.stateList.drink) {
       if (
         (this.status.state !== Creature.stateList.sleep ||
-          Math.random() > 0.75) &&
+          Math.random() < 0.25) &&
         this.status.motives.hydration > 0 &&
-        Math.random() > 0.5
+        Math.random() < decayThresholds.hydration
       ) {
         this.status.motives.hydration --;
       }

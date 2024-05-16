@@ -503,6 +503,7 @@ class World {
     lineWidth: 0.1,
     showStatus: false,
     showSliders: false,
+    showPersonality: false,
   };
 
   static statusOutputs = ["goalTokens", "currentGoal", "plan", "state"];
@@ -598,6 +599,12 @@ class World {
       this.entities.creatures.forEach((creature) => {
         this.showCreatureSliders(creature);
         this.updateCreatureSliders(creature);
+      });
+    }
+    
+    if (this.params.showPersonality) {
+      this.entities.creatures.forEach((creature) => {
+        this.showCreaturePersonality(creature)
       });
     }
 
@@ -705,6 +712,23 @@ class World {
     }
 
     this.elements.statusWrapper.appendChild(sliders);
+  }
+  
+  showCreaturePersonality(creature) {
+    if (!this.params.showPersonality) {
+      return;
+    }
+    
+    let personality = document.createElement('p');
+    const personalityValues = creature.getPersonality();
+    for (let value in personalityValues) {
+      let span = document.createElement('span');
+      span.innerHTML = `${value}: ${personalityValues[value]}`;
+      personality.appendChild(span);
+      personality.appendChild(document.createElement("br"));
+    }
+    
+    this.elements.statusWrapper.appendChild(personality);
   }
 
   updateCreatureStatus(creature) {
@@ -1057,6 +1081,13 @@ class Creature extends Entity {
     petAnnoyed: "&#x1F620;",
     movingToTarget: "&#x1F43E;",
   };
+  
+  static personalityValues = [
+    'liveliness',
+    'patience',
+    'naughtiness',
+    'metabolism',
+  ];
 
   constructor(world, params = {}) {
     super(world, params);
@@ -1072,6 +1103,12 @@ class Creature extends Entity {
     this.status.currentGoal = Creature.goalList.wander;
     this.status.plan = Creature.planList.moving;
     this.status.state = Creature.stateList.wander;
+    
+    this.personality = {};
+    let maxPersonalityValue = 100;
+    Creature.personalityValues.forEach(value => {
+      this.personality[value] = utilities.rand(maxPersonalityValue);
+    });
 
     this.states = states;
     this.plans = plans;
@@ -1232,6 +1269,10 @@ class Creature extends Entity {
   getGoalTokens() {
     return this.status.goalTokens;
   }
+  
+  getPersonality() {
+    return this.personality;
+  }
 
   setState(state) {
     this.status.state = state;
@@ -1291,5 +1332,6 @@ if (worldEl) {
     cellSize: 70,
     showStatus: true,
     showSliders: true,
+    showPersonality: true,
   });
 }

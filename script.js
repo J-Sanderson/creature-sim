@@ -720,7 +720,7 @@ class World {
     }
     
     let personality = document.createElement('p');
-    const personalityValues = creature.getPersonality();
+    const personalityValues = creature.getPersonalityValues();
     for (let value in personalityValues) {
       let span = document.createElement('span');
       span.innerHTML = `${value}: ${personalityValues[value]}`;
@@ -1104,11 +1104,18 @@ class Creature extends Entity {
     this.status.plan = Creature.planList.moving;
     this.status.state = Creature.stateList.wander;
     
-    this.personality = {};
+    this.personality = {
+      values: {},
+    };
     let maxPersonalityValue = 100;
     Creature.personalityValues.forEach(value => {
-      this.personality[value] = utilities.rand(maxPersonalityValue);
+      this.personality.values[value] = utilities.rand(maxPersonalityValue);
     });
+    this.personality.decayThresholds = {
+      fullness: this.getPersonalityValues().metabolism / 100,
+      energy: 1 - (1 - (this.getPersonalityValues().metabolism / 100)) * (1 + (this.getPersonalityValues().liveliness / 100)), 
+    };
+    this.personality.decayThresholds.energy =  Math.max(0, Math.min(1, this.personality.decayThresholds.energy));
 
     this.states = states;
     this.plans = plans;
@@ -1144,19 +1151,18 @@ class Creature extends Entity {
   }
 
   metabolismManager() {
-    const personality = this.getPersonality();
+    const personalityValues = this.getPersonalityValues();
+    const decayThresholds = this.getDecayThresholds();
     
     // fullness decay
     if(this.status.state !== Creature.stateList.eat) {
       if (
         (this.status.state !== Creature.stateList.sleep ||
           Math.random() > 0.75) &&
-        this.status.motives.fullness > 0 &&
-        Math.random() > 0.5
+        this.status.motives.fullness > 0
       ) {
-        const dropChance = 1 - (personality.metabolism / 100);
-        if (Math.random() > dropChance) {
-          this.setMotive('fullness',  Math.max(0, this.status.motives.fullness - 1));
+        if (Math.random() < decayThresholds.fullness) {
+          this.setMotive('fullness',  this.status.motives.fullness - 1);
         }
       }
     }
@@ -1174,10 +1180,9 @@ class Creature extends Entity {
     }
     
     // energy decay
-    if(this.status.state !== Creature.stateList.sleep) {
-      const dropChance = 1 - (personality.metabolism / 100);
-      if (Math.random() < dropChance) {
-        this.setMotive('energy',  Math.max(0, this.status.motives.energy - 1));
+    if(this.status.state !== Creature.stateList.sleep && this.status.motives.energy > 0) {
+      if (Math.random() < decayThresholds.energy) {
+        this.setMotive('energy', this.status.motives.energy - 1);
       }
     }
 
@@ -1296,16 +1301,20 @@ class Creature extends Entity {
     return this.status.goalTokens;
   }
   
-  getPersonality() {
-    return this.personality;
+  getPersonalityValues() {
+    return this.personality.values;
   }
   
   getPersonalityValue(value) {
-    if (!(value in this.personality)) {
+    if (!(value in this.personality.values)) {
       console.error(`Error: no ${value} personality value found`);
       return;
     }
     return this.personality[value];
+  }
+  
+  getDecayThresholds() {
+    return this.personality.decayThresholds;
   }
 
   setState(state) {

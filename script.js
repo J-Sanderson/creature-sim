@@ -464,7 +464,7 @@ const queries = {
     return self.getMotive("hydration") < self.maxMotive / 2;
   },
   amITired(self) {
-    return self.getMotive("energy") < self.maxMotive / 5;
+    return self.getMotive("energy") < self.getDesireThreshold('sleep');
   },
   getItemFromWorld(self, id) {
     const world = worldManager.getWorld(self.world);
@@ -1112,14 +1112,22 @@ class Creature extends Entity {
     Creature.personalityValues.forEach(value => {
       this.personality.values[value] = utilities.rand(maxPersonalityValue);
     });
+    let personalityValues = this.getPersonalityValues();
 
     this.personality.decayThresholds = {
-      fullness: this.getPersonalityValues().metabolism / 100,
-      hydration: 0.4 + (this.getPersonalityValues().liveliness / 300),
-      energy: 1 - (1 - (this.getPersonalityValues().metabolism / 100)) * (1 + (this.getPersonalityValues().liveliness / 100)), 
+      fullness: personalityValues.metabolism / 100,
+      hydration: 0.4 + (personalityValues.liveliness / 300),
+      energy: 1 - (1 - (personalityValues.metabolism / 100)) * (1 + (personalityValues.liveliness / 100)), 
     };
     for (let threshold in this.personality.decayThresholds) {
       this.personality.decayThresholds[threshold] = Math.max(0, Math.min(1, this.personality.decayThresholds[threshold]));
+    }
+    
+    this.personality.desireThresholds = {
+      sleep: (this.maxMotive * 0.2) - (personalityValues.liveliness / 10),
+    };
+    for (let threshold in this.personality.desireThresholds) {
+      this.personality.desireThresholds[threshold] = Math.max(0, Math.min(this.maxMotive, this.personality.desireThresholds[threshold]));
     }
 
     this.states = states;
@@ -1320,6 +1328,14 @@ class Creature extends Entity {
   
   getDecayThresholds() {
     return this.personality.decayThresholds;
+  }
+  
+  getDesireThresholds() {
+    return this.personality.desireThresholds;
+  }
+  
+  getDesireThreshold(desire) {
+    return this.personality.desireThresholds[desire];
   }
 
   setState(state) {

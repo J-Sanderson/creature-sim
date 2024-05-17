@@ -356,7 +356,9 @@ const plans = {
         `Error: no relevant goal token found for ${Creature.goalList.sitAround}`
       );
     }
-    goalTokens[Creature.goalList.sitAround].decrementTicks();
+    if (Math.random() < self.getDecayThreshold('sitAround')) {
+      goalTokens[Creature.goalList.sitAround].decrementTicks();
+    }
     if (goalTokens[Creature.goalList.sitAround].getTicks() <= 0) {
       self.deleteGoal(Creature.goalList.sitAround);
     }
@@ -1147,9 +1149,10 @@ class Creature extends Entity {
     let personalityValues = this.getPersonalityValues();
 
     this.personality.decayThresholds = {
-      fullness: personalityValues.metabolism / 100,
-      hydration: 0.4 + (personalityValues.liveliness / 300),
-      energy: 1 - (1 - (personalityValues.metabolism / 100)) * (1 + (personalityValues.liveliness / 100)), 
+      fullness: personalityValues.metabolism / this.maxMotive,
+      hydration: 0.4 + (personalityValues.liveliness / (this.maxMotive * 3)),
+      energy: 1 - (1 - (personalityValues.metabolism / this.maxMotive)) * (1 + (personalityValues.liveliness / this.maxMotive)),
+      sitAround: personalityValues.liveliness / this.maxMotive,
     };
     for (let threshold in this.personality.decayThresholds) {
       this.personality.decayThresholds[threshold] = Math.max(0, Math.min(1, this.personality.decayThresholds[threshold]));
@@ -1308,11 +1311,12 @@ class Creature extends Entity {
         this.addGoal(Creature.goalList.wander, {
           priority: 1,
           suspended: false,
+          ticks: 5,
         });
         this.addGoal(Creature.goalList.sitAround, {
           priority: 1,
           suspended: false,
-          ticks: 10, // should probably be random
+          ticks: 5, // should probably be random
         });
       }
     }
@@ -1364,6 +1368,14 @@ class Creature extends Entity {
   
   getDecayThresholds() {
     return this.personality.decayThresholds;
+  }
+  
+  getDecayThreshold(value) {
+    if (!(value in this.personality.decayThresholds)) {
+      console.error(`Error: no ${value} decay threshold found`);
+      return;
+    }
+    return this.personality.decayThresholds[value];
   }
   
   getDesireThresholds() {

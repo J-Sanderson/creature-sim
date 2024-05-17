@@ -29,7 +29,7 @@ const goals = {
       // nothing else should be a priority
       // delete me if something else comes up.
       if (self.getPriority() === "none") {
-        return 1;
+        return Math.random() < self.getPersonalityValue('liveliness') / self.getMaxMotive() ? 1 : 2;
       }
       return -1;
     },
@@ -164,6 +164,20 @@ const goals = {
         self.plans.planPetHappy(self);
       }
     },
+  },
+  goalSitAround: {
+    filter: function (self) {
+      // nothing else should be a priority
+      // delete me if something else comes up.
+      if (self.getPriority() === "none") {
+        // priority dependent on liveliness value
+        return Math.random() > self.getPersonalityValue('liveliness') / self.getMaxMotive() ? 1 : 2;
+      }
+      return -1;
+    },
+    execute: function (self) {
+      self.plans.planSitAround(self);
+    }
   },
 };
 
@@ -334,6 +348,20 @@ const plans = {
     }
     self.states.statePetAnnoyed(self);
   },
+  planSitAround: function(self) {
+    self.setPlan(Creature.planList.sitAround);
+    let goalTokens = self.getGoalTokens();
+    if (!goalTokens[Creature.goalList.sitAround]) {
+      console.error(
+        `Error: no relevant goal token found for ${Creature.goalList.sitAround}`
+      );
+    }
+    goalTokens[Creature.goalList.sitAround].decrementTicks();
+    if (goalTokens[Creature.goalList.sitAround].getTicks() <= 0) {
+      self.deleteGoal(Creature.goalList.sitAround);
+    }
+    self.states.stateSitAround(self);
+  }
 };
 
 const states = {
@@ -438,6 +466,10 @@ const states = {
     self.setState(Creature.stateList.petAnnoyed);
     self.showMotive(Creature.motiveIcons.petAnnoyed);
   },
+  stateSitAround(self) {
+    self.setState(Creature.stateList.sitAround);
+    self.showMotive(Creature.motiveIcons.sitAround);
+  }
 };
 
 const queries = {
@@ -1046,6 +1078,7 @@ class Creature extends Entity {
     sleep: "goalSleep",
     wander: "goalWander",
     pet: "goalBePetted",
+    sitAround: 'goalSitAround',
   };
 
   static planList = {
@@ -1057,6 +1090,7 @@ class Creature extends Entity {
     drink: "planDrink",
     petHappy: "planPetHappy",
     petAnnoyed: "planPetAnnoyed",
+    sitAround: 'planSitAround',
   };
 
   static stateList = {
@@ -1068,6 +1102,7 @@ class Creature extends Entity {
     drink: "stateDrink",
     petHappy: "statePetHappy",
     petAnnoyed: "statePetAnnoyed",
+    sitAround: 'stateSitAround',
   };
 
   static motiveIcons = {
@@ -1080,6 +1115,7 @@ class Creature extends Entity {
     petHappy: "&#x1FA77;",
     petAnnoyed: "&#x1F620;",
     movingToTarget: "&#x1F43E;",
+    sitAround: '&#x2601;',
   };
   
   static personalityValues = [
@@ -1099,10 +1135,6 @@ class Creature extends Entity {
     });
 
     this.status.goalTokens = {};
-    this.addGoal(Creature.goalList.wander, { priority: 1, suspended: false });
-    this.status.currentGoal = Creature.goalList.wander;
-    this.status.plan = Creature.planList.moving;
-    this.status.state = Creature.stateList.wander;
     
     this.personality = {
       values: {},
@@ -1272,10 +1304,15 @@ class Creature extends Entity {
         }
         this.status.currentGoal = newGoal;
       } else {
-        // no goal tokens left, add the basic wander goal
+        // no goal tokens left, add the basic do nothing goals
         this.addGoal(Creature.goalList.wander, {
           priority: 1,
           suspended: false,
+        });
+        this.addGoal(Creature.goalList.sitAround, {
+          priority: 1,
+          suspended: false,
+          ticks: 10, // should probably be random
         });
       }
     }
@@ -1322,7 +1359,7 @@ class Creature extends Entity {
       console.error(`Error: no ${value} personality value found`);
       return;
     }
-    return this.personality[value];
+    return this.personality.values[value];
   }
   
   getDecayThresholds() {

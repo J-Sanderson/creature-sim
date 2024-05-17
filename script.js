@@ -458,10 +458,10 @@ const queries = {
     );
   },
   amIHungry(self) {
-    return self.getMotive("fullness") < self.maxMotive / 2;
+    return self.getMotive("fullness") < self.getDesireThreshold('eat');
   },
   amIThirsty(self) {
-    return self.getMotive("hydration") < self.maxMotive / 2;
+    return self.getMotive("hydration") < self.getDesireThreshold('drink');
   },
   amITired(self) {
     return self.getMotive("energy") < self.getDesireThreshold('sleep');
@@ -1077,7 +1077,7 @@ class Creature extends Entity {
     drink: "&#x1F445;",
     eat: "&#x1F37D;",
     sleep: "&#x1F4A4;",
-    petHappy: "&#x2764;",
+    petHappy: "&#x1FA77;",
     petAnnoyed: "&#x1F620;",
     movingToTarget: "&#x1F43E;",
   };
@@ -1108,7 +1108,7 @@ class Creature extends Entity {
       values: {},
     };
 
-    let maxPersonalityValue = 100;
+    let maxPersonalityValue = this.maxMotive;
     Creature.personalityValues.forEach(value => {
       this.personality.values[value] = utilities.rand(maxPersonalityValue);
     });
@@ -1125,10 +1125,9 @@ class Creature extends Entity {
     
     this.personality.desireThresholds = {
       sleep: (this.maxMotive * 0.2) - (personalityValues.liveliness / 10),
+      eat: (this.maxMotive * 0.4) + (personalityValues.metabolism / 10),
+      drink: (this.maxMotive * 0.4) + (personalityValues.liveliness / 10),
     };
-    for (let threshold in this.personality.desireThresholds) {
-      this.personality.desireThresholds[threshold] = Math.max(0, Math.min(this.maxMotive, this.personality.desireThresholds[threshold]));
-    }
 
     this.states = states;
     this.plans = plans;
@@ -1335,6 +1334,10 @@ class Creature extends Entity {
   }
   
   getDesireThreshold(desire) {
+    if (!(desire in this.personality.desireThresholds)) {
+      console.error(`Error: no ${desire} threshold value found`);
+      return;
+    }
     return this.personality.desireThresholds[desire];
   }
 

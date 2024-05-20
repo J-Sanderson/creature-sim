@@ -184,6 +184,18 @@ const goals = {
 const plans = {
   planWander: function (self) {
     self.setPlan(Creature.planList.wander);
+    let goalTokens = self.getGoalTokens();
+    if (!goalTokens[Creature.goalList.wander]) {
+      console.error(
+        `Error: no relevant goal token found for ${Creature.goalList.wander}`
+      );
+    }
+    if (Math.random() < self.getDecayThreshold('wander')) {
+      goalTokens[Creature.goalList.wander].decrementTicks();
+    }
+    if (goalTokens[Creature.goalList.wander].getTicks() <= 0) {
+      self.deleteGoal(Creature.goalList.wander);
+    }
     const position = self.getPosition();
 
     const directions = [
@@ -1153,6 +1165,7 @@ class Creature extends Entity {
       hydration: 0.4 + (personalityValues.liveliness / (this.maxMotive * 3)),
       energy: 1 - (1 - (personalityValues.metabolism / this.maxMotive)) * (1 + (personalityValues.liveliness / this.maxMotive)),
       sitAround: personalityValues.liveliness / this.maxMotive,
+      wander: 1 - personalityValues.liveliness / this.maxMotive,
     };
     for (let threshold in this.personality.decayThresholds) {
       this.personality.decayThresholds[threshold] = Math.max(0, Math.min(1, this.personality.decayThresholds[threshold]));

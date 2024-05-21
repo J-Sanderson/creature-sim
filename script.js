@@ -179,6 +179,20 @@ const goals = {
       self.plans.planSitAround(self);
     }
   },
+  goalKnockItemFromToybox: {
+    filter: function(self) {
+      // -1 if high patience.
+      return 1;
+    },
+    execute: function(self) {
+      // frustrated icon (may eventually be emotion dependent)
+      // move to bottom of screen
+      // what does it want?
+      self.plans.planMoveToToybox(self);
+      // push icon
+      // spawn item
+    },
+  }
 };
 
 const plans = {
@@ -266,6 +280,9 @@ const plans = {
       if (tokens.hasOwnProperty(goal)) {
         tokens[goal].setTarget(closestItem.guid);
       }
+    } else {
+      self.suspendGoal(goal);
+      self.addGoal(Creature.goalList.knockItemFromToybox, { priority: 1, suspended: false, calledBy: goal });
     }
 
     const itemPos = closestItem === null ? null : closestItem.getPosition();
@@ -375,6 +392,64 @@ const plans = {
       self.deleteGoal(Creature.goalList.sitAround);
     }
     self.states.stateSitAround(self);
+  },
+  planMoveToToybox: function(self) {
+    self.setPlan(Creature.planList.moveToToybox);
+    const position = self.getPosition();
+    const bounds = self.getBounds();
+    position.y++;
+    if (position.y >= bounds.y) {
+      self.plans.planPushItemFromToybox(self);
+    } else {
+      self.states.stateMoveToToybox(self, position);
+    }
+  },
+  planPushItemFromToybox(self) {
+    self.setPlan(Creature.planList.pushItemFromToybox);
+    self.states.statePushItemFromToybox(self);
+    let goalTokens = self.getGoalTokens();
+    if (!goalTokens[Creature.goalList.knockItemFromToybox]) {
+      console.error(
+        `Error: no relevant goal token found for ${Creature.goalList.knockItemFromToybox}`
+      );
+    }
+
+    let className;
+    let calledBy = goalTokens[Creature.goalList.knockItemFromToybox].getCalledBy();
+    switch (calledBy) {
+      case 'goalEat':
+        className = Food;
+        break;
+      case 'goalDrink':
+        className = Water;
+        break;
+      case 'goalSleep':
+        className = Bed;
+        break;
+      default:
+        // item not called by need, TODO random knocking item?
+    }
+
+    const world = worldManager.getWorld(self.world);
+    const entities = world.getEntities();
+
+    let exists = false;
+    entities.items.forEach((item) => {
+      if (item instanceof className) {
+        exists = true;
+      }
+    });
+    if (exists) {
+      self.deleteGoal(Creature.goalList.knockItemFromToybox);
+      self.unsuspendGoal(calledBy);
+    } else {
+      let button = document.querySelector(`[data-item-class="${className.className}"]`);
+      if (!button) {
+        console.error(`Error: no toybox button found for ${className.className}`);
+        return;
+      }
+      button.click();
+    }
   }
 };
 
@@ -483,7 +558,18 @@ const states = {
   stateSitAround(self) {
     self.setState(Creature.stateList.sitAround);
     self.showMotive(Creature.motiveIcons.sitAround);
-  }
+  },
+  stateMoveToToybox(self, pos) {
+    self.setState(Creature.stateList.moveToToybox);
+    self.showMotive(Creature.motiveIcons.movingToTarget);
+    self.setYPosition(pos.y);
+    const world = worldManager.getWorld(self.world);
+    world.moveEntity(self.outputs.icon, self.getPosition());
+  },
+  statePushItemFromToybox(self) {
+    self.setState(Creature.stateList.pushItemFromToybox);
+    self.showMotive(Creature.motiveIcons.pushItemFromToybox);
+  },
 };
 
 const queries = {
@@ -611,6 +697,7 @@ class World {
       let button = document.createElement("button");
       button.innerHTML = item.icon;
       button.style["font-size"] = `${this.params.cellSize}px`;
+      button.dataset.itemClass = item.className;
       button.addEventListener("click", () => {
         let entityId = button.dataset.entityId;
         if (entityId) {
@@ -868,6 +955,7 @@ class GoalToken {
     suspended: false,
     ticks: -1,
     target: null,
+    calledBy: null,
   };
 
   constructor(name, params = {}) {
@@ -916,6 +1004,10 @@ class GoalToken {
 
   setTarget(target) {
     this.target = target;
+  }
+  
+  getCalledBy() {
+    return this.calledBy;
   }
 }
 
@@ -1047,6 +1139,7 @@ class Item extends Entity {
 
 class Water extends Item {
   static icon = "&#x1F4A7;";
+  static className = 'Water';
 
   constructor(world, params = {}) {
     super(world, params);
@@ -1061,6 +1154,7 @@ class Water extends Item {
 
 class Food extends Item {
   static icon = "&#x1F969;";
+  static className = 'Food';
 
   constructor(world, params = {}) {
     super(world, params);
@@ -1075,6 +1169,7 @@ class Food extends Item {
 
 class Bed extends Item {
   static icon = "&#x1F6CF;";
+  static className = 'Bed';
 
   constructor(world, params = {}) {
     super(world, params);
@@ -1093,6 +1188,7 @@ class Creature extends Entity {
     wander: "goalWander",
     pet: "goalBePetted",
     sitAround: 'goalSitAround',
+    knockItemFromToybox: 'goalKnockItemFromToybox',
   };
 
   static planList = {
@@ -1105,6 +1201,8 @@ class Creature extends Entity {
     petHappy: "planPetHappy",
     petAnnoyed: "planPetAnnoyed",
     sitAround: 'planSitAround',
+    moveToToybox: 'planMoveToToybox',
+    pushItemFromToybox: 'planPushItemFromToybox',
   };
 
   static stateList = {
@@ -1117,6 +1215,8 @@ class Creature extends Entity {
     petHappy: "statePetHappy",
     petAnnoyed: "statePetAnnoyed",
     sitAround: 'stateSitAround',
+    moveToToybox: 'stateMoveToToybox',
+    pushItemFromToybox: 'statePushItemFromToybox',
   };
 
   static motiveIcons = {
@@ -1130,6 +1230,7 @@ class Creature extends Entity {
     petAnnoyed: "&#x1F620;",
     movingToTarget: "&#x1F43E;",
     sitAround: '&#x2601;',
+    pushItemFromToybox: '&#x1FAF7;',
   };
   
   static personalityValues = [

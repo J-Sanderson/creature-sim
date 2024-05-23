@@ -181,16 +181,15 @@ const goals = {
   },
   goalKnockItemFromToybox: {
     filter: function(self) {
-      // -1 if high patience.
-      return 1;
+      const personalityValues = self.getPersonalityValues();
+      const maxMotive = self.getMaxMotive();
+      if (Math.random() < 1 - (personalityValues.patience / maxMotive)) {
+        return 2;
+      }
+      return -1;
     },
     execute: function(self) {
-      // frustrated icon (may eventually be emotion dependent)
-      // move to bottom of screen
-      // what does it want?
       self.plans.planMoveToToybox(self);
-      // push icon
-      // spawn item
     },
   }
 };

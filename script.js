@@ -397,10 +397,10 @@ const plans = {
     self.setPlan(Creature.planList.moveToToybox);
     const position = self.getPosition();
     const bounds = self.getBounds();
-    position.y++;
-    if (position.y >= bounds.y) {
+    if (position.y + 1 >= bounds.y) {
       self.plans.planPushItemFromToybox(self);
     } else {
+      position.y++;
       self.states.stateMoveToToybox(self, position);
     }
   },
@@ -1230,7 +1230,7 @@ class Creature extends Entity {
     petAnnoyed: "&#x1F620;",
     movingToTarget: "&#x1F43E;",
     sitAround: '&#x2601;',
-    pushItemFromToybox: '&#x1FAF7;',
+    pushItemFromToybox: '&#x1F4A5;',
   };
   
   static personalityValues = [

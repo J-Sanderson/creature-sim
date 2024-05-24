@@ -369,10 +369,30 @@ class GoalKnockItemFromToybox extends Goal {
   filter(self) {
     const personalityValues = self.getPersonalityValues();
     const maxMotive = self.getMaxMotive();
-    if (Math.random() < 1 - personalityValues.patience / maxMotive) {
-      return 2;
+    
+    if (personalityValues.naughtiness <= maxMotive / 10 && personalityValues.patience >= maxMotive / 10) {
+      return -1
     }
-    return -1;
+    
+    let priority = 5;
+    
+    const patienceFactor = 1 - Math.min(
+      1,
+      personalityValues.patience / maxMotive
+    );
+    const patienceModifier = Math.floor(3 * patienceFactor);
+    priority -= patienceModifier;
+    
+    const naughtinessFactor = Math.min(
+      1,
+      personalityValues.liveliness / maxMotive
+    );
+    const naughtinessModifier = Math.floor(3 * naughtinessFactor);
+    priority -= naughtinessModifier;
+    
+    priority = Math.max(1, priority);
+    
+    return priority;
   }
   execute(self) {
     self.plans.planMoveToToybox(self);
@@ -1592,20 +1612,6 @@ class Creature extends Entity {
     }
     this.outputs.bubble.innerHTML = `<span>${motive}</span>`;
     this.outputs.bubble.style.display = "block";
-  }
-
-  getPriority() {
-    let priority = "none";
-    if (this.queries.amITired(this)) {
-      priority = "energy";
-    }
-    if (this.queries.amIHungry(this)) {
-      priority = "fullness";
-    }
-    if (this.queries.amIThirsty(this)) {
-      priority = "hydration";
-    }
-    return priority;
   }
 
   getOutputs() {

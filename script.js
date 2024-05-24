@@ -170,14 +170,42 @@ class GoalDrink extends Goal {
     super(params);
   }
   filter(self) {
-    // creature is thirsty or running the drink plan
+    const motives = self.getMotives();
+    const goals = self.getGoals();
+    const maxMotive = self.getMaxMotive();
+    const personalityValues = self.getPersonalityValues();
+    const plan = self.getPlan();
+    const nearbyWater = self.queries.getItemsByAdjective(
+      self,
+      Entity.adjectiveList.wet
+    );
+
+    let priority = 10;
+
     if (
-      self.getPriority() === "hydration" ||
-      self.status.plan === Creature.planList.drink
+      plan === Creature.planList.drink ||
+      motives.hydration <= maxMotive / 10
     ) {
-      return 1;
+      priority = 1;
     }
-    return 3;
+
+    if (nearbyWater.length) {
+      if (motives.hydration <= maxMotive / 2) {
+        priority = 4;
+      } else if (motives.hydration <= maxMotive / 1.53) {
+        priority = 8;
+      }
+    }
+
+    const livelinessFactor = Math.min(
+      1,
+      personalityValues.liveliness / maxMotive
+    );
+    const priorityModifier = Math.floor(3 * livelinessFactor);
+
+    priority = Math.max(1, priority - priorityModifier);
+
+    return priority;
   }
   execute(self) {
     if (self.getMotive("hydration") >= self.getMaxMotive()) {

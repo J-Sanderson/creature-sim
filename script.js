@@ -409,7 +409,13 @@ class GoalKnockItemFromToybox extends Goal {
     return priority;
   }
   execute(self) {
-    self.plans.planMoveToToybox(self);
+    const position = self.getPosition();
+    const bounds = self.getBounds();
+    if (position.y + 1 >= bounds.y) {
+      self.plans.planPushItemFromToybox(self);
+    } else {
+      self.plans.planMoveToToybox(self);
+    }
   }
 }
 
@@ -619,14 +625,7 @@ const plans = {
   },
   planMoveToToybox: function (self) {
     self.setPlan(Creature.planList.moveToToybox);
-    const position = self.getPosition();
-    const bounds = self.getBounds();
-    if (position.y + 1 >= bounds.y) {
-      self.plans.planPushItemFromToybox(self);
-    } else {
-      position.y++;
-      self.states.stateMoveToToybox(self, position);
-    }
+    self.states.stateMoveToToybox(self);
   },
   planPushItemFromToybox(self) {
     self.setPlan(Creature.planList.pushItemFromToybox);
@@ -793,10 +792,11 @@ const states = {
     self.setState(Creature.stateList.sitAround);
     self.showMotive(Creature.motiveIcons.sitAround);
   },
-  stateMoveToToybox(self, pos) {
+  stateMoveToToybox(self) {
     self.setState(Creature.stateList.moveToToybox);
     self.showMotive(Creature.motiveIcons.movingToTarget);
-    self.setYPosition(pos.y);
+    const pos = self.getPosition();
+    self.setYPosition(pos.y + 1);
     const world = worldManager.getWorld(self.world);
     world.moveEntity(self.outputs.icon, self.getPosition());
   },

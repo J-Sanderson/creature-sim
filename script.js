@@ -84,15 +84,25 @@ class GoalWander extends Goal {
     super(params);
   }
   filter(self) {
-    // nothing else should be a priority
-    // delete me if something else comes up.
-    if (self.getPriority() === "none") {
-      return Math.random() <
-        self.getPersonalityValue("liveliness") / self.getMaxMotive()
-        ? 1
-        : 2;
+    const motives = self.getMotives();
+    const maxMotive = self.getMaxMotive();
+    const personalityValues = self.getPersonalityValues();
+    let priority = 7;
+    
+    for (let motive in motives) {
+      if (motives[motive] <= maxMotive / 10) {
+        return -1
+      }
     }
-    return -1;
+    
+    const livelinessFactor = Math.min(
+      1,
+      personalityValues.liveliness / maxMotive
+    );
+    const priorityModifier = Math.floor(3 * livelinessFactor);
+    priority -= priorityModifier;
+    
+    return priority;
   }
   execute(self) {
     self.plans.planWander(self);
@@ -323,16 +333,29 @@ class GoalSitAround extends Goal {
     super(params);
   }
   filter(self) {
-    // nothing else should be a priority
-    // delete me if something else comes up.
-    if (self.getPriority() === "none") {
-      // priority dependent on liveliness value
-      return Math.random() >
-        self.getPersonalityValue("liveliness") / self.getMaxMotive()
-        ? 1
-        : 2;
+    const motives = self.getMotives();
+    const maxMotive = self.getMaxMotive();
+    const personalityValues = self.getPersonalityValues();
+    let priority = 7;
+    
+    for (let motive in motives) {
+      if (motives[motive] <= maxMotive / 10) {
+        return -1
+      }
     }
-    return -1;
+    
+    if (motives.energy <= maxMotive / 3) {
+      priority += 1;
+    }
+    
+    const livelinessFactor = 1 - Math.min(
+      1,
+      personalityValues.liveliness / maxMotive
+    );
+    const priorityModifier = Math.floor(3 * livelinessFactor);
+    priority = Math.max(1, priority - priorityModifier);
+    
+    return priority;
   }
   execute(self) {
     self.plans.planSitAround(self);

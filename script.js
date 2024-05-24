@@ -939,7 +939,7 @@ class World {
       this.elements.statusWrapper = statusWrapper;
     }
 
-    [Water, Food, Bed].forEach((item) => {
+    [Water, Food, Bed, Bone].forEach((item) => {
       let button = document.createElement("button");
       button.innerHTML = item.icon;
       button.style["font-size"] = `${this.params.cellSize}px`;
@@ -1202,6 +1202,7 @@ class Entity {
     tasty: "tasty",
     wet: "wet",
     restful: "restful",
+    chew: 'chew',
   };
 
   constructor(world, params = {}) {
@@ -1359,6 +1360,19 @@ class Bed extends Item {
     super(world, params);
     this.adjectives.push(Entity.adjectiveList.restful);
     this.icon = Bed.icon;
+
+    this.setIcon();
+  }
+}
+
+class Bone extends Item {
+  static icon = "&#x1F9B4;";
+  static className = "Bone";
+
+  constructor(world, params = {}) {
+    super(world, params);
+    this.adjectives.push(Entity.adjectiveList.chew);
+    this.icon = Bone.icon;
 
     this.setIcon();
   }

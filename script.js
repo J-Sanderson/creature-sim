@@ -105,7 +105,6 @@ class GoalEat extends Goal {
   }
   filter(self) {
     const motives = self.getMotives();
-    const goals = self.getGoals();
     const maxMotive = self.getMaxMotive();
     const personalityValues = self.getPersonalityValues();
     const plan = self.getPlan();
@@ -133,7 +132,6 @@ class GoalEat extends Goal {
       personalityValues.metabolism / maxMotive
     );
     const priorityModifier = Math.floor(3 * metabolismFactor);
-
     priority = Math.max(1, priority - priorityModifier);
 
     return priority;
@@ -171,7 +169,6 @@ class GoalDrink extends Goal {
   }
   filter(self) {
     const motives = self.getMotives();
-    const goals = self.getGoals();
     const maxMotive = self.getMaxMotive();
     const personalityValues = self.getPersonalityValues();
     const plan = self.getPlan();
@@ -202,7 +199,6 @@ class GoalDrink extends Goal {
       personalityValues.liveliness / maxMotive
     );
     const priorityModifier = Math.floor(3 * livelinessFactor);
-
     priority = Math.max(1, priority - priorityModifier);
 
     return priority;
@@ -239,14 +235,40 @@ class GoalSleep extends Goal {
     super(params);
   }
   filter(self) {
-    // creature is tired or running the sleep plan
+    const motives = self.getMotives();
+    const maxMotive = self.getMaxMotive();
+    const personalityValues = self.getPersonalityValues();
+    const plan = self.getPlan();
+    const nearbyBeds = self.queries.getItemsByAdjective(
+      self,
+      Entity.adjectiveList.restful
+    );
+    
+    let priority = 10;
+    
     if (
-      self.getPriority() === "energy" ||
-      self.status.plan === Creature.planList.sleep
+      plan === Creature.planList.sleep ||
+      motives.energy <= maxMotive / 10
     ) {
-      return 1;
+      priority = 1;
     }
-    return 3;
+    
+    if (nearbyBeds.length) {
+      if (motives.energy <= maxMotive / 2) {
+        priority = 4;
+      } else if (motives.energy <= maxMotive / 1.53) {
+        priority = 8;
+      }
+    }
+    
+    const livelinessFactor = 1 - Math.min(
+      1,
+      personalityValues.liveliness / maxMotive
+    );
+    const priorityModifier = Math.floor(3 * livelinessFactor);
+    priority = Math.max(1, priority - priorityModifier);
+    
+    return priority;
   }
   execute(self) {
     if (self.getMotive("energy") >= self.getMaxMotive()) {

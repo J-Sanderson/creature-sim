@@ -88,20 +88,20 @@ class GoalWander extends Goal {
     const maxMotive = self.getMaxMotive();
     const personalityValues = self.getPersonalityValues();
     let priority = 7;
-    
+
     for (let motive in motives) {
       if (motives[motive] <= maxMotive / 10) {
-        return -1
+        return -1;
       }
     }
-    
+
     const livelinessFactor = Math.min(
       1,
       personalityValues.liveliness / maxMotive
     );
     const priorityModifier = Math.floor(3 * livelinessFactor);
     priority -= priorityModifier;
-    
+
     return priority;
   }
   execute(self) {
@@ -253,16 +253,13 @@ class GoalSleep extends Goal {
       self,
       Entity.adjectiveList.restful
     );
-    
+
     let priority = 10;
-    
-    if (
-      plan === Creature.planList.sleep ||
-      motives.energy <= maxMotive / 10
-    ) {
+
+    if (plan === Creature.planList.sleep || motives.energy <= maxMotive / 10) {
       priority = 1;
     }
-    
+
     if (nearbyBeds.length) {
       if (motives.energy <= maxMotive / 2) {
         priority = 4;
@@ -270,14 +267,12 @@ class GoalSleep extends Goal {
         priority = 8;
       }
     }
-    
-    const livelinessFactor = 1 - Math.min(
-      1,
-      personalityValues.liveliness / maxMotive
-    );
+
+    const livelinessFactor =
+      1 - Math.min(1, personalityValues.liveliness / maxMotive);
     const priorityModifier = Math.floor(3 * livelinessFactor);
     priority = Math.max(1, priority - priorityModifier);
-    
+
     return priority;
   }
   execute(self) {
@@ -337,24 +332,22 @@ class GoalSitAround extends Goal {
     const maxMotive = self.getMaxMotive();
     const personalityValues = self.getPersonalityValues();
     let priority = 7;
-    
+
     for (let motive in motives) {
       if (motives[motive] <= maxMotive / 10) {
-        return -1
+        return -1;
       }
     }
-    
+
     if (motives.energy <= maxMotive / 3) {
       priority += 1;
     }
-    
-    const livelinessFactor = 1 - Math.min(
-      1,
-      personalityValues.liveliness / maxMotive
-    );
+
+    const livelinessFactor =
+      1 - Math.min(1, personalityValues.liveliness / maxMotive);
     const priorityModifier = Math.floor(3 * livelinessFactor);
     priority = Math.max(1, priority - priorityModifier);
-    
+
     return priority;
   }
   execute(self) {
@@ -369,29 +362,50 @@ class GoalKnockItemFromToybox extends Goal {
   filter(self) {
     const personalityValues = self.getPersonalityValues();
     const maxMotive = self.getMaxMotive();
-    
-    if (personalityValues.naughtiness <= maxMotive / 10 && personalityValues.patience >= maxMotive / 10) {
-      return -1
+
+    if (
+      personalityValues.naughtiness <= maxMotive / 10 &&
+      personalityValues.patience >= maxMotive / 10
+    ) {
+      return -1;
     }
-    
+
+    const goals = self.getGoals();
+    const calledBy = goals[Creature.goalList.knockItemFromToybox].getCalledBy();
+    if (calledBy) {
+      let adj = "";
+      switch (calledBy) {
+        case Creature.goalList.sleep:
+          adj = Entity.adjectiveList.restful;
+          break;
+        case Creature.goalList.eat:
+          adj = Entity.adjectiveList.tasty;
+          break;
+        case Creature.goalList.drink:
+          adj = Entity.adjectiveList.wet;
+          break;
+      }
+      if (adj && self.queries.getItemsByAdjective(self, adj).length) {
+        return -1;
+      }
+    }
+
     let priority = 5;
-    
-    const patienceFactor = 1 - Math.min(
-      1,
-      personalityValues.patience / maxMotive
-    );
+
+    const patienceFactor =
+      1 - Math.min(1, personalityValues.patience / maxMotive);
     const patienceModifier = Math.floor(3 * patienceFactor);
     priority -= patienceModifier;
-    
+
     const naughtinessFactor = Math.min(
       1,
       personalityValues.liveliness / maxMotive
     );
     const naughtinessModifier = Math.floor(3 * naughtinessFactor);
     priority -= naughtinessModifier;
-    
+
     priority = Math.max(1, priority);
-    
+
     return priority;
   }
   execute(self) {

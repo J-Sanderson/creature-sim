@@ -73,23 +73,36 @@ class Goal {
   setTarget(target) {
     this.target = target;
   }
-  
+
   getCalledBy() {
     return this.calledBy;
   }
 }
 
 class GoalWander extends Goal {
-  constructor (params) {
+  constructor(params) {
     super(params);
   }
   filter(self) {
-    // nothing else should be a priority
-    // delete me if something else comes up.
-    if (self.getPriority() === "none") {
-      return Math.random() < self.getPersonalityValue('liveliness') / self.getMaxMotive() ? 1 : 2;
+    const motives = self.getMotives();
+    const maxMotive = self.getMaxMotive();
+    const personalityValues = self.getPersonalityValues();
+    let priority = 7;
+
+    for (let motive in motives) {
+      if (motives[motive] <= maxMotive / 10) {
+        return -1;
+      }
     }
-    return -1;
+
+    const livelinessFactor = Math.min(
+      1,
+      personalityValues.liveliness / maxMotive
+    );
+    const priorityModifier = Math.floor(3 * livelinessFactor);
+    priority -= priorityModifier;
+
+    return priority;
   }
   execute(self) {
     self.plans.planWander(self);
@@ -97,18 +110,41 @@ class GoalWander extends Goal {
 }
 
 class GoalEat extends Goal {
-  constructor (params) {
+  constructor(params) {
     super(params);
   }
   filter(self) {
-    // creature is hungry or running the eat plan
-    if (
-      self.getPriority() === "fullness" ||
-      self.status.plan === Creature.planList.eat
-    ) {
-      return 1;
+    const motives = self.getMotives();
+    const maxMotive = self.getMaxMotive();
+    const personalityValues = self.getPersonalityValues();
+    const plan = self.getPlan();
+    const nearbyFood = self.queries.getItemsByAdjective(
+      self,
+      Entity.adjectiveList.tasty
+    );
+
+    let priority = 10;
+
+    if (plan === Creature.planList.eat || motives.fullness <= maxMotive / 10) {
+      priority = 1;
     }
-    return 3;
+
+    if (nearbyFood.length) {
+      if (motives.fullness <= maxMotive / 2) {
+        priority = 4;
+      } else if (motives.fullness <= maxMotive / 1.53) {
+        priority = 8;
+      }
+    }
+
+    const metabolismFactor = Math.min(
+      1,
+      personalityValues.metabolism / maxMotive
+    );
+    const priorityModifier = Math.floor(3 * metabolismFactor);
+    priority = Math.max(1, priority - priorityModifier);
+
+    return priority;
   }
   execute(self) {
     if (self.getMotive("fullness") >= self.getMaxMotive()) {
@@ -138,18 +174,44 @@ class GoalEat extends Goal {
 }
 
 class GoalDrink extends Goal {
-  constructor (params) {
+  constructor(params) {
     super(params);
   }
   filter(self) {
-    // creature is thirsty or running the drink plan
+    const motives = self.getMotives();
+    const maxMotive = self.getMaxMotive();
+    const personalityValues = self.getPersonalityValues();
+    const plan = self.getPlan();
+    const nearbyWater = self.queries.getItemsByAdjective(
+      self,
+      Entity.adjectiveList.wet
+    );
+
+    let priority = 10;
+
     if (
-      self.getPriority() === "hydration" ||
-      self.status.plan === Creature.planList.drink
+      plan === Creature.planList.drink ||
+      motives.hydration <= maxMotive / 10
     ) {
-      return 1;
+      priority = 1;
     }
-    return 3;
+
+    if (nearbyWater.length) {
+      if (motives.hydration <= maxMotive / 2) {
+        priority = 4;
+      } else if (motives.hydration <= maxMotive / 1.53) {
+        priority = 8;
+      }
+    }
+
+    const livelinessFactor = Math.min(
+      1,
+      personalityValues.liveliness / maxMotive
+    );
+    const priorityModifier = Math.floor(3 * livelinessFactor);
+    priority = Math.max(1, priority - priorityModifier);
+
+    return priority;
   }
   execute(self) {
     if (self.getMotive("hydration") >= self.getMaxMotive()) {
@@ -179,18 +241,39 @@ class GoalDrink extends Goal {
 }
 
 class GoalSleep extends Goal {
-  constructor (params) {
+  constructor(params) {
     super(params);
   }
   filter(self) {
-    // creature is tired or running the sleep plan
-    if (
-      self.getPriority() === "energy" ||
-      self.status.plan === Creature.planList.sleep
-    ) {
-      return 1;
+    const motives = self.getMotives();
+    const maxMotive = self.getMaxMotive();
+    const personalityValues = self.getPersonalityValues();
+    const plan = self.getPlan();
+    const nearbyBeds = self.queries.getItemsByAdjective(
+      self,
+      Entity.adjectiveList.restful
+    );
+
+    let priority = 10;
+
+    if (plan === Creature.planList.sleep || motives.energy <= maxMotive / 10) {
+      priority = 1;
     }
-    return 3;
+
+    if (nearbyBeds.length) {
+      if (motives.energy <= maxMotive / 2) {
+        priority = 4;
+      } else if (motives.energy <= maxMotive / 1.53) {
+        priority = 8;
+      }
+    }
+
+    const livelinessFactor =
+      1 - Math.min(1, personalityValues.liveliness / maxMotive);
+    const priorityModifier = Math.floor(3 * livelinessFactor);
+    priority = Math.max(1, priority - priorityModifier);
+
+    return priority;
   }
   execute(self) {
     if (self.getMotive("energy") >= self.getMaxMotive()) {
@@ -220,7 +303,7 @@ class GoalSleep extends Goal {
 }
 
 class GoalBePetted extends Goal {
-  constructor (params) {
+  constructor(params) {
     super(params);
   }
   filter(self) {
@@ -241,17 +324,31 @@ class GoalBePetted extends Goal {
 }
 
 class GoalSitAround extends Goal {
-  constructor (params) {
+  constructor(params) {
     super(params);
   }
   filter(self) {
-    // nothing else should be a priority
-    // delete me if something else comes up.
-    if (self.getPriority() === "none") {
-      // priority dependent on liveliness value
-      return Math.random() > self.getPersonalityValue('liveliness') / self.getMaxMotive() ? 1 : 2;
+    const motives = self.getMotives();
+    const maxMotive = self.getMaxMotive();
+    const personalityValues = self.getPersonalityValues();
+    let priority = 7;
+
+    for (let motive in motives) {
+      if (motives[motive] <= maxMotive / 10) {
+        return -1;
+      }
     }
-    return -1;
+
+    if (motives.energy <= maxMotive / 3) {
+      priority += 1;
+    }
+
+    const livelinessFactor =
+      1 - Math.min(1, personalityValues.liveliness / maxMotive);
+    const priorityModifier = Math.floor(3 * livelinessFactor);
+    priority = Math.max(1, priority - priorityModifier);
+
+    return priority;
   }
   execute(self) {
     self.plans.planSitAround(self);
@@ -259,19 +356,66 @@ class GoalSitAround extends Goal {
 }
 
 class GoalKnockItemFromToybox extends Goal {
-  constructor (params) {
+  constructor(params) {
     super(params);
   }
   filter(self) {
     const personalityValues = self.getPersonalityValues();
     const maxMotive = self.getMaxMotive();
-    if (Math.random() < 1 - (personalityValues.patience / maxMotive)) {
-      return 2;
+
+    if (
+      personalityValues.naughtiness <= maxMotive / 10 &&
+      personalityValues.patience >= maxMotive / 10
+    ) {
+      return -1;
     }
-    return -1;
+
+    const goals = self.getGoals();
+    const calledBy = goals[Creature.goalList.knockItemFromToybox].getCalledBy();
+    if (calledBy) {
+      let adj = "";
+      switch (calledBy) {
+        case Creature.goalList.sleep:
+          adj = Entity.adjectiveList.restful;
+          break;
+        case Creature.goalList.eat:
+          adj = Entity.adjectiveList.tasty;
+          break;
+        case Creature.goalList.drink:
+          adj = Entity.adjectiveList.wet;
+          break;
+      }
+      if (adj && self.queries.getItemsByAdjective(self, adj).length) {
+        return -1;
+      }
+    }
+
+    let priority = 5;
+
+    const patienceFactor =
+      1 - Math.min(1, personalityValues.patience / maxMotive);
+    const patienceModifier = Math.floor(3 * patienceFactor);
+    priority -= patienceModifier;
+
+    const naughtinessFactor = Math.min(
+      1,
+      personalityValues.liveliness / maxMotive
+    );
+    const naughtinessModifier = Math.floor(3 * naughtinessFactor);
+    priority -= naughtinessModifier;
+
+    priority = Math.max(1, priority);
+
+    return priority;
   }
   execute(self) {
-    self.plans.planMoveToToybox(self);
+    const position = self.getPosition();
+    const bounds = self.getBounds();
+    if (position.y + 1 >= bounds.y) {
+      self.plans.planPushItemFromToybox(self);
+    } else {
+      self.plans.planMoveToToybox(self);
+    }
   }
 }
 
@@ -294,7 +438,7 @@ const plans = {
         `Error: no relevant goal found for ${Creature.goalList.wander}`
       );
     }
-    if (Math.random() < self.getDecayThreshold('wander')) {
+    if (Math.random() < self.getDecayThreshold("wander")) {
       goals[Creature.goalList.wander].decrementTicks();
     }
     if (goals[Creature.goalList.wander].getTicks() <= 0) {
@@ -337,19 +481,11 @@ const plans = {
       console.error("No valid movement direction available");
     }
   },
-  planSeekItem: function (self, adjective, motive, goal) {
+  planSeekItem: function (self, adj, motive, goal) {
     self.setPlan(Creature.planList.seekItem);
 
     const position = self.getPosition();
-    const world = worldManager.getWorld(self.world);
-    const entities = world.getEntities();
-
-    let interestingItems = [];
-    entities.items.forEach((item) => {
-      if (item.adjectives.includes(adjective)) {
-        interestingItems.push(item);
-      }
-    });
+    let interestingItems = self.queries.getItemsByAdjective(self, adj);
 
     // get the closest of these
     let minDistance = Infinity;
@@ -372,7 +508,11 @@ const plans = {
       }
     } else {
       self.suspendGoal(goal);
-      self.addGoal(Creature.goalList.knockItemFromToybox, { priority: 1, suspended: false, calledBy: goal });
+      self.addGoal(Creature.goalList.knockItemFromToybox, {
+        priority: 1,
+        suspended: false,
+        calledBy: goal,
+      });
     }
 
     const itemPos = closestItem === null ? null : closestItem.getPosition();
@@ -467,7 +607,7 @@ const plans = {
     }
     self.states.statePetAnnoyed(self);
   },
-  planSitAround: function(self) {
+  planSitAround: function (self) {
     self.setPlan(Creature.planList.sitAround);
     let goals = self.getGoals();
     if (!goals[Creature.goalList.sitAround]) {
@@ -475,7 +615,7 @@ const plans = {
         `Error: no relevant goal found for ${Creature.goalList.sitAround}`
       );
     }
-    if (Math.random() < self.getDecayThreshold('sitAround')) {
+    if (Math.random() < self.getDecayThreshold("sitAround")) {
       goals[Creature.goalList.sitAround].decrementTicks();
     }
     if (goals[Creature.goalList.sitAround].getTicks() <= 0) {
@@ -483,16 +623,9 @@ const plans = {
     }
     self.states.stateSitAround(self);
   },
-  planMoveToToybox: function(self) {
+  planMoveToToybox: function (self) {
     self.setPlan(Creature.planList.moveToToybox);
-    const position = self.getPosition();
-    const bounds = self.getBounds();
-    if (position.y + 1 >= bounds.y) {
-      self.plans.planPushItemFromToybox(self);
-    } else {
-      position.y++;
-      self.states.stateMoveToToybox(self, position);
-    }
+    self.states.stateMoveToToybox(self);
   },
   planPushItemFromToybox(self) {
     self.setPlan(Creature.planList.pushItemFromToybox);
@@ -507,17 +640,17 @@ const plans = {
     let className;
     let calledBy = goals[Creature.goalList.knockItemFromToybox].getCalledBy();
     switch (calledBy) {
-      case 'goalEat':
+      case "goalEat":
         className = Food;
         break;
-      case 'goalDrink':
+      case "goalDrink":
         className = Water;
         break;
-      case 'goalSleep':
+      case "goalSleep":
         className = Bed;
         break;
       default:
-        // item not called by need, TODO random knocking item?
+      // item not called by need, TODO random knocking item?
     }
 
     const world = worldManager.getWorld(self.world);
@@ -533,14 +666,18 @@ const plans = {
       self.deleteGoal(Creature.goalList.knockItemFromToybox);
       self.unsuspendGoal(calledBy);
     } else {
-      let button = document.querySelector(`[data-item-class="${className.className}"]`);
+      let button = document.querySelector(
+        `[data-item-class="${className.className}"]`
+      );
       if (!button) {
-        console.error(`Error: no toybox button found for ${className.className}`);
+        console.error(
+          `Error: no toybox button found for ${className.className}`
+        );
         return;
       }
       button.click();
     }
-  }
+  },
 };
 
 const states = {
@@ -579,7 +716,10 @@ const states = {
     world.moveEntity(self.outputs.icon, self.getPosition());
   },
   stateDrink(self, hydration, maxVal) {
-    const item = self.queries.getItemFromWorld(self, self.getGoals()[Creature.goalList.drink].target);
+    const item = self.queries.getItemFromWorld(
+      self,
+      self.getGoals()[Creature.goalList.drink].target
+    );
     if (item) {
       const amount = item.getMotive("amount");
       if (amount > 0) {
@@ -602,7 +742,10 @@ const states = {
     }
   },
   stateEat(self, motives, maxVal) {
-    const item = self.queries.getItemFromWorld(self, self.getGoals()[Creature.goalList.eat].target);
+    const item = self.queries.getItemFromWorld(
+      self,
+      self.getGoals()[Creature.goalList.eat].target
+    );
 
     if (item) {
       const amount = item.getMotive("amount");
@@ -649,10 +792,11 @@ const states = {
     self.setState(Creature.stateList.sitAround);
     self.showMotive(Creature.motiveIcons.sitAround);
   },
-  stateMoveToToybox(self, pos) {
+  stateMoveToToybox(self) {
     self.setState(Creature.stateList.moveToToybox);
     self.showMotive(Creature.motiveIcons.movingToTarget);
-    self.setYPosition(pos.y);
+    const pos = self.getPosition();
+    self.setYPosition(pos.y + 1);
     const world = worldManager.getWorld(self.world);
     world.moveEntity(self.outputs.icon, self.getPosition());
   },
@@ -680,13 +824,25 @@ const queries = {
     );
   },
   amIHungry(self) {
-    return self.getMotive("fullness") < self.getDesireThreshold('eat');
+    return self.getMotive("fullness") < self.getDesireThreshold("eat");
   },
   amIThirsty(self) {
-    return self.getMotive("hydration") < self.getDesireThreshold('drink');
+    return self.getMotive("hydration") < self.getDesireThreshold("drink");
   },
   amITired(self) {
-    return self.getMotive("energy") < self.getDesireThreshold('sleep');
+    return self.getMotive("energy") < self.getDesireThreshold("sleep");
+  },
+  getItemsByAdjective(self, adj) {
+    const world = worldManager.getWorld(self.world);
+    const entities = world.getEntities();
+
+    let interestingItems = [];
+    entities.items.forEach((item) => {
+      if (item.adjectives.includes(adj)) {
+        interestingItems.push(item);
+      }
+    });
+    return interestingItems;
   },
   getItemFromWorld(self, id) {
     const world = worldManager.getWorld(self.world);
@@ -824,10 +980,10 @@ class World {
         this.updateCreatureSliders(creature);
       });
     }
-    
+
     if (this.params.showPersonality) {
       this.entities.creatures.forEach((creature) => {
-        this.showCreaturePersonality(creature)
+        this.showCreaturePersonality(creature);
       });
     }
 
@@ -936,21 +1092,21 @@ class World {
 
     this.elements.statusWrapper.appendChild(sliders);
   }
-  
+
   showCreaturePersonality(creature) {
     if (!this.params.showPersonality) {
       return;
     }
-    
-    let personality = document.createElement('p');
+
+    let personality = document.createElement("p");
     const personalityValues = creature.getPersonalityValues();
     for (let value in personalityValues) {
-      let span = document.createElement('span');
+      let span = document.createElement("span");
       span.innerHTML = `${value}: ${personalityValues[value]}`;
       personality.appendChild(span);
       personality.appendChild(document.createElement("br"));
     }
-    
+
     this.elements.statusWrapper.appendChild(personality);
   }
 
@@ -1167,7 +1323,7 @@ class Item extends Entity {
 
 class Water extends Item {
   static icon = "&#x1F4A7;";
-  static className = 'Water';
+  static className = "Water";
 
   constructor(world, params = {}) {
     super(world, params);
@@ -1182,7 +1338,7 @@ class Water extends Item {
 
 class Food extends Item {
   static icon = "&#x1F969;";
-  static className = 'Food';
+  static className = "Food";
 
   constructor(world, params = {}) {
     super(world, params);
@@ -1197,7 +1353,7 @@ class Food extends Item {
 
 class Bed extends Item {
   static icon = "&#x1F6CF;";
-  static className = 'Bed';
+  static className = "Bed";
 
   constructor(world, params = {}) {
     super(world, params);
@@ -1215,8 +1371,8 @@ class Creature extends Entity {
     sleep: "goalSleep",
     wander: "goalWander",
     pet: "goalBePetted",
-    sitAround: 'goalSitAround',
-    knockItemFromToybox: 'goalKnockItemFromToybox',
+    sitAround: "goalSitAround",
+    knockItemFromToybox: "goalKnockItemFromToybox",
   };
 
   static planList = {
@@ -1228,9 +1384,9 @@ class Creature extends Entity {
     drink: "planDrink",
     petHappy: "planPetHappy",
     petAnnoyed: "planPetAnnoyed",
-    sitAround: 'planSitAround',
-    moveToToybox: 'planMoveToToybox',
-    pushItemFromToybox: 'planPushItemFromToybox',
+    sitAround: "planSitAround",
+    moveToToybox: "planMoveToToybox",
+    pushItemFromToybox: "planPushItemFromToybox",
   };
 
   static stateList = {
@@ -1242,9 +1398,9 @@ class Creature extends Entity {
     drink: "stateDrink",
     petHappy: "statePetHappy",
     petAnnoyed: "statePetAnnoyed",
-    sitAround: 'stateSitAround',
-    moveToToybox: 'stateMoveToToybox',
-    pushItemFromToybox: 'statePushItemFromToybox',
+    sitAround: "stateSitAround",
+    moveToToybox: "stateMoveToToybox",
+    pushItemFromToybox: "statePushItemFromToybox",
   };
 
   static motiveIcons = {
@@ -1257,15 +1413,15 @@ class Creature extends Entity {
     petHappy: "&#x1FA77;",
     petAnnoyed: "&#x1F620;",
     movingToTarget: "&#x1F43E;",
-    sitAround: '&#x2601;',
-    pushItemFromToybox: '&#x1F4A5;',
+    sitAround: "&#x2601;",
+    pushItemFromToybox: "&#x1F4A5;",
   };
-  
+
   static personalityValues = [
-    'liveliness',
-    'patience',
-    'naughtiness',
-    'metabolism',
+    "liveliness",
+    "patience",
+    "naughtiness",
+    "metabolism",
   ];
 
   constructor(world, params = {}) {
@@ -1278,32 +1434,38 @@ class Creature extends Entity {
     });
 
     this.status.goals = {};
-    
+
     this.personality = {
       values: {},
     };
 
     let maxPersonalityValue = this.maxMotive;
-    Creature.personalityValues.forEach(value => {
+    Creature.personalityValues.forEach((value) => {
       this.personality.values[value] = utilities.rand(maxPersonalityValue);
     });
     let personalityValues = this.getPersonalityValues();
 
     this.personality.decayThresholds = {
       fullness: personalityValues.metabolism / this.maxMotive,
-      hydration: 0.4 + (personalityValues.liveliness / (this.maxMotive * 3)),
-      energy: 1 - (1 - (personalityValues.metabolism / this.maxMotive)) * (1 + (personalityValues.liveliness / this.maxMotive)),
+      hydration: 0.4 + personalityValues.liveliness / (this.maxMotive * 3),
+      energy:
+        1 -
+        (1 - personalityValues.metabolism / this.maxMotive) *
+          (1 + personalityValues.liveliness / this.maxMotive),
       sitAround: personalityValues.liveliness / this.maxMotive,
       wander: 1 - personalityValues.liveliness / this.maxMotive,
     };
     for (let threshold in this.personality.decayThresholds) {
-      this.personality.decayThresholds[threshold] = Math.max(0, Math.min(1, this.personality.decayThresholds[threshold]));
+      this.personality.decayThresholds[threshold] = Math.max(
+        0,
+        Math.min(1, this.personality.decayThresholds[threshold])
+      );
     }
-    
+
     this.personality.desireThresholds = {
-      sleep: (this.maxMotive * 0.2) - (personalityValues.liveliness / 10),
-      eat: (this.maxMotive * 0.4) + (personalityValues.metabolism / 10),
-      drink: (this.maxMotive * 0.4) + (personalityValues.liveliness / 10),
+      sleep: this.maxMotive * 0.2 - personalityValues.liveliness / 10,
+      eat: this.maxMotive * 0.4 + personalityValues.metabolism / 10,
+      drink: this.maxMotive * 0.4 + personalityValues.liveliness / 10,
     };
 
     this.states = states;
@@ -1342,69 +1504,61 @@ class Creature extends Entity {
   metabolismManager() {
     const personalityValues = this.getPersonalityValues();
     const decayThresholds = this.getDecayThresholds();
-    
+
     // fullness decay
-    if(this.status.state !== Creature.stateList.eat) {
+    if (this.status.state !== Creature.stateList.eat) {
       if (
         (this.status.state !== Creature.stateList.sleep ||
           Math.random() < 0.25) &&
         this.status.motives.fullness > 0
       ) {
         if (Math.random() < decayThresholds.fullness) {
-          this.setMotive('fullness',  this.status.motives.fullness - 1);
+          this.setMotive("fullness", this.status.motives.fullness - 1);
+
+          if (
+            !(Creature.goalList.eat in this.status.goals) &&
+            this.queries.amIHungry(this)
+          ) {
+            this.addGoal(Creature.goalList.eat, {}, false);
+          }
         }
       }
     }
-    
+
     // hydration decay
-    if(this.status.state !== Creature.stateList.drink) {
+    if (this.status.state !== Creature.stateList.drink) {
       if (
         (this.status.state !== Creature.stateList.sleep ||
           Math.random() < 0.25) &&
         this.status.motives.hydration > 0 &&
         Math.random() < decayThresholds.hydration
       ) {
-        this.status.motives.hydration --;
-      }
-    }
-    
-    // energy decay
-    if(this.status.state !== Creature.stateList.sleep && this.status.motives.energy > 0) {
-      if (Math.random() < decayThresholds.energy) {
-        this.setMotive('energy', this.status.motives.energy - 1);
+        this.status.motives.hydration--;
+
+        if (
+          !(Creature.goalList.drink in this.status.goals) &&
+          this.queries.amIThirsty(this)
+        ) {
+          this.addGoal(Creature.goalList.drink, {}, false);
+        }
       }
     }
 
-    const priority = this.getPriority();
-    switch (priority) {
-      case "fullness":
-        if (!(Creature.goalList.eat in this.status.goals)) {
-          this.addGoal(
-            Creature.goalList.eat,
-            { priority: 1, suspended: false },
-            false
-          );
+    // energy decay
+    if (
+      this.status.state !== Creature.stateList.sleep &&
+      this.status.motives.energy > 0
+    ) {
+      if (Math.random() < decayThresholds.energy) {
+        this.setMotive("energy", this.status.motives.energy - 1);
+
+        if (
+          !(Creature.goalList.sleep in this.status.goals) &&
+          this.queries.amITired(this)
+        ) {
+          this.addGoal(Creature.goalList.sleep, {}, false);
         }
-        break;
-      case "hydration":
-        if (!(Creature.goalList.drink in this.status.goals)) {
-          this.addGoal(
-            Creature.goalList.drink,
-            { priority: 1, suspended: false },
-            false
-          );
-        }
-        break;
-      case "energy":
-        if (!(Creature.goalList.sleep in this.status.goals)) {
-          this.addGoal(
-            Creature.goalList.sleep,
-            { priority: 1, suspended: false },
-            false
-          );
-        }
-        break;
-      default:
+      }
     }
   }
 
@@ -1474,20 +1628,6 @@ class Creature extends Entity {
     this.outputs.bubble.style.display = "block";
   }
 
-  getPriority() {
-    let priority = "none";
-    if (this.queries.amITired(this)) {
-      priority = "energy";
-    }
-    if (this.queries.amIHungry(this)) {
-      priority = "fullness";
-    }
-    if (this.queries.amIThirsty(this)) {
-      priority = "hydration";
-    }
-    return priority;
-  }
-
   getOutputs() {
     return this.outputs;
   }
@@ -1495,11 +1635,11 @@ class Creature extends Entity {
   getGoals() {
     return this.status.goals;
   }
-  
+
   getPersonalityValues() {
     return this.personality.values;
   }
-  
+
   getPersonalityValue(value) {
     if (!(value in this.personality.values)) {
       console.error(`Error: no ${value} personality value found`);
@@ -1507,11 +1647,11 @@ class Creature extends Entity {
     }
     return this.personality.values[value];
   }
-  
+
   getDecayThresholds() {
     return this.personality.decayThresholds;
   }
-  
+
   getDecayThreshold(value) {
     if (!(value in this.personality.decayThresholds)) {
       console.error(`Error: no ${value} decay threshold found`);
@@ -1519,11 +1659,11 @@ class Creature extends Entity {
     }
     return this.personality.decayThresholds[value];
   }
-  
+
   getDesireThresholds() {
     return this.personality.desireThresholds;
   }
-  
+
   getDesireThreshold(desire) {
     if (!(desire in this.personality.desireThresholds)) {
       console.error(`Error: no ${desire} threshold value found`);
@@ -1540,8 +1680,12 @@ class Creature extends Entity {
     this.status.plan = plan;
   }
 
+  getPlan() {
+    return this.status.plan;
+  }
+
   addGoal(name, params, isCurrent = true) {
-    if (!(this.goals.hasOwnProperty(name))) {
+    if (!this.goals.hasOwnProperty(name)) {
       console.error(`Error: no goal object found for ${name}`);
     }
     if (this.status.goals.hasOwnProperty(name)) {

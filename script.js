@@ -391,8 +391,8 @@ class GoalKnockItemFromToybox extends Goal {
     const maxMotive = self.getMaxMotive();
 
     if (
-      personalityValues.naughtiness <= maxMotive / 10 &&
-      personalityValues.patience >= maxMotive / 10
+      personalityValues.naughtiness <= maxMotive * 0.1 &&
+      personalityValues.patience >= maxMotive * 0.1
     ) {
       return -1;
     }
@@ -411,10 +411,26 @@ class GoalKnockItemFromToybox extends Goal {
         case Creature.goalList.drink:
           adj = Entity.adjectiveList.wet;
           break;
+        case Creature.goalList.chewToy:
+          adj = Entity.adjectiveList.chew;
+          break;
+        case Creature.goalList.bounceToy:
+          adj = Entity.adjectiveList.bounce;
+          break;
       }
       if (adj && self.queries.getItemsByAdjective(self, adj).length) {
         return -1;
       }
+    }
+    
+    if (
+      calledBy !== Creature.goalList.sleep &&
+      calledBy !== Creature.goalList.eat &&
+      calledBy !== Creature.goalList.drink &&
+      personalityValues.naughtiness < maxMotive * 0.9 &&
+      personalityValues.patience > maxMotive * 0.1
+    ) {
+      return -1;
     }
 
     let priority = 5;
@@ -537,7 +553,7 @@ class GoalBounceToy extends Goal {
     ) {
       return -1;
     }
-    
+
     const motives = self.getMotives();
     const maxMotive = self.getMaxMotive();
 
@@ -546,7 +562,7 @@ class GoalBounceToy extends Goal {
         return -1;
       }
     }
-    
+
     const personalityValues = self.getPersonalityValues();
     const nearbyToys = self.queries.getItemsByAdjective(
       self,
@@ -560,16 +576,16 @@ class GoalBounceToy extends Goal {
     ) {
       return -1;
     }
-    
+
     let priority = 7;
-    
+
     const playfulnessFactor = Math.min(
       1,
       personalityValues.playfulness / maxMotive
     );
     const playfulnessModifier = Math.floor(3 * playfulnessFactor);
     priority -= playfulnessModifier;
-    
+
     const livelinessFactor = Math.min(
       1,
       personalityValues.liveliness / maxMotive
@@ -783,7 +799,7 @@ const plans = {
       case "goalChewToy":
         classNames = [Bone, Ball];
         break;
-      case 'goalBounceToy':
+      case "goalBounceToy":
         classNames = [Ball];
         break;
       default:
@@ -795,7 +811,7 @@ const plans = {
 
     let exists = false;
     entities.items.forEach((item) => {
-      classNames.forEach(className => {
+      classNames.forEach((className) => {
         if (item instanceof className) {
           exists = true;
         }
@@ -806,11 +822,11 @@ const plans = {
       self.unsuspendGoal(calledBy);
     } else {
       let buttons = [];
-      classNames.forEach(className => {
+      classNames.forEach((className) => {
         let button = document.querySelector(
           `[data-item-class="${className.className}"]`
         );
-        if (button && !button.classList.contains('item-active')) {
+        if (button && !button.classList.contains("item-active")) {
           buttons.push(button);
         }
       });
@@ -1366,7 +1382,7 @@ class Entity {
     wet: "wet",
     restful: "restful",
     chew: "chew",
-    bounce: 'bounce',
+    bounce: "bounce",
   };
 
   constructor(world, params = {}) {
@@ -1566,7 +1582,7 @@ class Creature extends Entity {
     sitAround: "goalSitAround",
     knockItemFromToybox: "goalKnockItemFromToybox",
     chewToy: "goalChewToy",
-    bounceToy: 'goalBounceToy',
+    bounceToy: "goalBounceToy",
   };
 
   static planList = {
@@ -1582,7 +1598,7 @@ class Creature extends Entity {
     moveToToybox: "planMoveToToybox",
     pushItemFromToybox: "planPushItemFromToybox",
     chewToy: "planChewToy",
-    bounceToy: 'planBounceToy',
+    bounceToy: "planBounceToy",
   };
 
   static stateList = {
@@ -1598,7 +1614,7 @@ class Creature extends Entity {
     moveToToybox: "stateMoveToToybox",
     pushItemFromToybox: "statePushItemFromToybox",
     chewToy: "stateChewToy",
-    bounceToy: 'stateBounceToy',
+    bounceToy: "stateBounceToy",
   };
 
   static motiveIcons = {
@@ -1614,7 +1630,7 @@ class Creature extends Entity {
     sitAround: "&#x2601;",
     pushItemFromToybox: "&#x1F4A5;",
     chewToy: "&#x1F9B7;",
-    bounceToy: '&#x26F9;',
+    bounceToy: "&#x26F9;",
   };
 
   static personalityValues = [

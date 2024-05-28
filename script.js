@@ -419,6 +419,38 @@ class GoalKnockItemFromToybox extends Goal {
   }
 }
 
+class GoalChewToy extends Goal {
+  constructor(params) {
+    super(params);
+  }
+  filter(self) {
+    return 1 // temp for testing
+    // should be deleteable priority if not naughty/impatent and item is not present.
+    // higher if item exists.
+  }
+  execute(self) {
+    let goals = self.getGoals();
+    if (!goals[Creature.goalList.chewToy]) {
+      return;
+    }
+    let target = goals[Creature.goalList.chewToy].target;
+    if (!target) {
+      self.plans.planSeekItem(
+        self,
+        Entity.adjectiveList.chew,
+        null,
+        Creature.goalList.chewToy
+      );
+    } else {
+      if (self.queries.amIOnItem(self, target)) {
+        self.plans.planChewToy(self);
+      } else {
+        self.plans.planMoveToItem(self, target, Creature.goalList.chewToy);
+      }
+    }
+  }
+}
+
 const goals = {
   goalWander: GoalWander,
   goalEat: GoalEat,
@@ -427,6 +459,7 @@ const goals = {
   goalBePetted: GoalBePetted,
   goalSitAround: GoalSitAround,
   goalKnockItemFromToybox: GoalKnockItemFromToybox,
+  goalChewToy: GoalChewToy,
 };
 
 const plans = {
@@ -506,13 +539,10 @@ const plans = {
       if (goals.hasOwnProperty(goal)) {
         goals[goal].setTarget(closestItem.guid);
       }
-    } else {
+      // temp condition - alter priority of knockitemfromtoybox for this case so it's rare and only if very naughty/impatient.
+    } else if (goal === Creature.goalList.eat || goal === Creature.goalList.drink || goal === Creature.goalList.sleep) {
       self.suspendGoal(goal);
-      self.addGoal(Creature.goalList.knockItemFromToybox, {
-        priority: 1,
-        suspended: false,
-        calledBy: goal,
-      });
+      self.addGoal(Creature.goalList.knockItemFromToybox, { calledBy: goal });
     }
 
     const itemPos = closestItem === null ? null : closestItem.getPosition();
@@ -649,6 +679,7 @@ const plans = {
       case "goalSleep":
         className = Bed;
         break;
+      // chew toy
       default:
       // item not called by need, TODO random knocking item?
     }
@@ -678,6 +709,20 @@ const plans = {
       button.click();
     }
   },
+  planChewToy(self) {
+    self.setPlan(Creature.planList.chewToy);
+    let goals = self.getGoals();
+    if (!goals[Creature.goalList.chewToy]) {
+      console.error(
+        `Error: no relevant goal found for ${Creature.goalList.chewToy}`
+      );
+    }
+    goals[Creature.goalList.chewToy].decrementTicks();
+    if (goals[Creature.goalList.chewToy].getTicks() <= 0) {
+      self.deleteGoal(Creature.goalList.chewToy);
+    }
+    self.states.stateChewToy(self);
+  }
 };
 
 const states = {
@@ -692,7 +737,9 @@ const states = {
   },
   stateSeekItem: function (self, motive) {
     self.setState(Creature.stateList.seekItem);
-    self.showMotive(motive);
+    if (motive) {
+      self.showMotive(motive);
+    }
   },
   stateMoveToItem(self, itemPos) {
     self.setState(Creature.stateList.moveToItem);
@@ -804,6 +851,10 @@ const states = {
     self.setState(Creature.stateList.pushItemFromToybox);
     self.showMotive(Creature.motiveIcons.pushItemFromToybox);
   },
+  stateChewToy(self) {
+    self.setState(Creature.stateList.chewToy);
+    self.showMotive(Creature.motiveIcons.chewToy);
+  }
 };
 
 const queries = {
@@ -1202,7 +1253,7 @@ class Entity {
     tasty: "tasty",
     wet: "wet",
     restful: "restful",
-    chew: 'chew',
+    chew: "chew",
   };
 
   constructor(world, params = {}) {
@@ -1387,6 +1438,7 @@ class Creature extends Entity {
     pet: "goalBePetted",
     sitAround: "goalSitAround",
     knockItemFromToybox: "goalKnockItemFromToybox",
+    chewToy: 'goalChewToy',
   };
 
   static planList = {
@@ -1401,6 +1453,7 @@ class Creature extends Entity {
     sitAround: "planSitAround",
     moveToToybox: "planMoveToToybox",
     pushItemFromToybox: "planPushItemFromToybox",
+    chewToy: 'planChewToy',
   };
 
   static stateList = {
@@ -1415,6 +1468,7 @@ class Creature extends Entity {
     sitAround: "stateSitAround",
     moveToToybox: "stateMoveToToybox",
     pushItemFromToybox: "statePushItemFromToybox",
+    chewToy: 'stateChewToy',
   };
 
   static motiveIcons = {
@@ -1429,6 +1483,7 @@ class Creature extends Entity {
     movingToTarget: "&#x1F43E;",
     sitAround: "&#x2601;",
     pushItemFromToybox: "&#x1F4A5;",
+    chewToy: "&#x1F9B7;",
   };
 
   static personalityValues = [
@@ -1436,6 +1491,7 @@ class Creature extends Entity {
     "patience",
     "naughtiness",
     "metabolism",
+    "playfulness",
   ];
 
   constructor(world, params = {}) {
@@ -1528,15 +1584,14 @@ class Creature extends Entity {
       ) {
         if (Math.random() < decayThresholds.fullness) {
           this.setMotive("fullness", this.status.motives.fullness - 1);
-
-          if (
-            !(Creature.goalList.eat in this.status.goals) &&
-            this.queries.amIHungry(this)
-          ) {
-            this.addGoal(Creature.goalList.eat, {}, false);
-          }
         }
       }
+    }
+    if (
+      !(Creature.goalList.eat in this.status.goals) &&
+      this.queries.amIHungry(this)
+    ) {
+      this.addGoal(Creature.goalList.eat, {}, false);
     }
 
     // hydration decay
@@ -1548,14 +1603,13 @@ class Creature extends Entity {
         Math.random() < decayThresholds.hydration
       ) {
         this.status.motives.hydration--;
-
-        if (
-          !(Creature.goalList.drink in this.status.goals) &&
-          this.queries.amIThirsty(this)
-        ) {
-          this.addGoal(Creature.goalList.drink, {}, false);
-        }
       }
+    }
+    if (
+      !(Creature.goalList.drink in this.status.goals) &&
+      this.queries.amIThirsty(this)
+    ) {
+      this.addGoal(Creature.goalList.drink, {}, false);
     }
 
     // energy decay
@@ -1565,14 +1619,13 @@ class Creature extends Entity {
     ) {
       if (Math.random() < decayThresholds.energy) {
         this.setMotive("energy", this.status.motives.energy - 1);
-
-        if (
-          !(Creature.goalList.sleep in this.status.goals) &&
-          this.queries.amITired(this)
-        ) {
-          this.addGoal(Creature.goalList.sleep, {}, false);
-        }
       }
+    }
+    if (
+      !(Creature.goalList.sleep in this.status.goals) &&
+      this.queries.amITired(this)
+    ) {
+      this.addGoal(Creature.goalList.sleep, {}, false);
     }
   }
 
@@ -1618,16 +1671,10 @@ class Creature extends Entity {
         this.status.currentGoal = newGoal;
       } else {
         // no goals left, add the basic do nothing goals
-        this.addGoal(Creature.goalList.wander, {
-          priority: 1,
-          suspended: false,
-          ticks: 5,
-        });
-        this.addGoal(Creature.goalList.sitAround, {
-          priority: 1,
-          suspended: false,
-          ticks: 5, // should probably be random
-        });
+        // this could probaby be expanded into something like the petz todo list function
+        this.addGoal(Creature.goalList.wander, { ticks: 5 });
+        this.addGoal(Creature.goalList.sitAround, { ticks: 5 });
+        this.addGoal(Creature.goalList.chewToy, { ticks: 5 });
       }
     }
     this.status.goals[this.status.currentGoal].execute(this);

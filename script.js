@@ -399,7 +399,7 @@ class GoalKnockItemFromToybox extends Goal {
 
     const naughtinessFactor = Math.min(
       1,
-      personalityValues.liveliness / maxMotive
+      personalityValues.naughtiness / maxMotive
     );
     const naughtinessModifier = Math.floor(3 * naughtinessFactor);
     priority -= naughtinessModifier;
@@ -424,9 +424,55 @@ class GoalChewToy extends Goal {
     super(params);
   }
   filter(self) {
-    return 1 // temp for testing
-    // should be deleteable priority if not naughty/impatent and item is not present.
-    // higher if item exists.
+    const currentGoal = self.getCurrentGoal();
+    if (
+      this.getIsSuspended() &&
+      currentGoal !== Creature.goalList.knockItemFromToybox &&
+      currentGoal !== Creature.goalList.chewToy
+    ) {
+      return -1;
+    }
+
+    const motives = self.getMotives();
+    const maxMotive = self.getMaxMotive();
+
+    for (let motive in motives) {
+      if (motives[motive] <= maxMotive * 0.1) {
+        return -1;
+      }
+    }
+
+    const personalityValues = self.getPersonalityValues();
+    const nearbyToys = self.queries.getItemsByAdjective(
+      self,
+      Entity.adjectiveList.chew
+    );
+
+    if (
+      !nearbyToys.length &&
+      personalityValues.naughtiness < maxMotive * 0.9 &&
+      personalityValues.patience > maxMotive * 0.1
+    ) {
+      return -1;
+    }
+
+    let priority = 7;
+
+    const playfulnessFactor = Math.min(
+      1,
+      personalityValues.playfulness / maxMotive
+    );
+    const playfulnessModifier = Math.floor(3 * playfulnessFactor);
+    priority -= playfulnessModifier;
+
+    const livelinessFactor =
+      1 - Math.min(1, personalityValues.liveliness / maxMotive);
+    const livelinessModifier = Math.floor(3 * livelinessFactor);
+    priority -= livelinessModifier;
+
+    priority = Math.max(1, priority);
+
+    return priority;
   }
   execute(self) {
     let goals = self.getGoals();
@@ -539,8 +585,7 @@ const plans = {
       if (goals.hasOwnProperty(goal)) {
         goals[goal].setTarget(closestItem.guid);
       }
-      // temp condition - alter priority of knockitemfromtoybox for this case so it's rare and only if very naughty/impatient.
-    } else if (goal === Creature.goalList.eat || goal === Creature.goalList.drink || goal === Creature.goalList.sleep) {
+    } else {
       self.suspendGoal(goal);
       self.addGoal(Creature.goalList.knockItemFromToybox, { calledBy: goal });
     }
@@ -679,7 +724,9 @@ const plans = {
       case "goalSleep":
         className = Bed;
         break;
-      // chew toy
+      case "goalChewToy":
+        className = Bone;
+        break;
       default:
       // item not called by need, TODO random knocking item?
     }
@@ -722,7 +769,7 @@ const plans = {
       self.deleteGoal(Creature.goalList.chewToy);
     }
     self.states.stateChewToy(self);
-  }
+  },
 };
 
 const states = {
@@ -854,7 +901,7 @@ const states = {
   stateChewToy(self) {
     self.setState(Creature.stateList.chewToy);
     self.showMotive(Creature.motiveIcons.chewToy);
-  }
+  },
 };
 
 const queries = {
@@ -1438,7 +1485,7 @@ class Creature extends Entity {
     pet: "goalBePetted",
     sitAround: "goalSitAround",
     knockItemFromToybox: "goalKnockItemFromToybox",
-    chewToy: 'goalChewToy',
+    chewToy: "goalChewToy",
   };
 
   static planList = {
@@ -1453,7 +1500,7 @@ class Creature extends Entity {
     sitAround: "planSitAround",
     moveToToybox: "planMoveToToybox",
     pushItemFromToybox: "planPushItemFromToybox",
-    chewToy: 'planChewToy',
+    chewToy: "planChewToy",
   };
 
   static stateList = {
@@ -1468,7 +1515,7 @@ class Creature extends Entity {
     sitAround: "stateSitAround",
     moveToToybox: "stateMoveToToybox",
     pushItemFromToybox: "statePushItemFromToybox",
-    chewToy: 'stateChewToy',
+    chewToy: "stateChewToy",
   };
 
   static motiveIcons = {
@@ -1500,7 +1547,7 @@ class Creature extends Entity {
     this.adjectives.push(Entity.adjectiveList.animate);
 
     ["fullness", "hydration", "energy"].forEach((motive) => {
-      this.status.motives[motive] = utilities.rand(this.maxMotive);
+      this.status.motives[motive] = 100; //utilities.rand(this.maxMotive);
     });
 
     this.status.goals = {};
@@ -1695,6 +1742,10 @@ class Creature extends Entity {
 
   getGoals() {
     return this.status.goals;
+  }
+
+  getCurrentGoal() {
+    return this.status.currentGoal;
   }
 
   getPersonalityValues() {

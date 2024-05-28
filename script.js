@@ -502,7 +502,7 @@ class GoalChewToy extends Goal {
     return priority;
   }
   execute(self) {
-    let target = goals[Creature.goalList.chewToy].target;
+    let target = this.target;
     if (!target) {
       self.plans.planSeekItem(
         self,
@@ -524,6 +524,84 @@ class GoalChewToy extends Goal {
   }
 }
 
+class GoalBounceToy extends Goal {
+  constructor(params) {
+    super(params);
+  }
+  filter(self) {
+    const currentGoal = self.getCurrentGoal();
+    if (
+      this.getIsSuspended() &&
+      currentGoal !== Creature.goalList.knockItemFromToybox &&
+      currentGoal !== Creature.goalList.bounceToy
+    ) {
+      return -1;
+    }
+    
+    const motives = self.getMotives();
+    const maxMotive = self.getMaxMotive();
+
+    for (let motive in motives) {
+      if (motives[motive] <= maxMotive * 0.1) {
+        return -1;
+      }
+    }
+    
+    const personalityValues = self.getPersonalityValues();
+    const nearbyToys = self.queries.getItemsByAdjective(
+      self,
+      Entity.adjectiveList.bounce
+    );
+
+    if (
+      !nearbyToys.length &&
+      personalityValues.naughtiness < maxMotive * 0.9 &&
+      personalityValues.patience > maxMotive * 0.1
+    ) {
+      return -1;
+    }
+    
+    let priority = 7;
+    
+    const playfulnessFactor = Math.min(
+      1,
+      personalityValues.playfulness / maxMotive
+    );
+    const playfulnessModifier = Math.floor(3 * playfulnessFactor);
+    priority -= playfulnessModifier;
+    
+    const livelinessFactor = Math.min(
+      1,
+      personalityValues.liveliness / maxMotive
+    );
+    const livelinessModifier = Math.floor(3 * livelinessFactor);
+    priority -= livelinessModifier;
+
+    return priority;
+  }
+  execute(self) {
+    let target = this.target;
+    if (!target) {
+      self.plans.planSeekItem(
+        self,
+        Entity.adjectiveList.bounce,
+        null,
+        Creature.goalList.bounceToy
+      );
+    } else {
+      if (self.queries.amIOnItem(self, target)) {
+        this.decrementTicks();
+        if (this.getTicks() <= 0) {
+          self.deleteGoal(Creature.goalList.bounceToy);
+        }
+        self.plans.planBounceToy(self);
+      } else {
+        self.plans.planMoveToItem(self, target, Creature.goalList.bounceToy);
+      }
+    }
+  }
+}
+
 const goals = {
   goalWander: GoalWander,
   goalEat: GoalEat,
@@ -533,6 +611,7 @@ const goals = {
   goalSitAround: GoalSitAround,
   goalKnockItemFromToybox: GoalKnockItemFromToybox,
   goalChewToy: GoalChewToy,
+  goalBounceToy: GoalBounceToy,
 };
 
 const plans = {
@@ -704,6 +783,9 @@ const plans = {
       case "goalChewToy":
         classNames = [Bone, Ball];
         break;
+      case 'goalBounceToy':
+        classNames = [Ball];
+        break;
       default:
       // item not called by need, TODO random knocking item?
     }
@@ -744,6 +826,10 @@ const plans = {
   planChewToy(self) {
     self.setPlan(Creature.planList.chewToy);
     self.states.stateChewToy(self);
+  },
+  planBounceToy(self) {
+    self.setPlan(Creature.planList.bounceToy);
+    self.states.stateBounceToy(self);
   },
 };
 
@@ -876,6 +962,10 @@ const states = {
   stateChewToy(self) {
     self.setState(Creature.stateList.chewToy);
     self.showMotive(Creature.motiveIcons.chewToy);
+  },
+  stateBounceToy(self) {
+    self.setState(Creature.stateList.bounceToy);
+    self.showMotive(Creature.motiveIcons.bounceToy);
   },
 };
 
@@ -1276,6 +1366,7 @@ class Entity {
     wet: "wet",
     restful: "restful",
     chew: "chew",
+    bounce: 'bounce',
   };
 
   constructor(world, params = {}) {
@@ -1458,6 +1549,7 @@ class Ball extends Item {
   constructor(world, params = {}) {
     super(world, params);
     this.adjectives.push(Entity.adjectiveList.chew);
+    this.adjectives.push(Entity.adjectiveList.bounce);
     this.icon = Ball.icon;
 
     this.setIcon();
@@ -1474,6 +1566,7 @@ class Creature extends Entity {
     sitAround: "goalSitAround",
     knockItemFromToybox: "goalKnockItemFromToybox",
     chewToy: "goalChewToy",
+    bounceToy: 'goalBounceToy',
   };
 
   static planList = {
@@ -1489,6 +1582,7 @@ class Creature extends Entity {
     moveToToybox: "planMoveToToybox",
     pushItemFromToybox: "planPushItemFromToybox",
     chewToy: "planChewToy",
+    bounceToy: 'planBounceToy',
   };
 
   static stateList = {
@@ -1504,6 +1598,7 @@ class Creature extends Entity {
     moveToToybox: "stateMoveToToybox",
     pushItemFromToybox: "statePushItemFromToybox",
     chewToy: "stateChewToy",
+    bounceToy: 'stateBounceToy',
   };
 
   static motiveIcons = {
@@ -1519,6 +1614,7 @@ class Creature extends Entity {
     sitAround: "&#x2601;",
     pushItemFromToybox: "&#x1F4A5;",
     chewToy: "&#x1F9B7;",
+    bounceToy: '&#x26F9;',
   };
 
   static personalityValues = [
@@ -1710,6 +1806,7 @@ class Creature extends Entity {
         this.addGoal(Creature.goalList.wander, { ticks: 5 });
         this.addGoal(Creature.goalList.sitAround, { ticks: 5 });
         this.addGoal(Creature.goalList.chewToy, { ticks: 5 });
+        this.addGoal(Creature.goalList.bounceToy, { ticks: 5 });
       }
     }
     this.status.goals[this.status.currentGoal].execute(this);

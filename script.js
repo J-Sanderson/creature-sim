@@ -105,6 +105,13 @@ class GoalWander extends Goal {
     return priority;
   }
   execute(self) {
+    if (Math.random() < self.getDecayThreshold("wander")) {
+      this.decrementTicks();
+    }
+    if (this.getTicks() <= 0) {
+      self.deleteGoal(Creature.goalList.wander);
+    }
+
     self.plans.planWander(self);
   }
 }
@@ -316,8 +323,22 @@ class GoalBePetted extends Goal {
       self.status.state === Creature.stateList.sleep ||
       self.status.state === Creature.stateList.petAnnoyed
     ) {
+      this.decrementTicks();
+      if (this.getTicks() <= 0) {
+        self.deleteGoal(Creature.goalList.pet);
+      }
       self.plans.planPetAnnoyed(self);
     } else {
+      if (
+        self.queries.amIHungry(self) ||
+        self.queries.amIThirsty(self) ||
+        self.queries.amITired(self)
+      ) {
+        this.decrementTicks();
+        if (this.getTicks() <= 0) {
+          self.deleteGoal(Creature.goalList.pet);
+        }
+      }
       self.plans.planPetHappy(self);
     }
   }
@@ -351,6 +372,12 @@ class GoalSitAround extends Goal {
     return priority;
   }
   execute(self) {
+    if (Math.random() < self.getDecayThreshold("sitAround")) {
+      this.decrementTicks();
+    }
+    if (this.getTicks() <= 0) {
+      self.deleteGoal(Creature.goalList.sitAround);
+    }
     self.plans.planSitAround(self);
   }
 }
@@ -475,10 +502,6 @@ class GoalChewToy extends Goal {
     return priority;
   }
   execute(self) {
-    let goals = self.getGoals();
-    if (!goals[Creature.goalList.chewToy]) {
-      return;
-    }
     let target = goals[Creature.goalList.chewToy].target;
     if (!target) {
       self.plans.planSeekItem(
@@ -489,6 +512,10 @@ class GoalChewToy extends Goal {
       );
     } else {
       if (self.queries.amIOnItem(self, target)) {
+        this.decrementTicks();
+        if (this.getTicks() <= 0) {
+          self.deleteGoal(Creature.goalList.chewToy);
+        }
         self.plans.planChewToy(self);
       } else {
         self.plans.planMoveToItem(self, target, Creature.goalList.chewToy);
@@ -511,18 +538,6 @@ const goals = {
 const plans = {
   planWander: function (self) {
     self.setPlan(Creature.planList.wander);
-    let goals = self.getGoals();
-    if (!goals[Creature.goalList.wander]) {
-      console.error(
-        `Error: no relevant goal found for ${Creature.goalList.wander}`
-      );
-    }
-    if (Math.random() < self.getDecayThreshold("wander")) {
-      goals[Creature.goalList.wander].decrementTicks();
-    }
-    if (goals[Creature.goalList.wander].getTicks() <= 0) {
-      self.deleteGoal(Creature.goalList.wander);
-    }
     const position = self.getPosition();
 
     const directions = [
@@ -650,52 +665,14 @@ const plans = {
   },
   planPetHappy: function (self) {
     self.setPlan(Creature.planList.petHappy);
-    if (
-      self.queries.amIHungry(self) ||
-      self.queries.amIThirsty(self) ||
-      self.queries.amITired(self)
-    ) {
-      let goals = self.getGoals();
-      if (!goals[Creature.goalList.pet]) {
-        console.error(
-          `Error: no relevant goal found for ${Creature.goalList.pet}`
-        );
-      }
-      goals[Creature.goalList.pet].decrementTicks();
-      if (goals[Creature.goalList.pet].getTicks() <= 0) {
-        self.deleteGoal(Creature.goalList.pet);
-      }
-    }
     self.states.statePetHappy(self);
   },
   planPetAnnoyed: function (self) {
     self.setPlan(Creature.planList.petAnnoyed);
-    let goals = self.getGoals();
-    if (!goals[Creature.goalList.pet]) {
-      console.error(
-        `Error: no relevant goal found for ${Creature.goalList.pet}`
-      );
-    }
-    goals[Creature.goalList.pet].decrementTicks();
-    if (goals[Creature.goalList.pet].getTicks() <= 0) {
-      self.deleteGoal(Creature.goalList.pet);
-    }
     self.states.statePetAnnoyed(self);
   },
   planSitAround: function (self) {
     self.setPlan(Creature.planList.sitAround);
-    let goals = self.getGoals();
-    if (!goals[Creature.goalList.sitAround]) {
-      console.error(
-        `Error: no relevant goal found for ${Creature.goalList.sitAround}`
-      );
-    }
-    if (Math.random() < self.getDecayThreshold("sitAround")) {
-      goals[Creature.goalList.sitAround].decrementTicks();
-    }
-    if (goals[Creature.goalList.sitAround].getTicks() <= 0) {
-      self.deleteGoal(Creature.goalList.sitAround);
-    }
     self.states.stateSitAround(self);
   },
   planMoveToToybox: function (self) {
@@ -712,20 +689,20 @@ const plans = {
       );
     }
 
-    let className;
+    let classNames;
     let calledBy = goals[Creature.goalList.knockItemFromToybox].getCalledBy();
     switch (calledBy) {
       case "goalEat":
-        className = Food;
+        classNames = [Food];
         break;
       case "goalDrink":
-        className = Water;
+        classNames = [Water];
         break;
       case "goalSleep":
-        className = Bed;
+        classNames = [Bed];
         break;
       case "goalChewToy":
-        className = Bone;
+        classNames = [Bone, Ball];
         break;
       default:
       // item not called by need, TODO random knocking item?
@@ -736,38 +713,36 @@ const plans = {
 
     let exists = false;
     entities.items.forEach((item) => {
-      if (item instanceof className) {
-        exists = true;
-      }
+      classNames.forEach(className => {
+        if (item instanceof className) {
+          exists = true;
+        }
+      });
     });
     if (exists) {
       self.deleteGoal(Creature.goalList.knockItemFromToybox);
       self.unsuspendGoal(calledBy);
     } else {
-      let button = document.querySelector(
-        `[data-item-class="${className.className}"]`
-      );
-      if (!button) {
-        console.error(
-          `Error: no toybox button found for ${className.className}`
+      let buttons = [];
+      classNames.forEach(className => {
+        let button = document.querySelector(
+          `[data-item-class="${className.className}"]`
         );
-        return;
+        if (button && !button.classList.contains('item-active')) {
+          buttons.push(button);
+        }
+      });
+
+      if (!buttons.length) {
+        self.deleteGoal(Creature.goalList.knockItemFromToybox);
+        self.unsuspendGoal(calledBy);
       }
+      const button = buttons[utilities.rand(buttons.length - 1)];
       button.click();
     }
   },
   planChewToy(self) {
     self.setPlan(Creature.planList.chewToy);
-    let goals = self.getGoals();
-    if (!goals[Creature.goalList.chewToy]) {
-      console.error(
-        `Error: no relevant goal found for ${Creature.goalList.chewToy}`
-      );
-    }
-    goals[Creature.goalList.chewToy].decrementTicks();
-    if (goals[Creature.goalList.chewToy].getTicks() <= 0) {
-      self.deleteGoal(Creature.goalList.chewToy);
-    }
     self.states.stateChewToy(self);
   },
 };
@@ -1037,7 +1012,7 @@ class World {
       this.elements.statusWrapper = statusWrapper;
     }
 
-    [Water, Food, Bed, Bone].forEach((item) => {
+    [Water, Food, Bed, Bone, Ball].forEach((item) => {
       let button = document.createElement("button");
       button.innerHTML = item.icon;
       button.style["font-size"] = `${this.params.cellSize}px`;
@@ -1476,6 +1451,19 @@ class Bone extends Item {
   }
 }
 
+class Ball extends Item {
+  static icon = "&#x1F3BE;";
+  static className = "Ball";
+
+  constructor(world, params = {}) {
+    super(world, params);
+    this.adjectives.push(Entity.adjectiveList.chew);
+    this.icon = Ball.icon;
+
+    this.setIcon();
+  }
+}
+
 class Creature extends Entity {
   static goalList = {
     drink: "goalDrink",
@@ -1547,7 +1535,7 @@ class Creature extends Entity {
     this.adjectives.push(Entity.adjectiveList.animate);
 
     ["fullness", "hydration", "energy"].forEach((motive) => {
-      this.status.motives[motive] = 100; //utilities.rand(this.maxMotive);
+      this.status.motives[motive] = utilities.rand(this.maxMotive);
     });
 
     this.status.goals = {};

@@ -130,7 +130,7 @@ class GoalEat extends Goal {
       Entity.adjectiveList.tasty
     );
 
-    let priority = 5;
+    let priority = 6;
 
     if (plan === Creature.planList.eat || motives.fullness <= maxMotive / 10) {
       priority = 1;
@@ -140,7 +140,7 @@ class GoalEat extends Goal {
       if (motives.fullness <= maxMotive / 2) {
         priority = 4;
       } else if (motives.fullness <= maxMotive / 1.53) {
-        priority = 8;
+        priority = 5;
       }
     }
 
@@ -194,7 +194,7 @@ class GoalDrink extends Goal {
       Entity.adjectiveList.wet
     );
 
-    let priority = 5;
+    let priority = 6;
 
     if (
       plan === Creature.planList.drink ||
@@ -207,7 +207,7 @@ class GoalDrink extends Goal {
       if (motives.hydration <= maxMotive / 2) {
         priority = 4;
       } else if (motives.hydration <= maxMotive / 1.53) {
-        priority = 8;
+        priority = 5;
       }
     }
 
@@ -261,7 +261,7 @@ class GoalSleep extends Goal {
       Entity.adjectiveList.restful
     );
 
-    let priority = 5;
+    let priority = 6;
 
     if (plan === Creature.planList.sleep || motives.energy <= maxMotive / 10) {
       priority = 1;
@@ -271,7 +271,7 @@ class GoalSleep extends Goal {
       if (motives.energy <= maxMotive / 2) {
         priority = 4;
       } else if (motives.energy <= maxMotive / 1.53) {
-        priority = 8;
+        priority = 5;
       }
     }
 
@@ -1860,7 +1860,6 @@ class Creature extends Entity {
   update() {
     this.metabolismManager();
     this.goalManager.update(this);
-    // this.goalManager();
   }
 
   metabolismManager() {

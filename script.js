@@ -109,7 +109,7 @@ class GoalWander extends Goal {
       this.decrementTicks();
     }
     if (this.getTicks() <= 0) {
-      self.deleteGoal(Creature.goalList.wander);
+      self.goalManager.deleteGoal(Creature.goalList.wander);
     }
 
     self.plans.planWander(self);
@@ -155,7 +155,7 @@ class GoalEat extends Goal {
   }
   execute(self) {
     if (self.getMotive("fullness") >= self.getMaxMotive()) {
-      self.deleteGoal(Creature.goalList.eat);
+      self.goalManager.deleteGoal(Creature.goalList.eat);
     }
     let goals = self.getGoals();
     if (!goals[Creature.goalList.eat]) {
@@ -222,7 +222,7 @@ class GoalDrink extends Goal {
   }
   execute(self) {
     if (self.getMotive("hydration") >= self.getMaxMotive()) {
-      self.deleteGoal(Creature.goalList.drink);
+      self.goalManager.deleteGoal(Creature.goalList.drink);
     }
     let goals = self.getGoals();
     if (!goals[Creature.goalList.drink]) {
@@ -284,7 +284,7 @@ class GoalSleep extends Goal {
   }
   execute(self) {
     if (self.getMotive("energy") >= self.getMaxMotive()) {
-      self.deleteGoal(Creature.goalList.sleep);
+      self.goalManager.deleteGoal(Creature.goalList.sleep);
     }
     let goals = self.getGoals();
     if (!goals[Creature.goalList.sleep]) {
@@ -325,7 +325,7 @@ class GoalBePetted extends Goal {
     ) {
       this.decrementTicks();
       if (this.getTicks() <= 0) {
-        self.deleteGoal(Creature.goalList.pet);
+        self.goalManager.deleteGoal(Creature.goalList.pet);
       }
       self.plans.planPetAnnoyed(self);
     } else {
@@ -336,7 +336,7 @@ class GoalBePetted extends Goal {
       ) {
         this.decrementTicks();
         if (this.getTicks() <= 0) {
-          self.deleteGoal(Creature.goalList.pet);
+          self.goalManager.deleteGoal(Creature.goalList.pet);
         }
       }
       self.plans.planPetHappy(self);
@@ -376,7 +376,7 @@ class GoalSitAround extends Goal {
       this.decrementTicks();
     }
     if (this.getTicks() <= 0) {
-      self.deleteGoal(Creature.goalList.sitAround);
+      self.goalManager.deleteGoal(Creature.goalList.sitAround);
     }
     self.plans.planSitAround(self);
   }
@@ -530,7 +530,7 @@ class GoalChewToy extends Goal {
       if (self.queries.amIOnItem(self, target)) {
         this.decrementTicks();
         if (this.getTicks() <= 0) {
-          self.deleteGoal(Creature.goalList.chewToy);
+          self.goalManager.deleteGoal(Creature.goalList.chewToy);
         }
         self.plans.planChewToy(self);
       } else {
@@ -608,7 +608,7 @@ class GoalBounceToy extends Goal {
       if (self.queries.amIOnItem(self, target)) {
         this.decrementTicks();
         if (this.getTicks() <= 0) {
-          self.deleteGoal(Creature.goalList.bounceToy);
+          self.goalManager.deleteGoal(Creature.goalList.bounceToy);
         }
         self.plans.planBounceToy(self);
       } else {
@@ -706,7 +706,7 @@ const plans = {
   planMoveToItem: function (self, id, goal) {
     const item = self.queries.getItemFromWorld(self, id);
     if (!item) {
-      self.deleteGoal(goal);
+      self.goalManager.deleteGoal(goal);
     }
     const itemPos = item.getPosition();
     self.states.stateMoveToItem(self, itemPos);
@@ -729,7 +729,7 @@ const plans = {
     self.setPlan(Creature.planList.eat);
     if (motives.hydration < 10) {
       self.goalManager.addGoal(self, Creature.goalList.drink, { priority: 1, suspended: false });
-      self.suspendGoal(Creature.goalList.eat);
+      self.goalManager.suspendGoal(Creature.goalList.eat);
     }
     const maxVal = self.getMaxMotive();
     if (motives.fullness >= maxVal) {
@@ -746,11 +746,11 @@ const plans = {
     self.setPlan(Creature.planList.sleep);
     if (motives.hydration < 10) {
       self.goalManager.addGoal(self, Creature.goalList.drink, { priority: 1, suspended: false });
-      self.suspendGoal(Creature.goalList.sleep);
+      self.goalManager.suspendGoal(Creature.goalList.sleep);
     }
     if (motives.fullness < 10) {
       self.goalManager.addGoal(self, Creature.goalList.eat, { priority: 1, suspended: false });
-      self.suspendGoal(Creature.goalList.sleep);
+      self.goalManager.suspendGoal(Creature.goalList.sleep);
     }
     const maxVal = self.getMaxMotive();
     if (motives.energy >= maxVal) {
@@ -818,8 +818,8 @@ const plans = {
       });
     });
     if (exists) {
-      self.deleteGoal(Creature.goalList.knockItemFromToybox);
-      self.unsuspendGoal(calledBy);
+      self.goalManager.deleteGoal(Creature.goalList.knockItemFromToybox);
+      self.goalManager.unsuspendGoal(calledBy);
     } else {
       let buttons = [];
       classNames.forEach((className) => {
@@ -832,8 +832,8 @@ const plans = {
       });
 
       if (!buttons.length) {
-        self.deleteGoal(Creature.goalList.knockItemFromToybox);
-        self.unsuspendGoal(calledBy);
+        self.goalManager.deleteGoal(Creature.goalList.knockItemFromToybox);
+        self.goalManager.unsuspendGoal(calledBy);
       }
       const button = buttons[utilities.rand(buttons.length - 1)];
       button.click();
@@ -906,10 +906,10 @@ const states = {
       } else {
         const world = worldManager.getWorld(self.world);
         world.deleteEntity(item.getGUID());
-        self.deleteGoal(Creature.goalList.drink);
+        self.goalManager.deleteGoal(Creature.goalList.drink);
       }
     } else {
-      self.deleteGoal(Creature.goalList.drink);
+      self.goalManager.deleteGoal(Creature.goalList.drink);
     }
   },
   stateEat(self, motives, maxVal) {
@@ -936,10 +936,10 @@ const states = {
       } else {
         const world = worldManager.getWorld(self.world);
         world.deleteEntity(item.getGUID());
-        self.deleteGoal(Creature.goalList.eat);
+        self.goalManager.deleteGoal(Creature.goalList.eat);
       }
     } else {
-      self.deleteGoal(Creature.goalList.eat);
+      self.goalManager.deleteGoal(Creature.goalList.eat);
     }
   },
   stateSleep(self, energy, maxVal) {
@@ -1124,7 +1124,7 @@ class GoalManager {
   }
 
   getCurrentGoal() {
-    return this.status.currentGoal;
+    return this.currentGoal;
   }
 }
 
@@ -1161,7 +1161,8 @@ class World {
     showPersonality: false,
   };
 
-  static statusOutputs = ["goals", "currentGoal", "plan", "state"];
+  static statusOutputs = ["plan", "state"];
+  static goalOutputs = ['goals', 'currentGoal'];
 
   constructor(el, params = {}) {
     if (!(el instanceof HTMLElement)) {
@@ -1324,6 +1325,18 @@ class World {
       status.appendChild(span);
       creature.setOutputEl(motive, output);
     }
+    
+    World.goalOutputs.forEach(item => {
+      let span = document.createElement("span");
+      span.classList.add("status-item");
+      let output = document.createElement("output");
+      span.innerHTML = `${item}: `;
+      span.appendChild(output);
+      status.appendChild(document.createElement("br"));
+      status.appendChild(span);
+      creature.setOutputEl(item, output);
+    });
+
 
     World.statusOutputs.forEach((item) => {
       let span = document.createElement("span");
@@ -1405,6 +1418,12 @@ class World {
         creature.setOutput(item, status[item]);
       }
     });
+    
+    const goal = creature.getCurrentGoal();
+    creature.setOutput('currentGoal', goal);
+    
+    const goals = creature.getGoals();
+    creature.setOutput('goals', goals)
   }
 
   updateCreatureSliders(creature) {
@@ -1804,7 +1823,7 @@ class Creature extends Entity {
     );
 
     this.eventHandlers.petStop = () => {
-      this.deleteGoal(Creature.goalList.pet);
+      this.goalManager.deleteGoal(Creature.goalList.pet);
     };
     this.outputs.icon.addEventListener("mouseup", this.eventHandlers.petStop);
 
@@ -1893,7 +1912,7 @@ class Creature extends Entity {
   }
 
   getCurrentGoal() {
-    return this.goalManager.getCurrentGoal;
+    return this.goalManager.getCurrentGoal();
   }
 
   getPersonalityValues() {
@@ -1960,7 +1979,7 @@ class Creature extends Entity {
 let worldEl = document.getElementById("world");
 if (worldEl) {
   const world = new World(worldEl, {
-    speed: 7500,
+    speed: 750,
     width: 10,
     height: 10,
     cellSize: 70,

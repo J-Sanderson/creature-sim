@@ -422,7 +422,7 @@ class GoalKnockItemFromToybox extends Goal {
         return -1;
       }
     }
-    
+
     if (
       calledBy !== Creature.goalList.sleep &&
       calledBy !== Creature.goalList.eat &&
@@ -696,8 +696,8 @@ const plans = {
         goals[goal].setTarget(closestItem.guid);
       }
     } else {
-      self.suspendGoal(goal);
-      self.addGoal(Creature.goalList.knockItemFromToybox, { calledBy: goal });
+      self.goalManager.suspendGoal(goal);
+      self.goalManager.addGoal(self, Creature.goalList.knockItemFromToybox, { calledBy: goal });
     }
 
     const itemPos = closestItem === null ? null : closestItem.getPosition();
@@ -728,7 +728,7 @@ const plans = {
     }
     self.setPlan(Creature.planList.eat);
     if (motives.hydration < 10) {
-      self.addGoal(Creature.goalList.drink, { priority: 1, suspended: false });
+      self.goalManager.addGoal(self, Creature.goalList.drink, { priority: 1, suspended: false });
       self.suspendGoal(Creature.goalList.eat);
     }
     const maxVal = self.getMaxMotive();
@@ -745,11 +745,11 @@ const plans = {
     }
     self.setPlan(Creature.planList.sleep);
     if (motives.hydration < 10) {
-      self.addGoal(Creature.goalList.drink, { priority: 1, suspended: false });
+      self.goalManager.addGoal(self, Creature.goalList.drink, { priority: 1, suspended: false });
       self.suspendGoal(Creature.goalList.sleep);
     }
     if (motives.fullness < 10) {
-      self.addGoal(Creature.goalList.eat, { priority: 1, suspended: false });
+      self.goalManager.addGoal(self, Creature.goalList.eat, { priority: 1, suspended: false });
       self.suspendGoal(Creature.goalList.sleep);
     }
     const maxVal = self.getMaxMotive();
@@ -1029,6 +1029,104 @@ const queries = {
     return items.get(id);
   },
 };
+
+class GoalManager {
+  constructor() {
+    this.goalList = {};
+    this.currentGoal = "";
+  }
+
+  update(self) {
+    for (let goal in this.goalList) {
+      if (goal) {
+        const priority = this.goalList[goal].filter(self);
+        if (priority < 0) {
+          delete this.goalList[goal];
+        } else {
+          this.goalList[goal].setPriority(priority);
+        }
+      }
+    }
+    let current = this.goalList[this.currentGoal];
+    if (!current || current.getIsSuspended()) {
+      if (Object.keys(this.goalList).length) {
+        // find another goal to execute
+        let priority = -1;
+        let newGoal = "";
+        for (let goal in this.goalList) {
+          let goalPriority = this.goalList[goal].getPriority();
+          if (
+            !this.goalList[goal].getIsSuspended() &&
+            goalPriority > priority
+          ) {
+            priority = goalPriority;
+            newGoal = goal;
+          }
+        }
+        if (!newGoal) {
+          for (let goal in this.goalList) {
+            let goalPriority = this.goalList[goal].getPriority();
+            if (goalPriority > priority) {
+              priority = goalPriority;
+              newGoal = goal;
+            }
+          }
+        }
+        if (this.goalList[newGoal].getIsSuspended()) {
+          this.unsuspendGoal(newGoal);
+        }
+        this.currentGoal = newGoal;
+      } else {
+        // no goals left, add the basic do nothing goals
+        // this could probaby be expanded into something like the petz todo list function
+        this.addGoal(self, Creature.goalList.wander, { ticks: 5 });
+        this.addGoal(self, Creature.goalList.sitAround, { ticks: 5 });
+        this.addGoal(self, Creature.goalList.chewToy, { ticks: 5 });
+        this.addGoal(self, Creature.goalList.bounceToy, { ticks: 5 });
+      }
+    }
+    this.goalList[this.currentGoal].execute(self);
+  }
+
+  addGoal(self, name, params, isCurrent = true) {
+    if (!self.goals.hasOwnProperty(name)) {
+      console.error(`Error: no goal object found for ${name}`);
+    }
+    if (this.goalList.hasOwnProperty(name)) {
+      return;
+    }
+    if (isCurrent) {
+      this.currentGoal = name;
+    }
+    this.goalList[name] = new self.goals[name](params);
+  }
+
+  suspendGoal(goalName) {
+    let toSuspend = this.goalList[goalName];
+    if (toSuspend) {
+      toSuspend.suspend();
+    }
+  }
+
+  unsuspendGoal(goalName) {
+    let toUnsuspend = this.goalList[goalName];
+    if (toUnsuspend) {
+      toUnsuspend.unsuspend();
+    }
+  }
+
+  deleteGoal(goalName) {
+    delete this.goalList[goalName];
+  }
+
+  getGoalList() {
+    return this.goalList;
+  }
+
+  getCurrentGoal() {
+    return this.status.currentGoal;
+  }
+}
 
 class WorldManager {
   constructor() {
@@ -1650,8 +1748,6 @@ class Creature extends Entity {
       this.status.motives[motive] = utilities.rand(this.maxMotive);
     });
 
-    this.status.goals = {};
-
     this.personality = {
       values: {},
     };
@@ -1696,7 +1792,7 @@ class Creature extends Entity {
     this.setIcon();
 
     this.eventHandlers.petStart = () => {
-      this.addGoal(Creature.goalList.pet, {
+      this.goalManager.addGoal(this, Creature.goalList.pet, {
         priority: 1,
         suspended: false,
         ticks: 1,
@@ -1711,11 +1807,14 @@ class Creature extends Entity {
       this.deleteGoal(Creature.goalList.pet);
     };
     this.outputs.icon.addEventListener("mouseup", this.eventHandlers.petStop);
+
+    this.goalManager = new GoalManager();
   }
 
   update() {
     this.metabolismManager();
-    this.goalManager();
+    this.goalManager.update(this);
+    // this.goalManager();
   }
 
   metabolismManager() {
@@ -1735,10 +1834,10 @@ class Creature extends Entity {
       }
     }
     if (
-      !(Creature.goalList.eat in this.status.goals) &&
+      !(Creature.goalList.eat in this.goalManager.getGoalList()) &&
       this.queries.amIHungry(this)
     ) {
-      this.addGoal(Creature.goalList.eat, {}, false);
+      this.goalManager.addGoal(this, Creature.goalList.eat, {}, false);
     }
 
     // hydration decay
@@ -1753,10 +1852,10 @@ class Creature extends Entity {
       }
     }
     if (
-      !(Creature.goalList.drink in this.status.goals) &&
+      !(Creature.goalList.drink in this.goalManager.getGoalList()) &&
       this.queries.amIThirsty(this)
     ) {
-      this.addGoal(Creature.goalList.drink, {}, false);
+      this.goalManager.addGoal(this, Creature.goalList.drink, {}, false);
     }
 
     // energy decay
@@ -1769,63 +1868,11 @@ class Creature extends Entity {
       }
     }
     if (
-      !(Creature.goalList.sleep in this.status.goals) &&
+      !(Creature.goalList.sleep in this.goalManager.getGoalList()) &&
       this.queries.amITired(this)
     ) {
-      this.addGoal(Creature.goalList.sleep, {}, false);
+      this.goalManager.addGoal(this, Creature.goalList.sleep, {}, false);
     }
-  }
-
-  goalManager() {
-    for (let goal in this.status.goals) {
-      if (goal) {
-        const priority = this.status.goals[goal].filter(this);
-        if (priority < 0) {
-          delete this.status.goals[goal];
-        } else {
-          this.status.goals[goal].setPriority(priority);
-        }
-      }
-    }
-    let current = this.status.goals[this.status.currentGoal];
-    if (!current || current.getIsSuspended()) {
-      if (Object.keys(this.status.goals).length) {
-        // find another goal to execute
-        let priority = -1;
-        let newGoal = "";
-        for (let goal in this.status.goals) {
-          let goalPriority = this.status.goals[goal].getPriority();
-          if (
-            !this.status.goals[goal].getIsSuspended() &&
-            goalPriority > priority
-          ) {
-            priority = goalPriority;
-            newGoal = goal;
-          }
-        }
-        if (!newGoal) {
-          for (let goal in this.status.goals) {
-            let goalPriority = this.status.goals[goal].getPriority();
-            if (goalPriority > priority) {
-              priority = goalPriority;
-              newGoal = goal;
-            }
-          }
-        }
-        if (this.status.goals[newGoal].getIsSuspended()) {
-          this.unsuspendGoal(newGoal);
-        }
-        this.status.currentGoal = newGoal;
-      } else {
-        // no goals left, add the basic do nothing goals
-        // this could probaby be expanded into something like the petz todo list function
-        this.addGoal(Creature.goalList.wander, { ticks: 5 });
-        this.addGoal(Creature.goalList.sitAround, { ticks: 5 });
-        this.addGoal(Creature.goalList.chewToy, { ticks: 5 });
-        this.addGoal(Creature.goalList.bounceToy, { ticks: 5 });
-      }
-    }
-    this.status.goals[this.status.currentGoal].execute(this);
   }
 
   showMotive(motive) {
@@ -1842,11 +1889,11 @@ class Creature extends Entity {
   }
 
   getGoals() {
-    return this.status.goals;
+    return this.goalManager.getGoalList();
   }
 
   getCurrentGoal() {
-    return this.status.currentGoal;
+    return this.goalManager.getCurrentGoal;
   }
 
   getPersonalityValues() {
@@ -1897,37 +1944,6 @@ class Creature extends Entity {
     return this.status.plan;
   }
 
-  addGoal(name, params, isCurrent = true) {
-    if (!this.goals.hasOwnProperty(name)) {
-      console.error(`Error: no goal object found for ${name}`);
-    }
-    if (this.status.goals.hasOwnProperty(name)) {
-      return;
-    }
-    if (isCurrent) {
-      this.status.currentGoal = name;
-    }
-    this.status.goals[name] = new this.goals[name](params);
-  }
-
-  suspendGoal(goalName) {
-    let toSuspend = this.status.goals[goalName];
-    if (toSuspend) {
-      toSuspend.suspend();
-    }
-  }
-
-  unsuspendGoal(goalName) {
-    let toUnsuspend = this.status.goals[goalName];
-    if (toUnsuspend) {
-      toUnsuspend.unsuspend();
-    }
-  }
-
-  deleteGoal(goalName) {
-    delete this.status.goals[goalName];
-  }
-
   setOutputEl(type, el) {
     this.outputs[type] = el;
   }
@@ -1944,7 +1960,7 @@ class Creature extends Entity {
 let worldEl = document.getElementById("world");
 if (worldEl) {
   const world = new World(worldEl, {
-    speed: 750,
+    speed: 7500,
     width: 10,
     height: 10,
     cellSize: 70,

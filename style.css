@@ -57,3 +57,14 @@ body {
   height: 80%;
   text-align: center;
 }
+
+.status-item table {
+  border-collapse: collapse;
+}
+
+.status-item table th,
+.status-item table td {
+  border: 1px solid;
+  padding: 3px;
+  text-align: left;
+}

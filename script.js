@@ -1968,10 +1968,35 @@ class Creature extends Entity {
   }
 
   setOutput(type, val, setVal = false) {
-    if (setVal) {
-      this.outputs[type].value = val;
+    if (type === 'goals') {
+      let table = document.createElement('table');
+      let tr = document.createElement('tr');
+      ['name', 'priority', 'suspended', 'ticks', 'target', 'calledBy'].forEach(item => {
+        let th = document.createElement('th');
+        th.innerHTML = item;
+        tr.appendChild(th);
+        table.appendChild(tr);
+      });
+      for (let goal in val) {
+        let tr = document.createElement('tr');
+        let td = document.createElement('td');
+        td.innerHTML = goal;
+        tr.appendChild(td);
+        ['priority', 'suspended', 'ticks', 'target', 'calledBy'].forEach(item => {
+          let td = document.createElement('td');
+          td.innerHTML = val[goal][item];
+          tr.appendChild(td);
+        });
+        table.appendChild(tr);
+      }
+      this.outputs[type].innerHTML = '';
+      this.outputs[type].appendChild(table);
     } else {
-      this.outputs[type].innerHTML = JSON.stringify(val);
+      if (setVal) {
+        this.outputs[type].value = val;
+      } else {
+        this.outputs[type].innerHTML = JSON.stringify(val);
+      }
     }
   }
 }

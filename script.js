@@ -130,7 +130,7 @@ class GoalEat extends Goal {
       Entity.adjectiveList.tasty
     );
 
-    let priority = 10;
+    let priority = 5;
 
     if (plan === Creature.planList.eat || motives.fullness <= maxMotive / 10) {
       priority = 1;
@@ -194,7 +194,7 @@ class GoalDrink extends Goal {
       Entity.adjectiveList.wet
     );
 
-    let priority = 10;
+    let priority = 5;
 
     if (
       plan === Creature.planList.drink ||
@@ -261,7 +261,7 @@ class GoalSleep extends Goal {
       Entity.adjectiveList.restful
     );
 
-    let priority = 10;
+    let priority = 5;
 
     if (plan === Creature.planList.sleep || motives.energy <= maxMotive / 10) {
       priority = 1;
@@ -697,7 +697,9 @@ const plans = {
       }
     } else {
       self.goalManager.suspendGoal(goal);
-      self.goalManager.addGoal(self, Creature.goalList.knockItemFromToybox, { calledBy: goal });
+      self.goalManager.addGoal(self, Creature.goalList.knockItemFromToybox, {
+        calledBy: goal,
+      });
     }
 
     const itemPos = closestItem === null ? null : closestItem.getPosition();
@@ -728,7 +730,10 @@ const plans = {
     }
     self.setPlan(Creature.planList.eat);
     if (motives.hydration < 10) {
-      self.goalManager.addGoal(self, Creature.goalList.drink, { priority: 1, suspended: false });
+      self.goalManager.addGoal(self, Creature.goalList.drink, {
+        priority: 1,
+        suspended: false,
+      });
       self.goalManager.suspendGoal(Creature.goalList.eat);
     }
     const maxVal = self.getMaxMotive();
@@ -745,11 +750,17 @@ const plans = {
     }
     self.setPlan(Creature.planList.sleep);
     if (motives.hydration < 10) {
-      self.goalManager.addGoal(self, Creature.goalList.drink, { priority: 1, suspended: false });
+      self.goalManager.addGoal(self, Creature.goalList.drink, {
+        priority: 1,
+        suspended: false,
+      });
       self.goalManager.suspendGoal(Creature.goalList.sleep);
     }
     if (motives.fullness < 10) {
-      self.goalManager.addGoal(self, Creature.goalList.eat, { priority: 1, suspended: false });
+      self.goalManager.addGoal(self, Creature.goalList.eat, {
+        priority: 1,
+        suspended: false,
+      });
       self.goalManager.suspendGoal(Creature.goalList.sleep);
     }
     const maxVal = self.getMaxMotive();
@@ -1037,6 +1048,31 @@ class GoalManager {
   }
 
   update(self) {
+    this.updateGoalPriorities(self);
+    let current = this.goalList[this.currentGoal];
+    if (!current || current.getIsSuspended()) {
+      // do I have other goals?
+      if (Object.keys(this.goalList).length) {
+        // is there another valid unsuspended goal in the list?
+        let newGoal = this.getTopPriorityGoal(true);
+        if (!newGoal) {
+          // is there a valid suspended goal in the list?
+          newGoal = this.getTopPriorityGoal();
+        }
+        // unsuspend if needed
+        if (this.goalList[newGoal].getIsSuspended()) {
+          this.unsuspendGoal(newGoal);
+        }
+        this.currentGoal = newGoal;
+      } else {
+        // no goals left, find something interesting to do
+        this.findInterestingGoals(self);
+      }
+    }
+    this.goalList[this.currentGoal].execute(self);
+  }
+
+  updateGoalPriorities(self) {
     for (let goal in this.goalList) {
       if (goal) {
         const priority = this.goalList[goal].filter(self);
@@ -1047,45 +1083,37 @@ class GoalManager {
         }
       }
     }
-    let current = this.goalList[this.currentGoal];
-    if (!current || current.getIsSuspended()) {
-      if (Object.keys(this.goalList).length) {
-        // find another goal to execute
-        let priority = -1;
-        let newGoal = "";
-        for (let goal in this.goalList) {
-          let goalPriority = this.goalList[goal].getPriority();
-          if (
-            !this.goalList[goal].getIsSuspended() &&
-            goalPriority > priority
-          ) {
-            priority = goalPriority;
-            newGoal = goal;
+  }
+
+  getTopPriorityGoal(excludeSuspended = false) {
+    let highestPriority = Infinity;
+    let highestPriorityGoal = null;
+
+    for (let goal in this.goalList) {
+      if (this.goalList.hasOwnProperty(goal)) {
+        if (
+          !excludeSuspended ||
+          (excludeSuspended && !this.goalList[goal].getIsSuspended())
+        ) {
+          const priority = this.goalList[goal].getPriority();
+          if (priority < highestPriority) {
+            highestPriority = priority;
+            highestPriorityGoal = goal;
           }
         }
-        if (!newGoal) {
-          for (let goal in this.goalList) {
-            let goalPriority = this.goalList[goal].getPriority();
-            if (goalPriority > priority) {
-              priority = goalPriority;
-              newGoal = goal;
-            }
-          }
-        }
-        if (this.goalList[newGoal].getIsSuspended()) {
-          this.unsuspendGoal(newGoal);
-        }
-        this.currentGoal = newGoal;
-      } else {
-        // no goals left, add the basic do nothing goals
-        // this could probaby be expanded into something like the petz todo list function
-        this.addGoal(self, Creature.goalList.wander, { ticks: 5 });
-        this.addGoal(self, Creature.goalList.sitAround, { ticks: 5 });
-        this.addGoal(self, Creature.goalList.chewToy, { ticks: 5 });
-        this.addGoal(self, Creature.goalList.bounceToy, { ticks: 5 });
       }
     }
-    this.goalList[this.currentGoal].execute(self);
+
+    return highestPriorityGoal;
+  }
+  
+  findInterestingGoals(self) {
+    // expand this to make more interesting
+    // currently just pushes 'idle' goals
+    this.addGoal(self, Creature.goalList.wander, { ticks: 5 });
+    this.addGoal(self, Creature.goalList.sitAround, { ticks: 5 });
+    this.addGoal(self, Creature.goalList.chewToy, { ticks: 5 });
+    this.addGoal(self, Creature.goalList.bounceToy, { ticks: 5 });
   }
 
   addGoal(self, name, params, isCurrent = true) {
@@ -1162,7 +1190,7 @@ class World {
   };
 
   static statusOutputs = ["plan", "state"];
-  static goalOutputs = ['goals', 'currentGoal'];
+  static goalOutputs = ["goals", "currentGoal"];
 
   constructor(el, params = {}) {
     if (!(el instanceof HTMLElement)) {
@@ -1325,8 +1353,8 @@ class World {
       status.appendChild(span);
       creature.setOutputEl(motive, output);
     }
-    
-    World.goalOutputs.forEach(item => {
+
+    World.goalOutputs.forEach((item) => {
       let span = document.createElement("span");
       span.classList.add("status-item");
       let output = document.createElement("output");
@@ -1336,7 +1364,6 @@ class World {
       status.appendChild(span);
       creature.setOutputEl(item, output);
     });
-
 
     World.statusOutputs.forEach((item) => {
       let span = document.createElement("span");
@@ -1418,12 +1445,12 @@ class World {
         creature.setOutput(item, status[item]);
       }
     });
-    
+
     const goal = creature.getCurrentGoal();
-    creature.setOutput('currentGoal', goal);
-    
+    creature.setOutput("currentGoal", goal);
+
     const goals = creature.getGoals();
-    creature.setOutput('goals', goals)
+    creature.setOutput("goals", goals);
   }
 
   updateCreatureSliders(creature) {
@@ -1968,28 +1995,32 @@ class Creature extends Entity {
   }
 
   setOutput(type, val, setVal = false) {
-    if (type === 'goals') {
-      let table = document.createElement('table');
-      let tr = document.createElement('tr');
-      ['name', 'priority', 'suspended', 'ticks', 'target', 'calledBy'].forEach(item => {
-        let th = document.createElement('th');
-        th.innerHTML = item;
-        tr.appendChild(th);
-        table.appendChild(tr);
-      });
+    if (type === "goals") {
+      let table = document.createElement("table");
+      let tr = document.createElement("tr");
+      ["name", "priority", "suspended", "ticks", "target", "calledBy"].forEach(
+        (item) => {
+          let th = document.createElement("th");
+          th.innerHTML = item;
+          tr.appendChild(th);
+          table.appendChild(tr);
+        }
+      );
       for (let goal in val) {
-        let tr = document.createElement('tr');
-        let td = document.createElement('td');
+        let tr = document.createElement("tr");
+        let td = document.createElement("td");
         td.innerHTML = goal;
         tr.appendChild(td);
-        ['priority', 'suspended', 'ticks', 'target', 'calledBy'].forEach(item => {
-          let td = document.createElement('td');
-          td.innerHTML = val[goal][item];
-          tr.appendChild(td);
-        });
+        ["priority", "suspended", "ticks", "target", "calledBy"].forEach(
+          (item) => {
+            let td = document.createElement("td");
+            td.innerHTML = val[goal][item];
+            tr.appendChild(td);
+          }
+        );
         table.appendChild(tr);
       }
-      this.outputs[type].innerHTML = '';
+      this.outputs[type].innerHTML = "";
       this.outputs[type].appendChild(table);
     } else {
       if (setVal) {

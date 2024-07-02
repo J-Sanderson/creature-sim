@@ -795,28 +795,22 @@ const plans = {
       );
     }
 
-    let classNames;
     let adj;
     let calledBy = goals[Creature.goalList.knockItemFromToybox].getCalledBy();
     switch (calledBy) {
       case "goalEat":
-        classNames = [Food];
         adj = Entity.adjectiveList.tasty;
         break;
       case "goalDrink":
-        classNames = [Water];
         adj = Entity.adjectiveList.wet;
         break;
       case "goalSleep":
-        classNames = [Bed];
         adj = Entity.adjectiveList.restful;
         break;
       case "goalChewToy":
-        classNames = [Bone, Ball];
         adj = Entity.adjectiveList.chew;
         break;
       case "goalBounceToy":
-        classNames = [Ball];
         adj = Entity.adjectiveList.bounce;
         break;
       default:
@@ -828,8 +822,8 @@ const plans = {
       self.goalManager.deleteGoal(Creature.goalList.knockItemFromToybox);
       self.goalManager.unsuspendGoal(calledBy);
     } else {
-      // TODO how can we ensure we only get the buttons for the given world?
-      let buttons = Array.from(document.querySelectorAll('.toybox button'));
+      let toybox = document.querySelector(`[data-world="${self.world}"]`);
+      let buttons = Array.from(toybox.querySelectorAll('button'));
       let interestingButtons = buttons.filter(button => {
         return button.dataset.adjectives.split(',').includes(adj);
       });
@@ -1224,7 +1218,7 @@ class World {
     this.drawWorld();
 
     let toybox = document.createElement("div");
-    toybox.classList.add("toybox");
+    toybox.dataset.world = this.guid;
     this.elements.root.appendChild(toybox);
     this.elements.toybox = toybox;
 

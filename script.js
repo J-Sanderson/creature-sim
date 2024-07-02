@@ -796,57 +796,48 @@ const plans = {
     }
 
     let classNames;
+    let adj;
     let calledBy = goals[Creature.goalList.knockItemFromToybox].getCalledBy();
     switch (calledBy) {
       case "goalEat":
         classNames = [Food];
+        adj = Entity.adjectiveList.tasty;
         break;
       case "goalDrink":
         classNames = [Water];
+        adj = Entity.adjectiveList.wet;
         break;
       case "goalSleep":
         classNames = [Bed];
+        adj = Entity.adjectiveList.restful;
         break;
       case "goalChewToy":
         classNames = [Bone, Ball];
+        adj = Entity.adjectiveList.chew;
         break;
       case "goalBounceToy":
         classNames = [Ball];
+        adj = Entity.adjectiveList.bounce;
         break;
       default:
       // item not called by need, TODO random knocking item?
     }
-
-    const world = worldManager.getWorld(self.world);
-    const entities = world.getEntities();
-
-    let exists = false;
-    entities.items.forEach((item) => {
-      classNames.forEach((className) => {
-        if (item instanceof className) {
-          exists = true;
-        }
-      });
-    });
-    if (exists) {
+    
+    const nearbyItems = self.queries.getItemsByAdjective(self, adj);
+    if (nearbyItems.length) {
       self.goalManager.deleteGoal(Creature.goalList.knockItemFromToybox);
       self.goalManager.unsuspendGoal(calledBy);
     } else {
-      let buttons = [];
-      classNames.forEach((className) => {
-        let button = document.querySelector(
-          `[data-item-class="${className.className}"]`
-        );
-        if (button && !button.classList.contains("item-active")) {
-          buttons.push(button);
-        }
+      // TODO how can we ensure we only get the buttons for the given world?
+      let buttons = Array.from(document.querySelectorAll('.toybox button'));
+      let interestingButtons = buttons.filter(button => {
+        return button.dataset.adjectives.split(',').includes(adj);
       });
-
-      if (!buttons.length) {
+      if (!interestingButtons.length) {
         self.goalManager.deleteGoal(Creature.goalList.knockItemFromToybox);
         self.goalManager.unsuspendGoal(calledBy);
       }
-      const button = buttons[utilities.rand(buttons.length - 1)];
+      const button = interestingButtons[utilities.rand(interestingButtons.length - 1)];
       button.click();
     }
   },
@@ -1249,7 +1240,7 @@ class World {
       let button = document.createElement("button");
       button.innerHTML = item.icon;
       button.style["font-size"] = `${this.params.cellSize}px`;
-      button.dataset.itemClass = item.className;
+      button.dataset.adjectives = item.adjectives;
       button.addEventListener("click", () => {
         let entityId = button.dataset.entityId;
         if (entityId) {
@@ -1640,19 +1631,22 @@ class Entity {
 }
 
 class Item extends Entity {
+  static adjectives = [Entity.adjectiveList.inanimate];
+
   constructor(world, params = {}) {
     super(world, params);
-    this.adjectives.push(Entity.adjectiveList.inanimate);
+    this.adjectives.push(...Item.adjectives);
   }
 }
 
 class Water extends Item {
   static icon = "&#x1F4A7;";
   static className = "Water";
+  static adjectives = [Entity.adjectiveList.wet];
 
   constructor(world, params = {}) {
     super(world, params);
-    this.adjectives.push(Entity.adjectiveList.wet);
+    this.adjectives.push(...Water.adjectives);
     this.icon = Water.icon;
 
     this.status.motives.amount = this.maxMotive * 2.5;
@@ -1664,10 +1658,11 @@ class Water extends Item {
 class Food extends Item {
   static icon = "&#x1F969;";
   static className = "Food";
+  static adjectives = [Entity.adjectiveList.tasty];
 
   constructor(world, params = {}) {
     super(world, params);
-    this.adjectives.push(Entity.adjectiveList.tasty);
+    this.adjectives.push(...Food.adjectives);
     this.icon = Food.icon;
 
     this.status.motives.amount = this.maxMotive * 1.5;
@@ -1679,10 +1674,11 @@ class Food extends Item {
 class Bed extends Item {
   static icon = "&#x1F6CF;";
   static className = "Bed";
+  static adjectives = [Entity.adjectiveList.restful];
 
   constructor(world, params = {}) {
     super(world, params);
-    this.adjectives.push(Entity.adjectiveList.restful);
+    this.adjectives.push(...Bed.adjectives);
     this.icon = Bed.icon;
 
     this.setIcon();
@@ -1692,10 +1688,11 @@ class Bed extends Item {
 class Bone extends Item {
   static icon = "&#x1F9B4;";
   static className = "Bone";
+  static adjectives = [Entity.adjectiveList.chew];
 
   constructor(world, params = {}) {
     super(world, params);
-    this.adjectives.push(Entity.adjectiveList.chew);
+    this.adjectives.push(...Bone.adjectives);
     this.icon = Bone.icon;
 
     this.setIcon();
@@ -1705,11 +1702,11 @@ class Bone extends Item {
 class Ball extends Item {
   static icon = "&#x1F3BE;";
   static className = "Ball";
+  static adjectives = [Entity.adjectiveList.chew, Entity.adjectiveList.bounce];
 
   constructor(world, params = {}) {
     super(world, params);
-    this.adjectives.push(Entity.adjectiveList.chew);
-    this.adjectives.push(Entity.adjectiveList.bounce);
+    this.adjectives.push(...Ball.adjectives);
     this.icon = Ball.icon;
 
     this.setIcon();
@@ -1784,11 +1781,13 @@ class Creature extends Entity {
     "metabolism",
     "playfulness",
   ];
+  
+  static adjectives = [Entity.adjectiveList.animate];
 
   constructor(world, params = {}) {
     super(world, params);
     this.order = 2;
-    this.adjectives.push(Entity.adjectiveList.animate);
+    this.adjectives.push(...Creature.adjectives);
 
     ["fullness", "hydration", "energy"].forEach((motive) => {
       this.status.motives[motive] = utilities.rand(this.maxMotive);

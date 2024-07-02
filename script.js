@@ -87,13 +87,23 @@ class GoalWander extends Goal {
     const motives = self.getMotives();
     const maxMotive = self.getMaxMotive();
     const personalityValues = self.getPersonalityValues();
-    let priority = 7;
 
     for (let motive in motives) {
       if (motives[motive] <= maxMotive / 10) {
         return -1;
       }
     }
+
+    const goals = self.getGoals();
+    if (
+      goals.hasOwnProperty(Creature.goalList.eat) ||
+      goals.hasOwnProperty(Creature.goalList.drink) ||
+      goals.hasOwnProperty(Creature.goalList.sleep)
+    ) {
+      return -1;
+    }
+
+    let priority = 7;
 
     const livelinessFactor = Math.min(
       1,
@@ -352,13 +362,23 @@ class GoalSitAround extends Goal {
     const motives = self.getMotives();
     const maxMotive = self.getMaxMotive();
     const personalityValues = self.getPersonalityValues();
-    let priority = 7;
 
     for (let motive in motives) {
       if (motives[motive] <= maxMotive / 10) {
         return -1;
       }
     }
+
+    const goals = self.getGoals();
+    if (
+      goals.hasOwnProperty(Creature.goalList.eat) ||
+      goals.hasOwnProperty(Creature.goalList.drink) ||
+      goals.hasOwnProperty(Creature.goalList.sleep)
+    ) {
+      return -1;
+    }
+
+    let priority = 7;
 
     if (motives.energy <= maxMotive / 3) {
       priority += 1;
@@ -816,22 +836,23 @@ const plans = {
       default:
       // item not called by need, TODO random knocking item?
     }
-    
+
     const nearbyItems = self.queries.getItemsByAdjective(self, adj);
     if (nearbyItems.length) {
       self.goalManager.deleteGoal(Creature.goalList.knockItemFromToybox);
       self.goalManager.unsuspendGoal(calledBy);
     } else {
       let toybox = document.querySelector(`[data-world="${self.world}"]`);
-      let buttons = Array.from(toybox.querySelectorAll('button'));
-      let interestingButtons = buttons.filter(button => {
-        return button.dataset.adjectives.split(',').includes(adj);
+      let buttons = Array.from(toybox.querySelectorAll("button"));
+      let interestingButtons = buttons.filter((button) => {
+        return button.dataset.adjectives.split(",").includes(adj);
       });
       if (!interestingButtons.length) {
         self.goalManager.deleteGoal(Creature.goalList.knockItemFromToybox);
         self.goalManager.unsuspendGoal(calledBy);
       }
-      const button = interestingButtons[utilities.rand(interestingButtons.length - 1)];
+      const button =
+        interestingButtons[utilities.rand(interestingButtons.length - 1)];
       button.click();
     }
   },
@@ -1091,7 +1112,7 @@ class GoalManager {
 
     return highestPriorityGoal;
   }
-  
+
   findInterestingGoals(self) {
     // expand this to make more interesting
     // currently just pushes 'idle' goals
@@ -1218,6 +1239,7 @@ class World {
     this.drawWorld();
 
     let toybox = document.createElement("div");
+    toybox.classList.add("toybox");
     toybox.dataset.world = this.guid;
     this.elements.root.appendChild(toybox);
     this.elements.toybox = toybox;
@@ -1775,7 +1797,7 @@ class Creature extends Entity {
     "metabolism",
     "playfulness",
   ];
-  
+
   static adjectives = [Entity.adjectiveList.animate];
 
   constructor(world, params = {}) {

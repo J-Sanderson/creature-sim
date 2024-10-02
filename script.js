@@ -24,12 +24,19 @@ const utilities = {
 };
 
 class Goal {
+  static types = {
+    motive: 'motive',
+    idle: 'idle',
+    narrative: 'narrative',
+  };
+  
   static defaults = {
     priority: 1,
     suspended: false,
     ticks: -1,
     target: null,
     calledBy: null,
+    type: Goal.types.idle,
   };
 
   constructor(params = {}) {
@@ -83,7 +90,7 @@ class GoalWander extends Goal {
   constructor(params) {
     super(params);
   }
-  filter(self) {
+  filter(self, nonReactive = false) {
     const motives = self.getMotives();
     const maxMotive = self.getMaxMotive();
     const personalityValues = self.getPersonalityValues();
@@ -129,8 +136,11 @@ class GoalWander extends Goal {
 class GoalEat extends Goal {
   constructor(params) {
     super(params);
+    this.type = Goal.types.motive;
   }
-  filter(self) {
+  filter(self, nonReactive = false) {
+    if (nonReactive) return -1
+
     const motives = self.getMotives();
     const maxMotive = self.getMaxMotive();
     const personalityValues = self.getPersonalityValues();
@@ -193,8 +203,11 @@ class GoalEat extends Goal {
 class GoalDrink extends Goal {
   constructor(params) {
     super(params);
+    this.type = Goal.types.motive;
   }
-  filter(self) {
+  filter(self, nonReactive = false) {
+    if (nonReactive) return -1;
+
     const motives = self.getMotives();
     const maxMotive = self.getMaxMotive();
     const personalityValues = self.getPersonalityValues();
@@ -260,8 +273,11 @@ class GoalDrink extends Goal {
 class GoalSleep extends Goal {
   constructor(params) {
     super(params);
+    this.type = Goal.types.motive;
   }
-  filter(self) {
+  filter(self, nonReactive = false) {
+    if (nonReactive) return -1;
+
     const motives = self.getMotives();
     const maxMotive = self.getMaxMotive();
     const personalityValues = self.getPersonalityValues();
@@ -322,8 +338,11 @@ class GoalSleep extends Goal {
 class GoalBePetted extends Goal {
   constructor(params) {
     super(params);
+    this.type = Goal.types.narrative;
   }
-  filter(self) {
+  filter(self, nonReactive = false) {
+    if (nonReactive) return -1;
+
     return 1;
   }
   execute(self) {
@@ -358,7 +377,7 @@ class GoalSitAround extends Goal {
   constructor(params) {
     super(params);
   }
-  filter(self) {
+  filter(self, nonReactive = false) {
     const motives = self.getMotives();
     const maxMotive = self.getMaxMotive();
     const personalityValues = self.getPersonalityValues();
@@ -405,8 +424,9 @@ class GoalSitAround extends Goal {
 class GoalKnockItemFromToybox extends Goal {
   constructor(params) {
     super(params);
+    this.type = Goal.types.narrative;
   }
-  filter(self) {
+  filter(self, nonReactive = false) {
     const personalityValues = self.getPersonalityValues();
     const maxMotive = self.getMaxMotive();
 
@@ -418,7 +438,7 @@ class GoalKnockItemFromToybox extends Goal {
     }
 
     const goals = self.getGoals();
-    const calledBy = goals[Creature.goalList.knockItemFromToybox].getCalledBy();
+    const calledBy = goals[Creature.goalList.knockItemFromToybox]?.getCalledBy();
     if (calledBy) {
       let adj = "";
       switch (calledBy) {
@@ -485,8 +505,9 @@ class GoalKnockItemFromToybox extends Goal {
 class GoalChewToy extends Goal {
   constructor(params) {
     super(params);
+    this.type = Goal.types.narrative;
   }
-  filter(self) {
+  filter(self, nonReactive = false) {
     const currentGoal = self.getCurrentGoal();
     if (
       this.getIsSuspended() &&
@@ -563,8 +584,9 @@ class GoalChewToy extends Goal {
 class GoalBounceToy extends Goal {
   constructor(params) {
     super(params);
+    this.type = Goal.types.narrative;
   }
-  filter(self) {
+  filter(self, nonReactive = false) {
     const currentGoal = self.getCurrentGoal();
     if (
       this.getIsSuspended() &&
@@ -1114,12 +1136,28 @@ class GoalManager {
   }
 
   findInterestingGoals(self) {
-    // expand this to make more interesting
-    // currently just pushes 'idle' goals
-    this.addGoal(self, Creature.goalList.wander, { ticks: 5 });
-    this.addGoal(self, Creature.goalList.sitAround, { ticks: 5 });
-    this.addGoal(self, Creature.goalList.chewToy, { ticks: 5 });
-    this.addGoal(self, Creature.goalList.bounceToy, { ticks: 5 });
+    let candidateGoals = [];
+    for (let goal in self.goals) {
+      const tempInstance = new self.goals[goal];
+      const priority = tempInstance.filter(self, true);
+      if (priority > -1) {
+        candidateGoals.push({name: goal, priority});
+      }
+    }
+    candidateGoals.sort((a, b) => {
+      if (a.priority < b.priority) return -1;
+      if (a.priority > b.priority) return 1;
+      return 0;
+    });
+    let chosenGoal = '';
+    const threshold = 2;
+    for (let i = 0; i < candidateGoals.length; i++) {
+      if (i === candidateGoals.length -1 || utilities.rand(threshold) !== threshold - 1) {
+        chosenGoal = candidateGoals[i].name;
+        break;
+      }
+    }
+    this.addGoal(self, chosenGoal, { ticks: 5 })
   }
 
   addGoal(self, name, params, isCurrent = true) {

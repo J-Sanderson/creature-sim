@@ -1325,6 +1325,23 @@ class World {
         if (entityId) {
           this.deleteEntity(entityId);
         } else {
+          let existingItems = this.getItems();
+          let placed = false;
+          let xPos, yPos;
+          
+          while (!placed) {
+            xPos = utilities.rand(this.params.width);
+            yPos = utilities.rand(this.params.height);
+            let spaceFree = true;
+            existingItems.forEach(existingItem => {
+              let existingPos = existingItem.getPosition();
+              if (existingPos.x === xPos && existingPos.y === yPos) {
+                spaceFree = false;
+              }
+            });
+            placed = spaceFree;
+          }
+
           let newItem = new item(this.guid, {
             xPos: utilities.rand(this.params.width),
             yPos: utilities.rand(this.params.height),

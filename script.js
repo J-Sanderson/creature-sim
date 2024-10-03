@@ -1359,7 +1359,7 @@ class World {
       this.elements.statusWrapper = statusWrapper;
     }
 
-    [Water, Food, Bed, Bone, Ball].forEach((item) => {
+    [Water, Steak, Chicken, Fish, Bed, Bone, Ball].forEach((item) => {
       let button = document.createElement("button");
       button.innerHTML = item.icon;
       button.style["font-size"] = `${this.params.cellSize}px`;
@@ -1803,15 +1803,47 @@ class Water extends Item {
   }
 }
 
-class Food extends Item {
+class Steak extends Item {
   static icon = "&#x1F969;";
-  static className = "Food";
+  static className = "Steak";
   static adjectives = [Entity.adjectiveList.tasty];
 
   constructor(world, params = {}) {
     super(world, params);
-    this.adjectives.push(...Food.adjectives);
-    this.icon = Food.icon;
+    this.adjectives.push(...Steak.adjectives);
+    this.icon = Steak.icon;
+
+    this.status.motives.amount = this.maxMotive * 1.5;
+
+    this.setIcon();
+  }
+}
+
+class Chicken extends Item {
+  static icon = "&#x1F357;";
+  static className = "Chicken";
+  static adjectives = [Entity.adjectiveList.tasty];
+
+  constructor(world, params = {}) {
+    super(world, params);
+    this.adjectives.push(...Chicken.adjectives);
+    this.icon = Chicken.icon;
+
+    this.status.motives.amount = this.maxMotive * 1.5;
+
+    this.setIcon();
+  }
+}
+
+class Fish extends Item {
+  static icon = "&#x1F41F;";
+  static className = "Fish";
+  static adjectives = [Entity.adjectiveList.tasty];
+
+  constructor(world, params = {}) {
+    super(world, params);
+    this.adjectives.push(...Fish.adjectives);
+    this.icon = Fish.icon;
 
     this.status.motives.amount = this.maxMotive * 1.5;
 

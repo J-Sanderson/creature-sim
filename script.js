@@ -411,6 +411,12 @@ class GoalSitAround extends Goal {
     return priority;
   }
   execute(self) {
+    // am I on an item?
+    let item = self.queries.getItemIAmOn(self);
+    if (item && !item.getAdjectives().includes(Entity.adjectiveList.restful)) {
+      self.plans.planMoveFromItem(self);
+    }
+    
     if (Math.random() < self.getDecayThreshold("sitAround")) {
       this.decrementTicks();
     }
@@ -761,7 +767,7 @@ const plans = {
       self.goalManager.deleteGoal(goal);
     }
     const itemPos = item.getPosition();
-    self.states.stateMoveToItem(self, itemPos);
+    self.states.stateMoveToPosition(self, itemPos);
   },
   planDrink: function (self) {
     self.setPlan(Creature.planList.drink);
@@ -908,6 +914,44 @@ const plans = {
     self.setPlan(Creature.planList.bounceToy);
     self.states.stateBounceToy(self);
   },
+  planMoveFromItem(self) {
+    self.setPlan(Creature.planList.moveFromItem);
+    const position = self.getPosition();
+
+    const directions = [
+      { dx: -1, dy: -1 }, // NW
+      { dx: 0, dy: -1 }, // N
+      { dx: 1, dy: -1 }, // NE
+      { dx: 1, dy: 0 }, // E
+      { dx: 1, dy: 1 }, // SE
+      { dx: 0, dy: 1 }, // S
+      { dx: -1, dy: 1 }, // SW
+      { dx: -1, dy: 0 }, // W
+    ];
+    const bounds = self.getBounds();
+    let validDirections = [];
+    
+    directions.forEach((direction) => {
+      const newX = position.x + direction.dx;
+      const newY = position.y + direction.dy;
+      if (newX >= 0 && newX < bounds.x && newY >= 0 && newY < bounds.y) {
+        validDirections.push(direction);
+      }
+    });
+    
+    // todo should try to move to am empty square if possible
+    if (validDirections.length > 0) {
+      const randomDirection = Math.floor(
+        Math.random() * validDirections.length
+      );
+      const { dx, dy } = validDirections[randomDirection];
+      const newX = position.x + dx;
+      const newY = position.y + dy;
+      self.states.stateMoveToPosition(self, { x: newX, y: newY });
+    } else {
+      console.error("No valid movement direction available");
+    }
+  }
 };
 
 const states = {
@@ -926,22 +970,22 @@ const states = {
       self.showMotive(motive);
     }
   },
-  stateMoveToItem(self, itemPos) {
-    self.setState(Creature.stateList.moveToItem);
+  stateMoveToPosition(self, newPos) {
+    self.setState(Creature.stateList.moveToPosition);
     self.showMotive(Creature.motiveIcons.movingToTarget);
 
     // move toward the item
     const position = self.getPosition();
-    if (itemPos.x > position.x) {
+    if (newPos.x > position.x) {
       self.setXPosition(position.x + 1);
     }
-    if (itemPos.x < position.x) {
+    if (newPos.x < position.x) {
       self.setXPosition(position.x - 1);
     }
-    if (itemPos.y > position.y) {
+    if (newPos.y > position.y) {
       self.setYPosition(position.y + 1);
     }
-    if (itemPos.y < position.y) {
+    if (newPos.y < position.y) {
       self.setYPosition(position.y - 1);
     }
     const world = worldManager.getWorld(self.world);
@@ -1089,6 +1133,20 @@ const queries = {
     const items = world.getItems();
     return items.get(id);
   },
+  getItemIAmOn(self) {
+    const world = worldManager.getWorld(self.world);
+    const items = world.getItems();
+    const pos = self.getPosition();
+
+    let foundItem;
+    items.forEach(item => {
+      const itemPos = item.getPosition();
+      if (pos.x === itemPos.x && pos.y === itemPos.y) {
+        foundItem = item;
+      }
+    });
+    return foundItem;
+  }
 };
 
 class GoalManager {
@@ -1669,6 +1727,10 @@ class Entity {
   getGUID() {
     return this.guid;
   }
+  
+  getAdjectives() {
+    return this.adjectives;
+  }
 
   getPosition() {
     return this.status.position;
@@ -1836,12 +1898,13 @@ class Creature extends Entity {
     pushItemFromToybox: "planPushItemFromToybox",
     chewToy: "planChewToy",
     bounceToy: "planBounceToy",
+    moveFromItem: "planMoveFromItem",
   };
 
   static stateList = {
     wander: "stateMoveRandomly",
     seekItem: "stateSeekItem",
-    moveToItem: "stateMoveToItem",
+    moveToPosition: "stateMoveToPosition",
     sleep: "stateSleep",
     eat: "stateEat",
     drink: "stateDrink",

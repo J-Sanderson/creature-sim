@@ -436,6 +436,8 @@ class GoalKnockItemFromToybox extends Goal {
     ) {
       return -1;
     }
+    
+    // todo return -1 if there is nothing to push (all toybox buttons have the item-active class)
 
     const goals = self.getGoals();
     const calledBy =
@@ -830,7 +832,7 @@ const plans = {
   },
   planPushItemFromToybox(self) {
     self.setPlan(Creature.planList.pushItemFromToybox);
-    self.states.statePushItemFromToybox(self);
+
     let goals = self.getGoals();
     if (!goals[Creature.goalList.knockItemFromToybox]) {
       console.error(
@@ -871,6 +873,7 @@ const plans = {
           return button.dataset.adjectives.split(",").includes(adj);
         });
         if (interestingButtons.length) {
+          self.states.statePushItemFromToybox(self);
           const button =
             interestingButtons[utilities.rand(interestingButtons.length - 1)];
           button.click();
@@ -884,6 +887,7 @@ const plans = {
         return !button.classList.contains("item-active");
       });
       if (interestingButtons.length) {
+        self.states.statePushItemFromToybox(self);
         const button =
           interestingButtons[utilities.rand(interestingButtons.length - 1)];
         button.click();

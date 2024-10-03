@@ -415,6 +415,7 @@ class GoalSitAround extends Goal {
     let item = self.queries.getItemIAmOn(self);
     if (item && !item.getAdjectives().includes(Entity.adjectiveList.restful)) {
       self.plans.planMoveFromItem(self);
+      return;
     }
     
     if (Math.random() < self.getDecayThreshold("sitAround")) {
@@ -765,6 +766,7 @@ const plans = {
     const item = self.queries.getItemFromWorld(self, id);
     if (!item) {
       self.goalManager.deleteGoal(goal);
+      return;
     }
     const itemPos = item.getPosition();
     self.states.stateMoveToPosition(self, itemPos);

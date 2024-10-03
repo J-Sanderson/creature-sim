@@ -1083,7 +1083,7 @@ const queries = {
 
     let interestingItems = [];
     entities.items.forEach((item) => {
-      if (item.adjectives.includes(adj)) {
+      if (item.properties.adjectives.includes(adj)) {
         interestingItems.push(item);
       }
     });
@@ -1663,6 +1663,13 @@ class Entity {
     chew: "chew",
     bounce: "bounce",
   };
+  
+  static flavorList = {
+    chicken: "chicken",
+    beef: "beef",
+    fish: "fish",
+    water: "water",
+  };
 
   constructor(world, params = {}) {
     let worldObj = worldManager.getWorld(world);
@@ -1677,7 +1684,10 @@ class Entity {
 
     this.outputs = {};
     this.eventHandlers = {};
-    this.adjectives = [];
+    this.properties = {
+      adjectives: [],
+      flavors: [],
+    }
 
     this.maxMotive = worldManager.getWorld(this.world).getParam("maxMotive");
     this.status = {
@@ -1719,7 +1729,7 @@ class Entity {
   }
 
   getAdjectives() {
-    return this.adjectives;
+    return this.properties.adjectives;
   }
 
   getPosition() {
@@ -1783,7 +1793,7 @@ class Item extends Entity {
 
   constructor(world, params = {}) {
     super(world, params);
-    this.adjectives.push(...Item.adjectives);
+    this.properties.adjectives.push(...Item.adjectives);
   }
 }
 
@@ -1794,7 +1804,8 @@ class Water extends Item {
 
   constructor(world, params = {}) {
     super(world, params);
-    this.adjectives.push(...Water.adjectives);
+    this.properties.adjectives.push(...Water.adjectives);
+    this.properties.flavors.push(Entity.flavorList.water);
     this.icon = Water.icon;
 
     this.status.motives.amount = this.maxMotive * 2.5;
@@ -1810,7 +1821,8 @@ class Steak extends Item {
 
   constructor(world, params = {}) {
     super(world, params);
-    this.adjectives.push(...Steak.adjectives);
+    this.properties.adjectives.push(...Steak.adjectives);
+    this.properties.flavors.push(Entity.flavorList.beef);
     this.icon = Steak.icon;
 
     this.status.motives.amount = this.maxMotive * 1.5;
@@ -1826,7 +1838,8 @@ class Chicken extends Item {
 
   constructor(world, params = {}) {
     super(world, params);
-    this.adjectives.push(...Chicken.adjectives);
+    this.properties.adjectives.push(...Chicken.adjectives);
+    this.properties.flavors.push(Entity.flavorList.chicken);
     this.icon = Chicken.icon;
 
     this.status.motives.amount = this.maxMotive * 1.5;
@@ -1842,7 +1855,8 @@ class Fish extends Item {
 
   constructor(world, params = {}) {
     super(world, params);
-    this.adjectives.push(...Fish.adjectives);
+    this.properties.adjectives.push(...Fish.adjectives);
+    this.properties.flavors.push(Entity.flavorList.fish);
     this.icon = Fish.icon;
 
     this.status.motives.amount = this.maxMotive * 1.5;
@@ -1858,7 +1872,7 @@ class Bed extends Item {
 
   constructor(world, params = {}) {
     super(world, params);
-    this.adjectives.push(...Bed.adjectives);
+    this.properties.adjectives.push(...Bed.adjectives);
     this.icon = Bed.icon;
 
     this.setIcon();
@@ -1872,7 +1886,7 @@ class Bone extends Item {
 
   constructor(world, params = {}) {
     super(world, params);
-    this.adjectives.push(...Bone.adjectives);
+    this.properties.adjectives.push(...Bone.adjectives);
     this.icon = Bone.icon;
 
     this.setIcon();
@@ -1886,7 +1900,7 @@ class Ball extends Item {
 
   constructor(world, params = {}) {
     super(world, params);
-    this.adjectives.push(...Ball.adjectives);
+    this.properties.adjectives.push(...Ball.adjectives);
     this.icon = Ball.icon;
 
     this.setIcon();
@@ -1968,7 +1982,7 @@ class Creature extends Entity {
   constructor(world, params = {}) {
     super(world, params);
     this.order = 2;
-    this.adjectives.push(...Creature.adjectives);
+    this.properties.adjectives.push(...Creature.adjectives);
 
     ["fullness", "hydration", "energy"].forEach((motive) => {
       this.status.motives[motive] = utilities.rand(this.maxMotive);

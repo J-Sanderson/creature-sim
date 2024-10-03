@@ -25,11 +25,11 @@ const utilities = {
 
 class Goal {
   static types = {
-    motive: 'motive',
-    idle: 'idle',
-    narrative: 'narrative',
+    motive: "motive",
+    idle: "idle",
+    narrative: "narrative",
   };
-  
+
   static defaults = {
     priority: 1,
     suspended: false,
@@ -139,7 +139,7 @@ class GoalEat extends Goal {
     this.type = Goal.types.motive;
   }
   filter(self, nonReactive = false) {
-    if (nonReactive) return -1
+    if (nonReactive) return -1;
 
     const motives = self.getMotives();
     const maxMotive = self.getMaxMotive();
@@ -438,7 +438,8 @@ class GoalKnockItemFromToybox extends Goal {
     }
 
     const goals = self.getGoals();
-    const calledBy = goals[Creature.goalList.knockItemFromToybox]?.getCalledBy();
+    const calledBy =
+      goals[Creature.goalList.knockItemFromToybox]?.getCalledBy();
     if (calledBy) {
       let adj = "";
       switch (calledBy) {
@@ -837,7 +838,7 @@ const plans = {
       );
     }
 
-    let adj;
+    let adj = "";
     let calledBy = goals[Creature.goalList.knockItemFromToybox].getCalledBy();
     switch (calledBy) {
       case "goalEat":
@@ -856,26 +857,38 @@ const plans = {
         adj = Entity.adjectiveList.bounce;
         break;
       default:
-      // item not called by need, TODO random knocking item?
     }
 
-    const nearbyItems = self.queries.getItemsByAdjective(self, adj);
-    if (nearbyItems.length) {
-      self.goalManager.deleteGoal(Creature.goalList.knockItemFromToybox);
-      self.goalManager.unsuspendGoal(calledBy);
-    } else {
-      let toybox = document.querySelector(`[data-world="${self.world}"]`);
-      let buttons = Array.from(toybox.querySelectorAll("button"));
-      let interestingButtons = buttons.filter((button) => {
-        return button.dataset.adjectives.split(",").includes(adj);
-      });
-      if (!interestingButtons.length) {
+    let toybox = document.querySelector(`[data-world="${self.world}"]`);
+    let buttons = Array.from(toybox.querySelectorAll("button"));
+    if (adj) {
+      const nearbyItems = self.queries.getItemsByAdjective(self, adj);
+      if (nearbyItems.length) {
         self.goalManager.deleteGoal(Creature.goalList.knockItemFromToybox);
         self.goalManager.unsuspendGoal(calledBy);
+      } else {
+        let interestingButtons = buttons.filter((button) => {
+          return button.dataset.adjectives.split(",").includes(adj);
+        });
+        if (interestingButtons.length) {
+          const button =
+            interestingButtons[utilities.rand(interestingButtons.length - 1)];
+          button.click();
+        } else {
+          self.goalManager.deleteGoal(Creature.goalList.knockItemFromToybox);
+          self.goalManager.unsuspendGoal(calledBy);
+        }
       }
-      const button =
-        interestingButtons[utilities.rand(interestingButtons.length - 1)];
-      button.click();
+    } else {
+      let interestingButtons = buttons.filter((button) => {
+        return !button.classList.contains("item-active");
+      });
+      if (interestingButtons.length) {
+        const button =
+          interestingButtons[utilities.rand(interestingButtons.length - 1)];
+        button.click();
+      }
+      self.goalManager.deleteGoal(Creature.goalList.knockItemFromToybox);
     }
   },
   planChewToy(self) {
@@ -1138,10 +1151,10 @@ class GoalManager {
   findInterestingGoals(self) {
     let candidateGoals = [];
     for (let goal in self.goals) {
-      const tempInstance = new self.goals[goal];
+      const tempInstance = new self.goals[goal]();
       const priority = tempInstance.filter(self, true);
       if (priority > -1) {
-        candidateGoals.push({name: goal, priority});
+        candidateGoals.push({ name: goal, priority });
       }
     }
     candidateGoals.sort((a, b) => {
@@ -1149,15 +1162,18 @@ class GoalManager {
       if (a.priority > b.priority) return 1;
       return 0;
     });
-    let chosenGoal = '';
+    let chosenGoal = "";
     const threshold = 2;
     for (let i = 0; i < candidateGoals.length; i++) {
-      if (i === candidateGoals.length -1 || utilities.rand(threshold) !== threshold - 1) {
+      if (
+        i === candidateGoals.length - 1 ||
+        utilities.rand(threshold) !== threshold - 1
+      ) {
         chosenGoal = candidateGoals[i].name;
         break;
       }
     }
-    this.addGoal(self, chosenGoal, { ticks: 5 })
+    this.addGoal(self, chosenGoal, { ticks: 5 });
   }
 
   addGoal(self, name, params, isCurrent = true) {

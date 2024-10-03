@@ -689,34 +689,14 @@ const goals = {
 const plans = {
   planWander: function (self) {
     self.setPlan(Creature.planList.wander);
-    const position = self.getPosition();
-
-    const directions = [
-      { dx: -1, dy: -1 }, // NW
-      { dx: 0, dy: -1 }, // N
-      { dx: 1, dy: -1 }, // NE
-      { dx: 1, dy: 0 }, // E
-      { dx: 1, dy: 1 }, // SE
-      { dx: 0, dy: 1 }, // S
-      { dx: -1, dy: 1 }, // SW
-      { dx: -1, dy: 0 }, // W
-    ];
-    const bounds = self.getBounds();
-    let validDirections = [];
-
-    directions.forEach((direction) => {
-      const newX = position.x + direction.dx;
-      const newY = position.y + direction.dy;
-      if (newX >= 0 && newX < bounds.x && newY >= 0 && newY < bounds.y) {
-        validDirections.push(direction);
-      }
-    });
+    const validDirections = self.queries.getValidDirections(self);
 
     if (validDirections.length > 0) {
       const randomDirection = Math.floor(
         Math.random() * validDirections.length
       );
       const { dx, dy } = validDirections[randomDirection];
+      const position = self.getPosition();
 
       const newX = position.x + dx;
       const newY = position.y + dy;
@@ -917,35 +897,15 @@ const plans = {
   },
   planMoveFromItem(self) {
     self.setPlan(Creature.planList.moveFromItem);
-    const position = self.getPosition();
+    const validDirections = self.queries.getValidDirections(self);
 
-    const directions = [
-      { dx: -1, dy: -1 }, // NW
-      { dx: 0, dy: -1 }, // N
-      { dx: 1, dy: -1 }, // NE
-      { dx: 1, dy: 0 }, // E
-      { dx: 1, dy: 1 }, // SE
-      { dx: 0, dy: 1 }, // S
-      { dx: -1, dy: 1 }, // SW
-      { dx: -1, dy: 0 }, // W
-    ];
-    const bounds = self.getBounds();
-    let validDirections = [];
-
-    directions.forEach((direction) => {
-      const newX = position.x + direction.dx;
-      const newY = position.y + direction.dy;
-      if (newX >= 0 && newX < bounds.x && newY >= 0 && newY < bounds.y) {
-        validDirections.push(direction);
-      }
-    });
-
-    // todo should try to move to am empty square if possible
+    // todo should try to move to an empty square if possible
     if (validDirections.length > 0) {
       const randomDirection = Math.floor(
         Math.random() * validDirections.length
       );
       const { dx, dy } = validDirections[randomDirection];
+      const position = self.getPosition();
       const newX = position.x + dx;
       const newY = position.y + dy;
       self.states.stateMoveToPosition(self, { x: newX, y: newY });
@@ -1148,6 +1108,31 @@ const queries = {
     });
     return foundItem;
   },
+  getValidDirections(self) {
+    const position = self.getPosition();
+    const directions = [
+      { dx: -1, dy: -1 }, // NW
+      { dx: 0, dy: -1 }, // N
+      { dx: 1, dy: -1 }, // NE
+      { dx: 1, dy: 0 }, // E
+      { dx: 1, dy: 1 }, // SE
+      { dx: 0, dy: 1 }, // S
+      { dx: -1, dy: 1 }, // SW
+      { dx: -1, dy: 0 }, // W
+    ];
+    const bounds = self.getBounds();
+    let validDirections = [];
+    
+    directions.forEach((direction) => {
+      const newX = position.x + direction.dx;
+      const newY = position.y + direction.dy;
+      if (newX >= 0 && newX < bounds.x && newY >= 0 && newY < bounds.y) {
+        validDirections.push(direction);
+      }
+    });
+    
+    return validDirections;
+  }
 };
 
 class GoalManager {

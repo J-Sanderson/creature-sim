@@ -437,7 +437,6 @@ class GoalKnockItemFromToybox extends Goal {
       return -1;
     }
     
-    // todo return -1 if there is nothing to push (all toybox buttons have the item-active class)
 
     const goals = self.getGoals();
     const calledBy =
@@ -462,6 +461,12 @@ class GoalKnockItemFromToybox extends Goal {
           break;
       }
       if (adj && self.queries.getItemsByAdjective(self, adj).length) {
+        return -1;
+      }
+    } else {
+      let toybox = document.querySelector(`[data-world="${self.world}"]`);
+      let buttons = Array.from(toybox.querySelectorAll("button"));
+      if (buttons.every(button => button.classList.contains('item-active'))) {
         return -1;
       }
     }

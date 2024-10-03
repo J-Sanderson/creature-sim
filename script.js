@@ -417,7 +417,7 @@ class GoalSitAround extends Goal {
       self.plans.planMoveFromItem(self);
       return;
     }
-    
+
     if (Math.random() < self.getDecayThreshold("sitAround")) {
       this.decrementTicks();
     }
@@ -443,7 +443,6 @@ class GoalKnockItemFromToybox extends Goal {
     ) {
       return -1;
     }
-    
 
     const goals = self.getGoals();
     const calledBy =
@@ -473,7 +472,7 @@ class GoalKnockItemFromToybox extends Goal {
     } else {
       let toybox = document.querySelector(`[data-world="${self.world}"]`);
       let buttons = Array.from(toybox.querySelectorAll("button"));
-      if (buttons.every(button => button.classList.contains('item-active'))) {
+      if (buttons.every((button) => button.classList.contains("item-active"))) {
         return -1;
       }
     }
@@ -932,7 +931,7 @@ const plans = {
     ];
     const bounds = self.getBounds();
     let validDirections = [];
-    
+
     directions.forEach((direction) => {
       const newX = position.x + direction.dx;
       const newY = position.y + direction.dy;
@@ -940,7 +939,7 @@ const plans = {
         validDirections.push(direction);
       }
     });
-    
+
     // todo should try to move to am empty square if possible
     if (validDirections.length > 0) {
       const randomDirection = Math.floor(
@@ -953,7 +952,7 @@ const plans = {
     } else {
       console.error("No valid movement direction available");
     }
-  }
+  },
 };
 
 const states = {
@@ -1141,14 +1140,14 @@ const queries = {
     const pos = self.getPosition();
 
     let foundItem;
-    items.forEach(item => {
+    items.forEach((item) => {
       const itemPos = item.getPosition();
       if (pos.x === itemPos.x && pos.y === itemPos.y) {
         foundItem = item;
       }
     });
     return foundItem;
-  }
+  },
 };
 
 class GoalManager {
@@ -1388,12 +1387,12 @@ class World {
           let existingItems = this.getItems();
           let placed = false;
           let xPos, yPos;
-          
+
           while (!placed) {
             xPos = utilities.rand(this.params.width);
             yPos = utilities.rand(this.params.height);
             let spaceFree = true;
-            existingItems.forEach(existingItem => {
+            existingItems.forEach((existingItem) => {
               let existingPos = existingItem.getPosition();
               if (existingPos.x === xPos && existingPos.y === yPos) {
                 spaceFree = false;
@@ -1403,8 +1402,8 @@ class World {
           }
 
           let newItem = new item(this.guid, {
-            xPos: utilities.rand(this.params.width),
-            yPos: utilities.rand(this.params.height),
+            xPos,
+            yPos,
           });
           this.entities.items.set(newItem.getGUID(), newItem);
           button.classList.add("item-active");
@@ -1729,7 +1728,7 @@ class Entity {
   getGUID() {
     return this.guid;
   }
-  
+
   getAdjectives() {
     return this.adjectives;
   }

@@ -1122,7 +1122,7 @@ const queries = {
     ];
     const bounds = self.getBounds();
     let validDirections = [];
-    
+
     directions.forEach((direction) => {
       const newX = position.x + direction.dx;
       const newY = position.y + direction.dy;
@@ -1130,9 +1130,9 @@ const queries = {
         validDirections.push(direction);
       }
     });
-    
+
     return validDirections;
-  }
+  },
 };
 
 class GoalManager {
@@ -1364,7 +1364,7 @@ class World {
       button.innerHTML = item.icon;
       button.style["font-size"] = `${this.params.cellSize}px`;
       button.dataset.adjectives = item.adjectives;
-      button.addEventListener('click', () => {
+      button.addEventListener("click", () => {
         this.toggleItem(button, item);
       });
       this.elements.toybox.appendChild(button);
@@ -1435,7 +1435,7 @@ class World {
       }
     });
   }
-  
+
   toggleItem(button, item) {
     let entityId = button.dataset.entityId;
     if (entityId) {
@@ -1560,6 +1560,17 @@ class World {
     }
 
     this.elements.statusWrapper.appendChild(personality);
+    
+    let favorites = document.createElement("p");
+    const favoriteValues = creature.getFavorites();
+    for (let value in favoriteValues) {
+      let span = document.createElement("span");
+      span.innerHTML = `${value}: ${favoriteValues[value]}`;
+      favorites.appendChild(span);
+      favorites.appendChild(document.createElement("br"));
+    }
+    
+    this.elements.statusWrapper.appendChild(favorites);
   }
 
   updateCreatureStatus(creature) {
@@ -1663,7 +1674,7 @@ class Entity {
     chew: "chew",
     bounce: "bounce",
   };
-  
+
   static flavorList = {
     chicken: "chicken",
     beef: "beef",
@@ -1687,7 +1698,7 @@ class Entity {
     this.properties = {
       adjectives: [],
       flavors: [],
-    }
+    };
 
     this.maxMotive = worldManager.getWorld(this.world).getParam("maxMotive");
     this.status = {
@@ -1990,6 +2001,9 @@ class Creature extends Entity {
 
     this.personality = {
       values: {},
+      favorites: {
+        flavor: '',
+      },
     };
 
     let maxPersonalityValue = this.maxMotive;
@@ -2020,6 +2034,10 @@ class Creature extends Entity {
       eat: this.maxMotive * 0.4 + personalityValues.metabolism / 10,
       drink: this.maxMotive * 0.4 + personalityValues.liveliness / 10,
     };
+
+    const flavorKeys = Object.keys(Entity.flavorList);
+    this.personality.favorites.flavor =
+      Entity.flavorList[flavorKeys[utilities.rand(flavorKeys.length)]];
 
     this.states = states;
     this.plans = plans;
@@ -2145,6 +2163,10 @@ class Creature extends Entity {
       return;
     }
     return this.personality.values[value];
+  }
+  
+  getFavorites() {
+    return this.personality.favorites;
   }
 
   getDecayThresholds() {

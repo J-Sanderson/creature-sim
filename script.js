@@ -726,6 +726,16 @@ const plans = {
       });
       interestingItems = preferredItems;
     }
+    
+    if (adj === Entity.adjectiveList.bounce || adj === Entity.adjectiveList.chew) {
+      const pref = self.getFavorites().color;
+      const preferredItems = interestingItems.filter((item) => {
+        return item.getColors().includes(pref);
+      });
+      if (preferredItems.length) {
+        interestingItems = preferredItems;
+      }
+    }
 
     // get the closest of these
     let minDistance = Infinity;
@@ -1833,6 +1843,10 @@ class Entity {
 
   getFlavors() {
     return this.properties.flavors;
+  }
+  
+  getColors() {
+    return this.properties.colors;
   }
 
   getPosition() {

@@ -1108,7 +1108,12 @@ const queries = {
     );
   },
   amIHungry(self) {
-    return self.getMotive("fullness") < self.getDesireThreshold("eat");
+    const faves = self.queries.getItemsByFlavor(self, self.getFavorites().flavor);
+    let threshold = self.getDesireThreshold("eat");
+    if (faves.length) {
+      threshold *= 1.1;
+    }
+    return self.getMotive("fullness") < threshold;
   },
   amIThirsty(self) {
     return self.getMotive("hydration") < self.getDesireThreshold("drink");
@@ -1128,7 +1133,19 @@ const queries = {
 
     let interestingItems = [];
     entities.items.forEach((item) => {
-      if (item.properties.adjectives.includes(adj)) {
+      if (item.getAdjectives().includes(adj)) {
+        interestingItems.push(item);
+      }
+    });
+    return interestingItems;
+  },
+  getItemsByFlavor(self, flavor) {
+    const world = worldManager.getWorld(self.world);
+    const entities = world.getEntities();
+    
+    let interestingItems = [];
+    entities.items.forEach((item) => {
+      if (item.getFlavors().includes(flavor)) {
         interestingItems.push(item);
       }
     });

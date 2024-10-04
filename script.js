@@ -709,8 +709,20 @@ const plans = {
   planSeekItem: function (self, adj, motive, goal) {
     self.setPlan(Creature.planList.seekItem);
 
-    const position = self.getPosition();
     let interestingItems = self.queries.getItemsByAdjective(self, adj);
+    const position = self.getPosition();
+    
+    // if hungry, check for preferred food.
+    // todo add a probability to gravitate to fave based on finickiness personality value.
+    if (adj === Entity.adjectiveList.tasty) {
+      const pref = self.getFavorites().flavor;
+      const preferredItems = interestingItems.filter(item => {
+        return item.getFlavors().includes(pref);
+      });
+      if (preferredItems.length) {
+        interestingItems = preferredItems;
+      }
+    }
 
     // get the closest of these
     let minDistance = Infinity;
@@ -1741,6 +1753,10 @@ class Entity {
 
   getAdjectives() {
     return this.properties.adjectives;
+  }
+  
+  getFlavors() {
+    return this.properties.flavors;
   }
 
   getPosition() {

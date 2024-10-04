@@ -875,7 +875,19 @@ const plans = {
     let toybox = document.querySelector(`[data-world="${self.world}"]`);
     let buttons = Array.from(toybox.querySelectorAll("button"));
     if (adj) {
+      let pref;
+      if (adj === Entity.adjectiveList.tasty) {
+        pref = self.getFavorites().flavor;
+      }
       const nearbyItems = self.queries.getItemsByAdjective(self, adj);
+      if (pref) {
+        const preferredItems = nearbyItems.filter(item => {
+          return item.getFlavors().includes(pref);
+        });
+        if (preferredItems.length) {
+          nearbyItems = preferredItems;
+        }
+      }
       if (nearbyItems.length) {
         self.goalManager.deleteGoal(Creature.goalList.knockItemFromToybox);
         self.goalManager.unsuspendGoal(calledBy);
@@ -884,6 +896,14 @@ const plans = {
           return button.dataset.adjectives.split(",").includes(adj);
         });
         if (interestingButtons.length) {
+          if (pref) {
+            preferredButtons = interestingButtons.filter(button => {
+              return button.dataset.flavors.split(",").includes(pref);
+            });
+            if (preferredButtons.length) {
+              interestingButtons = preferredButtons;
+            }
+          }
           self.states.statePushItemFromToybox(self);
           const button =
             interestingButtons[utilities.rand(interestingButtons.length - 1)];
@@ -1383,6 +1403,7 @@ class World {
       button.innerHTML = item.icon;
       button.style["font-size"] = `${this.params.cellSize}px`;
       button.dataset.adjectives = item.adjectives;
+      button.dataset.flavors = item.flavors ? item.flavors : [];
       button.addEventListener("click", () => {
         this.toggleItem(button, item);
       });
@@ -1835,11 +1856,12 @@ class Water extends Item {
   static icon = "&#x1F4A7;";
   static className = "Water";
   static adjectives = [Entity.adjectiveList.wet];
+  static flavors = [Entity.flavorList.water];
 
   constructor(world, params = {}) {
     super(world, params);
     this.properties.adjectives.push(...Water.adjectives);
-    this.properties.flavors.push(Entity.flavorList.water);
+    this.properties.flavors.push(...Water.flavors);
     this.icon = Water.icon;
 
     this.status.motives.amount = this.maxMotive * 2.5;
@@ -1852,11 +1874,12 @@ class Steak extends Item {
   static icon = "&#x1F969;";
   static className = "Steak";
   static adjectives = [Entity.adjectiveList.tasty];
+  static flavors = [Entity.flavorList.beef];
 
   constructor(world, params = {}) {
     super(world, params);
     this.properties.adjectives.push(...Steak.adjectives);
-    this.properties.flavors.push(Entity.flavorList.beef);
+    this.properties.flavors.push(...Steak.flavors);
     this.icon = Steak.icon;
 
     this.status.motives.amount = this.maxMotive * 1.5;
@@ -1869,11 +1892,12 @@ class Chicken extends Item {
   static icon = "&#x1F357;";
   static className = "Chicken";
   static adjectives = [Entity.adjectiveList.tasty];
+  static flavors = [Entity.flavorList.chicken];
 
   constructor(world, params = {}) {
     super(world, params);
     this.properties.adjectives.push(...Chicken.adjectives);
-    this.properties.flavors.push(Entity.flavorList.chicken);
+    this.properties.flavors.push(...Chicken.flavors);
     this.icon = Chicken.icon;
 
     this.status.motives.amount = this.maxMotive * 1.5;
@@ -1886,11 +1910,12 @@ class Fish extends Item {
   static icon = "&#x1F41F;";
   static className = "Fish";
   static adjectives = [Entity.adjectiveList.tasty];
+  static flavors = [Entity.flavorList.fish];
 
   constructor(world, params = {}) {
     super(world, params);
     this.properties.adjectives.push(...Fish.adjectives);
-    this.properties.flavors.push(Entity.flavorList.fish);
+    this.properties.flavors.push(...Fish.flavors);
     this.icon = Fish.icon;
 
     this.status.motives.amount = this.maxMotive * 1.5;

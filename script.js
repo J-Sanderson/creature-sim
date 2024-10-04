@@ -896,10 +896,11 @@ const plans = {
         });
         if (interestingButtons.length) {
           if (pref) {
-            preferredButtons = interestingButtons.filter((button) => {
+            const isFinicky = self.queries.amIFinicky(self);
+            const preferredButtons = interestingButtons.filter((button) => {
               return button.dataset.flavors.split(",").includes(pref);
             });
-            if (preferredButtons.length) {
+            if (preferredButtons.length || isFinicky) {
               interestingButtons = preferredButtons;
             }
           }

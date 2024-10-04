@@ -726,8 +726,11 @@ const plans = {
       });
       interestingItems = preferredItems;
     }
-    
-    if (adj === Entity.adjectiveList.bounce || adj === Entity.adjectiveList.chew) {
+
+    if (
+      adj === Entity.adjectiveList.bounce ||
+      adj === Entity.adjectiveList.chew
+    ) {
       const pref = self.getFavorites().color;
       const preferredItems = interestingItems.filter((item) => {
         return item.getColors().includes(pref);
@@ -885,10 +888,20 @@ const plans = {
       if (adj === Entity.adjectiveList.tasty) {
         pref = self.getFavorites().flavor;
       }
+      if (
+        adj === Entity.adjectiveList.bounce ||
+        adj === Entity.adjectiveList.chew
+      ) {
+        pref = self.getFavorites().color;
+      }
       const nearbyItems = self.queries.getItemsByAdjective(self, adj);
       if (pref) {
         const preferredItems = nearbyItems.filter((item) => {
-          return item.getFlavors().includes(pref);
+          const properties =
+            adj === Entity.adjectiveList.tasty
+              ? item.getFlavors()
+              : item.getColors();
+          return properties.includes(pref);
         });
         if (preferredItems.length) {
           nearbyItems = preferredItems;
@@ -904,7 +917,11 @@ const plans = {
         if (interestingButtons.length) {
           if (pref && self.queries.amIFinicky(self)) {
             const preferredButtons = interestingButtons.filter((button) => {
-              return button.dataset.flavors.split(",").includes(pref);
+              const dataset =
+                adj === Entity.adjectiveList.tasty
+                  ? button.dataset.flavors
+                  : button.dataset.colors;
+              return dataset.split(",").includes(pref);
             });
             interestingButtons = preferredButtons;
           }
@@ -1446,6 +1463,7 @@ class World {
       button.style["font-size"] = `${this.params.cellSize}px`;
       button.dataset.adjectives = item.adjectives;
       button.dataset.flavors = item.flavors ? item.flavors : [];
+      button.dataset.colors = item.colors ? item.colors : [];
       button.addEventListener("click", () => {
         this.toggleItem(button, item);
       });
@@ -1844,7 +1862,7 @@ class Entity {
   getFlavors() {
     return this.properties.flavors;
   }
-  
+
   getColors() {
     return this.properties.colors;
   }

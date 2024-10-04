@@ -1102,7 +1102,10 @@ const queries = {
     );
   },
   amIHungry(self) {
-    const faves = self.queries.getItemsByFlavor(self, self.getFavorites().flavor);
+    const faves = self.queries.getItemsByFlavor(
+      self,
+      self.getFavorites().flavor
+    );
     let threshold = self.getDesireThreshold("eat");
     if (faves.length) {
       threshold *= 1.1;
@@ -1136,7 +1139,7 @@ const queries = {
   getItemsByFlavor(self, flavor) {
     const world = worldManager.getWorld(self.world);
     const entities = world.getEntities();
-    
+
     let interestingItems = [];
     entities.items.forEach((item) => {
       if (item.getFlavors().includes(flavor)) {
@@ -1415,7 +1418,19 @@ class World {
       this.elements.statusWrapper = statusWrapper;
     }
 
-    [Water, Steak, Chicken, Fish, Bed, Bone, Ball].forEach((item) => {
+    [
+      Water,
+      Steak,
+      Chicken,
+      Fish,
+      Bed,
+      Bone,
+      TennisBall,
+      TeddyBear,
+      Yarn,
+      Basketball,
+      Disc,
+    ].forEach((item) => {
       let button = document.createElement("button");
       button.innerHTML = item.icon;
       button.style["font-size"] = `${this.params.cellSize}px`;
@@ -1738,20 +1753,20 @@ class Entity {
     fish: "fish",
     water: "water",
   };
-  
+
   static colorList = {
-    white: 'white',
-    black: 'black',
-    red: 'red',
-    green: 'green',
-    yellow: 'yellow',
-    blue: 'blue',
-    purple: 'purple',
-    pink: 'pink',
-    orange: 'orange',
-    brown: 'brown',
-    grey: 'grey',
-    clear: 'clear',
+    white: "white",
+    black: "black",
+    red: "red",
+    green: "green",
+    yellow: "yellow",
+    blue: "blue",
+    purple: "purple",
+    pink: "pink",
+    orange: "orange",
+    brown: "brown",
+    grey: "grey",
+    clear: "clear",
   };
 
   constructor(world, params = {}) {
@@ -1995,16 +2010,76 @@ class Bone extends Item {
   }
 }
 
-class Ball extends Item {
+class TennisBall extends Item {
   static icon = "&#x1F3BE;";
-  static className = "Ball";
+  static className = "TennisBall";
   static adjectives = [Entity.adjectiveList.chew, Entity.adjectiveList.bounce];
   static colors = [Entity.colorList.white, Entity.colorList.green];
 
   constructor(world, params = {}) {
     super(world, params);
-    this.properties.adjectives.push(...Ball.adjectives);
-    this.icon = Ball.icon;
+    this.properties.adjectives.push(...TennisBall.adjectives);
+    this.icon = TennisBall.icon;
+
+    this.setIcon();
+  }
+}
+
+class TeddyBear extends Item {
+  static icon = "&#x1F9F8;";
+  static className = "TeddyBear";
+  static adjectives = [Entity.adjectiveList.chew];
+  static colors = [Entity.colorList.brown];
+
+  constructor(world, params = {}) {
+    super(world, params);
+    this.properties.adjectives.push(...TeddyBear.adjectives);
+    this.icon = TeddyBear.icon;
+
+    this.setIcon();
+  }
+}
+
+class Yarn extends Item {
+  static icon = "&#x1F9F6;";
+  static className = "Yarn";
+  static adjectives = [Entity.adjectiveList.chew, Entity.adjectiveList.bounce];
+  static colors = [Entity.colorList.red];
+
+  constructor(world, params = {}) {
+    super(world, params);
+    this.properties.adjectives.push(...Yarn.adjectives);
+    this.icon = Yarn.icon;
+
+    this.setIcon();
+  }
+}
+
+class Basketball extends Item {
+  static icon = "&#x1F3C0;";
+  static className = "Basketball";
+  static adjectives = [Entity.adjectiveList.chew, Entity.adjectiveList.bounce];
+  static colors = [Entity.colorList.orange];
+
+  constructor(world, params = {}) {
+    super(world, params);
+    this.properties.adjectives.push(...Basketball.adjectives);
+    this.icon = Basketball.icon;
+
+    this.setIcon();
+  }
+}
+
+class Disc extends Item {
+  static icon = "&#x1F94F;";
+  static className = "Disc";
+  static adjectives = [Entity.adjectiveList.chew, Entity.adjectiveList.bounce];
+  static colors = [Entity.colorList.blue];
+
+  constructor(world, params = {}) {
+    super(world, params);
+    this.properties.adjectives.push(...Disc.adjectives);
+    this.icon = Disc.icon;
 
     this.setIcon();
   }
@@ -2081,11 +2156,21 @@ class Creature extends Entity {
     "finickiness",
   ];
 
-  static validFaves = [
-    Entity.flavorList.chicken,
-    Entity.flavorList.beef,
-    Entity.flavorList.fish,
-  ];
+  static validFaves = {
+    flavors: [
+      Entity.flavorList.chicken,
+      Entity.flavorList.beef,
+      Entity.flavorList.fish,
+    ],
+    colors: [
+      Entity.colorList.white,
+      Entity.colorList.green,
+      Entity.colorList.brown,
+      Entity.colorList.red,
+      Entity.colorList.orange,
+      Entity.colorList.blue,
+    ],
+  };
 
   static adjectives = [Entity.adjectiveList.animate];
 
@@ -2136,7 +2221,15 @@ class Creature extends Entity {
 
     this.personality.favorites.flavor =
       Entity.flavorList[
-        Creature.validFaves[utilities.rand(Creature.validFaves.length)]
+        Creature.validFaves.flavors[
+          utilities.rand(Creature.validFaves.flavors.length)
+        ]
+      ];
+    this.personality.favorites.color =
+      Entity.colorList[
+        Creature.validFaves.colors[
+          utilities.rand(Creature.validFaves.colors.length)
+        ]
       ];
 
     this.states = states;

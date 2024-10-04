@@ -162,6 +162,13 @@ class GoalEat extends Goal {
       } else if (motives.fullness <= maxMotive / 1.53) {
         priority = 5;
       }
+      const pref = self.getFavorites().flavor;
+      const preferredFood = nearbyFood.filter(item => {
+        return item.getFlavors().includes(pref);
+      });
+      if (preferredFood.length) {
+        priority += 2;
+      }
     }
 
     const metabolismFactor = Math.min(

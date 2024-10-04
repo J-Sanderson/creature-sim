@@ -727,6 +727,19 @@ const plans = {
       interestingItems = preferredItems;
     }
 
+    if (
+      adj === Entity.adjectiveList.bounce ||
+      adj === Entity.adjectiveList.chew
+    ) {
+      const pref = self.getFavorites().color;
+      const preferredItems = interestingItems.filter((item) => {
+        return item.getColors().includes(pref);
+      });
+      if (preferredItems.length) {
+        interestingItems = preferredItems;
+      }
+    }
+
     // get the closest of these
     let minDistance = Infinity;
     let closestItem = null;
@@ -875,10 +888,20 @@ const plans = {
       if (adj === Entity.adjectiveList.tasty) {
         pref = self.getFavorites().flavor;
       }
+      if (
+        adj === Entity.adjectiveList.bounce ||
+        adj === Entity.adjectiveList.chew
+      ) {
+        pref = self.getFavorites().color;
+      }
       const nearbyItems = self.queries.getItemsByAdjective(self, adj);
       if (pref) {
         const preferredItems = nearbyItems.filter((item) => {
-          return item.getFlavors().includes(pref);
+          const properties =
+            adj === Entity.adjectiveList.tasty
+              ? item.getFlavors()
+              : item.getColors();
+          return properties.includes(pref);
         });
         if (preferredItems.length) {
           nearbyItems = preferredItems;
@@ -894,7 +917,11 @@ const plans = {
         if (interestingButtons.length) {
           if (pref && self.queries.amIFinicky(self)) {
             const preferredButtons = interestingButtons.filter((button) => {
-              return button.dataset.flavors.split(",").includes(pref);
+              const dataset =
+                adj === Entity.adjectiveList.tasty
+                  ? button.dataset.flavors
+                  : button.dataset.colors;
+              return dataset.split(",").includes(pref);
             });
             interestingButtons = preferredButtons;
           }
@@ -1102,7 +1129,10 @@ const queries = {
     );
   },
   amIHungry(self) {
-    const faves = self.queries.getItemsByFlavor(self, self.getFavorites().flavor);
+    const faves = self.queries.getItemsByFlavor(
+      self,
+      self.getFavorites().flavor
+    );
     let threshold = self.getDesireThreshold("eat");
     if (faves.length) {
       threshold *= 1.1;
@@ -1136,7 +1166,7 @@ const queries = {
   getItemsByFlavor(self, flavor) {
     const world = worldManager.getWorld(self.world);
     const entities = world.getEntities();
-    
+
     let interestingItems = [];
     entities.items.forEach((item) => {
       if (item.getFlavors().includes(flavor)) {
@@ -1415,12 +1445,25 @@ class World {
       this.elements.statusWrapper = statusWrapper;
     }
 
-    [Water, Steak, Chicken, Fish, Bed, Bone, Ball].forEach((item) => {
+    [
+      Water,
+      Steak,
+      Chicken,
+      Fish,
+      Bed,
+      Bone,
+      TennisBall,
+      TeddyBear,
+      Yarn,
+      Basketball,
+      Disc,
+    ].forEach((item) => {
       let button = document.createElement("button");
       button.innerHTML = item.icon;
       button.style["font-size"] = `${this.params.cellSize}px`;
       button.dataset.adjectives = item.adjectives;
       button.dataset.flavors = item.flavors ? item.flavors : [];
+      button.dataset.colors = item.colors ? item.colors : [];
       button.addEventListener("click", () => {
         this.toggleItem(button, item);
       });
@@ -1739,6 +1782,21 @@ class Entity {
     water: "water",
   };
 
+  static colorList = {
+    white: "white",
+    black: "black",
+    red: "red",
+    green: "green",
+    yellow: "yellow",
+    blue: "blue",
+    purple: "purple",
+    pink: "pink",
+    orange: "orange",
+    brown: "brown",
+    grey: "grey",
+    clear: "clear",
+  };
+
   constructor(world, params = {}) {
     let worldObj = worldManager.getWorld(world);
     if (!worldObj || !(worldObj instanceof World)) {
@@ -1755,6 +1813,7 @@ class Entity {
     this.properties = {
       adjectives: [],
       flavors: [],
+      colors: [],
     };
 
     this.maxMotive = worldManager.getWorld(this.world).getParam("maxMotive");
@@ -1802,6 +1861,10 @@ class Entity {
 
   getFlavors() {
     return this.properties.flavors;
+  }
+
+  getColors() {
+    return this.properties.colors;
   }
 
   getPosition() {
@@ -1874,11 +1937,13 @@ class Water extends Item {
   static className = "Water";
   static adjectives = [Entity.adjectiveList.wet];
   static flavors = [Entity.flavorList.water];
+  static colors = [Entity.colorList.blue];
 
   constructor(world, params = {}) {
     super(world, params);
     this.properties.adjectives.push(...Water.adjectives);
     this.properties.flavors.push(...Water.flavors);
+    this.properties.colors.push(...Water.colors);
     this.icon = Water.icon;
 
     this.status.motives.amount = this.maxMotive * 2.5;
@@ -1892,11 +1957,13 @@ class Steak extends Item {
   static className = "Steak";
   static adjectives = [Entity.adjectiveList.tasty];
   static flavors = [Entity.flavorList.beef];
+  static colors = [Entity.colorList.red];
 
   constructor(world, params = {}) {
     super(world, params);
     this.properties.adjectives.push(...Steak.adjectives);
     this.properties.flavors.push(...Steak.flavors);
+    this.properties.colors.push(...Steak.colors);
     this.icon = Steak.icon;
 
     this.status.motives.amount = this.maxMotive * 1.5;
@@ -1910,11 +1977,13 @@ class Chicken extends Item {
   static className = "Chicken";
   static adjectives = [Entity.adjectiveList.tasty];
   static flavors = [Entity.flavorList.chicken];
+  static colors = [Entity.colorList.white, Entity.colorList.brown];
 
   constructor(world, params = {}) {
     super(world, params);
     this.properties.adjectives.push(...Chicken.adjectives);
     this.properties.flavors.push(...Chicken.flavors);
+    this.properties.colors.push(...Chicken.colors);
     this.icon = Chicken.icon;
 
     this.status.motives.amount = this.maxMotive * 1.5;
@@ -1928,11 +1997,13 @@ class Fish extends Item {
   static className = "Fish";
   static adjectives = [Entity.adjectiveList.tasty];
   static flavors = [Entity.flavorList.fish];
+  static colors = [Entity.colorList.blue, Entity.colorList.white];
 
   constructor(world, params = {}) {
     super(world, params);
     this.properties.adjectives.push(...Fish.adjectives);
     this.properties.flavors.push(...Fish.flavors);
+    this.properties.colors.push(...Fish.colors);
     this.icon = Fish.icon;
 
     this.status.motives.amount = this.maxMotive * 1.5;
@@ -1959,25 +2030,88 @@ class Bone extends Item {
   static icon = "&#x1F9B4;";
   static className = "Bone";
   static adjectives = [Entity.adjectiveList.chew];
+  static colors = [Entity.colorList.white];
 
   constructor(world, params = {}) {
     super(world, params);
     this.properties.adjectives.push(...Bone.adjectives);
+    this.properties.colors.push(...Bone.colors);
     this.icon = Bone.icon;
 
     this.setIcon();
   }
 }
 
-class Ball extends Item {
+class TennisBall extends Item {
   static icon = "&#x1F3BE;";
-  static className = "Ball";
+  static className = "TennisBall";
   static adjectives = [Entity.adjectiveList.chew, Entity.adjectiveList.bounce];
+  static colors = [Entity.colorList.white, Entity.colorList.green];
 
   constructor(world, params = {}) {
     super(world, params);
-    this.properties.adjectives.push(...Ball.adjectives);
-    this.icon = Ball.icon;
+    this.properties.adjectives.push(...TennisBall.adjectives);
+    this.icon = TennisBall.icon;
+
+    this.setIcon();
+  }
+}
+
+class TeddyBear extends Item {
+  static icon = "&#x1F9F8;";
+  static className = "TeddyBear";
+  static adjectives = [Entity.adjectiveList.chew];
+  static colors = [Entity.colorList.brown];
+
+  constructor(world, params = {}) {
+    super(world, params);
+    this.properties.adjectives.push(...TeddyBear.adjectives);
+    this.icon = TeddyBear.icon;
+
+    this.setIcon();
+  }
+}
+
+class Yarn extends Item {
+  static icon = "&#x1F9F6;";
+  static className = "Yarn";
+  static adjectives = [Entity.adjectiveList.chew, Entity.adjectiveList.bounce];
+  static colors = [Entity.colorList.red];
+
+  constructor(world, params = {}) {
+    super(world, params);
+    this.properties.adjectives.push(...Yarn.adjectives);
+    this.icon = Yarn.icon;
+
+    this.setIcon();
+  }
+}
+
+class Basketball extends Item {
+  static icon = "&#x1F3C0;";
+  static className = "Basketball";
+  static adjectives = [Entity.adjectiveList.chew, Entity.adjectiveList.bounce];
+  static colors = [Entity.colorList.orange];
+
+  constructor(world, params = {}) {
+    super(world, params);
+    this.properties.adjectives.push(...Basketball.adjectives);
+    this.icon = Basketball.icon;
+
+    this.setIcon();
+  }
+}
+
+class Disc extends Item {
+  static icon = "&#x1F94F;";
+  static className = "Disc";
+  static adjectives = [Entity.adjectiveList.chew, Entity.adjectiveList.bounce];
+  static colors = [Entity.colorList.blue];
+
+  constructor(world, params = {}) {
+    super(world, params);
+    this.properties.adjectives.push(...Disc.adjectives);
+    this.icon = Disc.icon;
 
     this.setIcon();
   }
@@ -2054,11 +2188,21 @@ class Creature extends Entity {
     "finickiness",
   ];
 
-  static validFaves = [
-    Entity.flavorList.chicken,
-    Entity.flavorList.beef,
-    Entity.flavorList.fish,
-  ];
+  static validFaves = {
+    flavors: [
+      Entity.flavorList.chicken,
+      Entity.flavorList.beef,
+      Entity.flavorList.fish,
+    ],
+    colors: [
+      Entity.colorList.white,
+      Entity.colorList.green,
+      Entity.colorList.brown,
+      Entity.colorList.red,
+      Entity.colorList.orange,
+      Entity.colorList.blue,
+    ],
+  };
 
   static adjectives = [Entity.adjectiveList.animate];
 
@@ -2109,7 +2253,15 @@ class Creature extends Entity {
 
     this.personality.favorites.flavor =
       Entity.flavorList[
-        Creature.validFaves[utilities.rand(Creature.validFaves.length)]
+        Creature.validFaves.flavors[
+          utilities.rand(Creature.validFaves.flavors.length)
+        ]
+      ];
+    this.personality.favorites.color =
+      Entity.colorList[
+        Creature.validFaves.colors[
+          utilities.rand(Creature.validFaves.colors.length)
+        ]
       ];
 
     this.states = states;

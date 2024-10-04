@@ -719,14 +719,13 @@ const plans = {
     let interestingItems = self.queries.getItemsByAdjective(self, adj);
     const position = self.getPosition();
     
-    // if hungry, check for preferred food.
-    // todo add a probability to gravitate to fave based on finickiness personality value.
     if (adj === Entity.adjectiveList.tasty) {
+      const isFinicky = self.queries.amIFinicky(self);
       const pref = self.getFavorites().flavor;
       const preferredItems = interestingItems.filter(item => {
         return item.getFlavors().includes(pref);
       });
-      if (preferredItems.length) {
+      if (preferredItems.length || isFinicky) {
         interestingItems = preferredItems;
       }
     }
@@ -1115,6 +1114,12 @@ const queries = {
   },
   amITired(self) {
     return self.getMotive("energy") < self.getDesireThreshold("sleep");
+  },
+  amIFinicky(self) {
+    const finickiness = self.getPersonalityValue('finickiness');
+    const maxMotive = self.getMaxMotive();
+    const ratio = finickiness / maxMotive;
+    return Math.random() <= ratio;
   },
   getItemsByAdjective(self, adj) {
     const world = worldManager.getWorld(self.world);
@@ -2034,6 +2039,7 @@ class Creature extends Entity {
     "naughtiness",
     "metabolism",
     "playfulness",
+    "finickiness",
   ];
 
   static adjectives = [Entity.adjectiveList.animate];

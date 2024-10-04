@@ -163,7 +163,7 @@ class GoalEat extends Goal {
         priority = 5;
       }
       const pref = self.getFavorites().flavor;
-      const preferredFood = nearbyFood.filter(item => {
+      const preferredFood = nearbyFood.filter((item) => {
         return item.getFlavors().includes(pref);
       });
       if (preferredFood.length) {
@@ -718,11 +718,11 @@ const plans = {
 
     let interestingItems = self.queries.getItemsByAdjective(self, adj);
     const position = self.getPosition();
-    
+
     if (adj === Entity.adjectiveList.tasty) {
       const isFinicky = self.queries.amIFinicky(self);
       const pref = self.getFavorites().flavor;
-      const preferredItems = interestingItems.filter(item => {
+      const preferredItems = interestingItems.filter((item) => {
         return item.getFlavors().includes(pref);
       });
       if (preferredItems.length || isFinicky) {
@@ -880,7 +880,7 @@ const plans = {
       }
       const nearbyItems = self.queries.getItemsByAdjective(self, adj);
       if (pref) {
-        const preferredItems = nearbyItems.filter(item => {
+        const preferredItems = nearbyItems.filter((item) => {
           return item.getFlavors().includes(pref);
         });
         if (preferredItems.length) {
@@ -896,7 +896,7 @@ const plans = {
         });
         if (interestingButtons.length) {
           if (pref) {
-            preferredButtons = interestingButtons.filter(button => {
+            preferredButtons = interestingButtons.filter((button) => {
               return button.dataset.flavors.split(",").includes(pref);
             });
             if (preferredButtons.length) {
@@ -1116,7 +1116,7 @@ const queries = {
     return self.getMotive("energy") < self.getDesireThreshold("sleep");
   },
   amIFinicky(self) {
-    const finickiness = self.getPersonalityValue('finickiness');
+    const finickiness = self.getPersonalityValue("finickiness");
     const maxMotive = self.getMaxMotive();
     const ratio = finickiness / maxMotive;
     return Math.random() <= ratio;
@@ -1605,7 +1605,7 @@ class World {
     }
 
     this.elements.statusWrapper.appendChild(personality);
-    
+
     let favorites = document.createElement("p");
     const favoriteValues = creature.getFavorites();
     for (let value in favoriteValues) {
@@ -1614,7 +1614,7 @@ class World {
       favorites.appendChild(span);
       favorites.appendChild(document.createElement("br"));
     }
-    
+
     this.elements.statusWrapper.appendChild(favorites);
   }
 
@@ -1787,7 +1787,7 @@ class Entity {
   getAdjectives() {
     return this.properties.adjectives;
   }
-  
+
   getFlavors() {
     return this.properties.flavors;
   }
@@ -2042,6 +2042,12 @@ class Creature extends Entity {
     "finickiness",
   ];
 
+  static validFaves = [
+    Entity.flavorList.chicken,
+    Entity.flavorList.beef,
+    Entity.flavorList.fish,
+  ];
+
   static adjectives = [Entity.adjectiveList.animate];
 
   constructor(world, params = {}) {
@@ -2056,7 +2062,7 @@ class Creature extends Entity {
     this.personality = {
       values: {},
       favorites: {
-        flavor: '',
+        flavor: "",
       },
     };
 
@@ -2089,9 +2095,10 @@ class Creature extends Entity {
       drink: this.maxMotive * 0.4 + personalityValues.liveliness / 10,
     };
 
-    const flavorKeys = Object.keys(Entity.flavorList);
     this.personality.favorites.flavor =
-      Entity.flavorList[flavorKeys[utilities.rand(flavorKeys.length)]];
+      Entity.flavorList[
+        Creature.validFaves[utilities.rand(Creature.validFaves.length)]
+      ];
 
     this.states = states;
     this.plans = plans;
@@ -2218,7 +2225,7 @@ class Creature extends Entity {
     }
     return this.personality.values[value];
   }
-  
+
   getFavorites() {
     return this.personality.favorites;
   }

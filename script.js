@@ -681,6 +681,85 @@ class GoalBounceToy extends Goal {
   }
 }
 
+class GoalCuddleToy extends Goal {
+  constructor(params) {
+    super(params);
+    this.type = Goal.types.narrative;
+  }
+  filter(self, nonReactive = false) {
+    const currentGoal = self.getCurrentGoal();
+    if (
+      this.getIsSuspended() &&
+      currentGoal !== Creature.goalList.knockItemFromToybox &&
+      currentGoal !== Creature.goalList.cuddleToy
+    ) {
+      return -1;
+    }
+
+    const motives = self.getMotives();
+    const maxMotive = self.getMaxMotive();
+
+    for (let motive in motives) {
+      if (motives[motive] <= maxMotive * 0.1) {
+        return -1;
+      }
+    }
+    
+    const personalityValues = self.getPersonalityValues();
+    const nearbyToys = self.queries.getItemsByAdjective(
+      self,
+      Entity.adjectiveList.soft
+    );
+
+    if (
+      !nearbyToys.length &&
+      personalityValues.naughtiness < maxMotive * 0.9 &&
+      personalityValues.patience > maxMotive * 0.1
+    ) {
+      return -1;
+    }
+    
+    let priority = 7;
+
+    const playfulnessFactor = Math.min(
+      1,
+      personalityValues.playfulness / maxMotive
+    );
+    const playfulnessModifier = Math.floor(3 * playfulnessFactor);
+    priority -= playfulnessModifier;
+
+    const livelinessFactor =
+      1 - Math.min(1, personalityValues.liveliness / maxMotive);
+    const livelinessModifier = Math.floor(3 * livelinessFactor);
+    priority -= livelinessModifier;
+
+    priority = Math.max(1, priority);
+
+    return priority;
+  }
+  execute(self) {
+    let target = this.target;
+    if (!target) {
+      self.plans.planSeekItem(
+        self,
+        Entity.adjectiveList.soft,
+        null,
+        Creature.goalList.cuddleToy
+      );
+    } else {
+      if (self.queries.amIOnItem(self, target)) {
+        this.decrementTicks();
+        if (this.getTicks() <= 0) {
+          self.goalManager.deleteGoal(Creature.goalList.cuddleToy);
+        }
+        self.plans.planCuddleToy(self);
+      } else {
+        self.plans.planMoveToItem(self, target, Creature.goalList.cuddleToy);
+      }
+    }
+  }
+}
+
 const goals = {
   goalWander: GoalWander,
   goalEat: GoalEat,
@@ -691,6 +770,7 @@ const goals = {
   goalKnockItemFromToybox: GoalKnockItemFromToybox,
   goalChewToy: GoalChewToy,
   goalBounceToy: GoalBounceToy,
+  goalCuddleToy: GoalCuddleToy,
 };
 
 const plans = {
@@ -955,6 +1035,10 @@ const plans = {
     self.setPlan(Creature.planList.bounceToy);
     self.states.stateBounceToy(self);
   },
+  planCuddleToy(self) {
+    self.setPlan(Creature.planList.cuddleToy);
+    self.states.stateCuddleToy(self);
+  },
   planMoveFromItem(self) {
     self.setPlan(Creature.planList.moveFromItem);
     const validDirections = self.queries.getValidDirections(self);
@@ -1108,6 +1192,10 @@ const states = {
   stateBounceToy(self) {
     self.setState(Creature.stateList.bounceToy);
     self.showMotive(Creature.motiveIcons.bounceToy);
+  },
+  stateCuddleToy(self) {
+    self.setState(Creature.stateList.cuddleToy);
+    self.showMotive(Creature.motiveIcons.cuddleToy);
   },
 };
 
@@ -1773,6 +1861,7 @@ class Entity {
     restful: "restful",
     chew: "chew",
     bounce: "bounce",
+    soft: "soft",
   };
 
   static flavorList = {
@@ -2060,7 +2149,7 @@ class TennisBall extends Item {
 class TeddyBear extends Item {
   static icon = "&#x1F9F8;";
   static className = "TeddyBear";
-  static adjectives = [Entity.adjectiveList.chew];
+  static adjectives = [Entity.adjectiveList.chew, Entity.adjectiveList.soft];
   static colors = [Entity.colorList.brown];
 
   constructor(world, params = {}) {
@@ -2075,7 +2164,11 @@ class TeddyBear extends Item {
 class Yarn extends Item {
   static icon = "&#x1F9F6;";
   static className = "Yarn";
-  static adjectives = [Entity.adjectiveList.chew, Entity.adjectiveList.bounce];
+  static adjectives = [
+    Entity.adjectiveList.chew,
+    Entity.adjectiveList.bounce,
+    Entity.adjectiveList.soft,
+  ];
   static colors = [Entity.colorList.red];
 
   constructor(world, params = {}) {
@@ -2128,6 +2221,7 @@ class Creature extends Entity {
     knockItemFromToybox: "goalKnockItemFromToybox",
     chewToy: "goalChewToy",
     bounceToy: "goalBounceToy",
+    cuddleToy: "goalCuddleToy",
   };
 
   static planList = {
@@ -2144,6 +2238,7 @@ class Creature extends Entity {
     pushItemFromToybox: "planPushItemFromToybox",
     chewToy: "planChewToy",
     bounceToy: "planBounceToy",
+    cuddleToy: "planCuddleToy",
     moveFromItem: "planMoveFromItem",
   };
 
@@ -2161,6 +2256,7 @@ class Creature extends Entity {
     pushItemFromToybox: "statePushItemFromToybox",
     chewToy: "stateChewToy",
     bounceToy: "stateBounceToy",
+    cuddleToy: "stateCuddleToy",
   };
 
   static motiveIcons = {
@@ -2177,6 +2273,7 @@ class Creature extends Entity {
     pushItemFromToybox: "&#x1F4A5;",
     chewToy: "&#x1F9B7;",
     bounceToy: "&#x26F9;",
+    cuddleToy: "&#x1FAC2;",
   };
 
   static personalityValues = [

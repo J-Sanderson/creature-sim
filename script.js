@@ -719,15 +719,12 @@ const plans = {
     let interestingItems = self.queries.getItemsByAdjective(self, adj);
     const position = self.getPosition();
 
-    if (adj === Entity.adjectiveList.tasty) {
-      const isFinicky = self.queries.amIFinicky(self);
+    if (adj === Entity.adjectiveList.tasty && self.queries.amIFinicky(self)) {
       const pref = self.getFavorites().flavor;
       const preferredItems = interestingItems.filter((item) => {
         return item.getFlavors().includes(pref);
       });
-      if (preferredItems.length || isFinicky) {
-        interestingItems = preferredItems;
-      }
+      interestingItems = preferredItems;
     }
 
     // get the closest of these
@@ -895,14 +892,11 @@ const plans = {
           return button.dataset.adjectives.split(",").includes(adj);
         });
         if (interestingButtons.length) {
-          if (pref) {
-            const isFinicky = self.queries.amIFinicky(self);
+          if (pref && self.queries.amIFinicky(self)) {
             const preferredButtons = interestingButtons.filter((button) => {
               return button.dataset.flavors.split(",").includes(pref);
             });
-            if (preferredButtons.length || isFinicky) {
-              interestingButtons = preferredButtons;
-            }
+            interestingButtons = preferredButtons;
           }
           self.states.statePushItemFromToybox(self);
           const button =

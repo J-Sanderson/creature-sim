@@ -1773,6 +1773,7 @@ class Entity {
     restful: "restful",
     chew: "chew",
     bounce: "bounce",
+    soft: "soft",
   };
 
   static flavorList = {
@@ -2060,7 +2061,7 @@ class TennisBall extends Item {
 class TeddyBear extends Item {
   static icon = "&#x1F9F8;";
   static className = "TeddyBear";
-  static adjectives = [Entity.adjectiveList.chew];
+  static adjectives = [Entity.adjectiveList.chew, Entity.adjectiveList.soft];
   static colors = [Entity.colorList.brown];
 
   constructor(world, params = {}) {
@@ -2075,7 +2076,7 @@ class TeddyBear extends Item {
 class Yarn extends Item {
   static icon = "&#x1F9F6;";
   static className = "Yarn";
-  static adjectives = [Entity.adjectiveList.chew, Entity.adjectiveList.bounce];
+  static adjectives = [Entity.adjectiveList.chew, Entity.adjectiveList.bounce, Entity.adjectiveList.soft];
   static colors = [Entity.colorList.red];
 
   constructor(world, params = {}) {

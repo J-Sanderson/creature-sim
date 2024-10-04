@@ -1738,6 +1738,21 @@ class Entity {
     fish: "fish",
     water: "water",
   };
+  
+  static colorList = {
+    white: 'white',
+    black: 'black',
+    red: 'red',
+    green: 'green',
+    yellow: 'yellow',
+    blue: 'blue',
+    purple: 'purple',
+    pink: 'pink',
+    orange: 'orange',
+    brown: 'brown',
+    grey: 'grey',
+    clear: 'clear',
+  };
 
   constructor(world, params = {}) {
     let worldObj = worldManager.getWorld(world);
@@ -1755,6 +1770,7 @@ class Entity {
     this.properties = {
       adjectives: [],
       flavors: [],
+      colors: [],
     };
 
     this.maxMotive = worldManager.getWorld(this.world).getParam("maxMotive");
@@ -1874,11 +1890,13 @@ class Water extends Item {
   static className = "Water";
   static adjectives = [Entity.adjectiveList.wet];
   static flavors = [Entity.flavorList.water];
+  static colors = [Entity.colorList.blue];
 
   constructor(world, params = {}) {
     super(world, params);
     this.properties.adjectives.push(...Water.adjectives);
     this.properties.flavors.push(...Water.flavors);
+    this.properties.colors.push(...Water.colors);
     this.icon = Water.icon;
 
     this.status.motives.amount = this.maxMotive * 2.5;
@@ -1892,11 +1910,13 @@ class Steak extends Item {
   static className = "Steak";
   static adjectives = [Entity.adjectiveList.tasty];
   static flavors = [Entity.flavorList.beef];
+  static colors = [Entity.colorList.red];
 
   constructor(world, params = {}) {
     super(world, params);
     this.properties.adjectives.push(...Steak.adjectives);
     this.properties.flavors.push(...Steak.flavors);
+    this.properties.colors.push(...Steak.colors);
     this.icon = Steak.icon;
 
     this.status.motives.amount = this.maxMotive * 1.5;
@@ -1910,11 +1930,13 @@ class Chicken extends Item {
   static className = "Chicken";
   static adjectives = [Entity.adjectiveList.tasty];
   static flavors = [Entity.flavorList.chicken];
+  static colors = [Entity.colorList.white, Entity.colorList.brown];
 
   constructor(world, params = {}) {
     super(world, params);
     this.properties.adjectives.push(...Chicken.adjectives);
     this.properties.flavors.push(...Chicken.flavors);
+    this.properties.colors.push(...Chicken.colors);
     this.icon = Chicken.icon;
 
     this.status.motives.amount = this.maxMotive * 1.5;
@@ -1928,11 +1950,13 @@ class Fish extends Item {
   static className = "Fish";
   static adjectives = [Entity.adjectiveList.tasty];
   static flavors = [Entity.flavorList.fish];
+  static colors = [Entity.colorList.blue, Entity.colorList.white];
 
   constructor(world, params = {}) {
     super(world, params);
     this.properties.adjectives.push(...Fish.adjectives);
     this.properties.flavors.push(...Fish.flavors);
+    this.properties.colors.push(...Fish.colors);
     this.icon = Fish.icon;
 
     this.status.motives.amount = this.maxMotive * 1.5;
@@ -1959,10 +1983,12 @@ class Bone extends Item {
   static icon = "&#x1F9B4;";
   static className = "Bone";
   static adjectives = [Entity.adjectiveList.chew];
+  static colors = [Entity.colorList.white];
 
   constructor(world, params = {}) {
     super(world, params);
     this.properties.adjectives.push(...Bone.adjectives);
+    this.properties.colors.push(...Bone.colors);
     this.icon = Bone.icon;
 
     this.setIcon();
@@ -1973,6 +1999,7 @@ class Ball extends Item {
   static icon = "&#x1F3BE;";
   static className = "Ball";
   static adjectives = [Entity.adjectiveList.chew, Entity.adjectiveList.bounce];
+  static colors = [Entity.colorList.white, Entity.colorList.green];
 
   constructor(world, params = {}) {
     super(world, params);

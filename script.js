@@ -503,6 +503,11 @@ class GoalKnockItemFromToybox extends Goal {
       1 - Math.min(1, personalityValues.patience / maxMotive);
     const patienceModifier = Math.floor(3 * patienceFactor);
     priority -= patienceModifier;
+    
+    const kindnessFactor =
+      1 - Math.min(1, personalityValues.kindness / maxMotive);
+    const kindnessModifier = Math.floor(3 * kindnessFactor);
+    priority -= kindnessModifier;
 
     const naughtinessFactor = Math.min(
       1,

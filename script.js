@@ -732,6 +732,11 @@ class GoalCuddleToy extends Goal {
       1 - Math.min(1, personalityValues.liveliness / maxMotive);
     const livelinessModifier = Math.floor(3 * livelinessFactor);
     priority -= livelinessModifier;
+    
+    const kindnessFactor = Math.min(1, personalityValues.kindness / maxMotive);
+    const kindnessModifier = Math.floor(3 * kindnessFactor);
+    priority -= kindnessModifier;
+
 
     priority = Math.max(1, priority);
 
@@ -2283,6 +2288,7 @@ class Creature extends Entity {
     "metabolism",
     "playfulness",
     "finickiness",
+    "kindness",
   ];
 
   static validFaves = {

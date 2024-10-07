@@ -132,7 +132,7 @@ class GoalWander extends Goal {
 
     const livelinessModifier = this.getPersonalityModifier(
       self,
-      "liveliness",
+      Creature.personalityValues.liveliness,
       true
     );
     priority -= livelinessModifier;
@@ -193,7 +193,7 @@ class GoalEat extends Goal {
 
     const metabolismModifier = this.getPersonalityModifier(
       self,
-      "metabolism",
+      Creature.personalityValues.metabolism,
       true
     );
     priority -= metabolismModifier;
@@ -265,7 +265,7 @@ class GoalDrink extends Goal {
 
     const livelinessModifier = this.getPersonalityModifier(
       self,
-      "liveliness",
+      Creature.personalityValues.liveliness,
       true
     );
     priority -= livelinessModifier;
@@ -334,7 +334,7 @@ class GoalSleep extends Goal {
 
     const livelinessModifier = this.getPersonalityModifier(
       self,
-      "liveliness",
+      Creature.personalityValues.liveliness,
       false
     );
     priority -= livelinessModifier;
@@ -440,7 +440,7 @@ class GoalSitAround extends Goal {
 
     const livelinessModifier = this.getPersonalityModifier(
       self,
-      "liveliness",
+      Creature.personalityValues.liveliness,
       false
     );
     priority -= livelinessModifier;
@@ -534,21 +534,21 @@ class GoalKnockItemFromToybox extends Goal {
     
     const patienceModifier = this.getPersonalityModifier(
       self,
-      "patience",
+      Creature.personalityValues.patience,
       false
     );
     priority -= patienceModifier;
     
     const kindnessModifier = this.getPersonalityModifier(
       self,
-      "kindness",
+      Creature.personalityValues.kindness,
       false
     );
     priority -= kindnessModifier;
     
     const naughtinessModifier = this.getPersonalityModifier(
       self,
-      "naughtiness",
+      Creature.personalityValues.naughtiness,
       true
     );
     priority -= naughtinessModifier;
@@ -610,21 +610,21 @@ class GoalChewToy extends Goal {
     
     const playfulnessModifier = this.getPersonalityModifier(
       self,
-      "playfulness",
+      Creature.personalityValues.playfulness,
       true
     );
     priority -= playfulnessModifier;
     
     const livelinessModifier = this.getPersonalityModifier(
       self,
-      "liveliness",
+      Creature.personalityValues.liveliness,
       false
     );
     priority -= livelinessModifier;
     
     const kindnessModifier = this.getPersonalityModifier(
       self,
-      "kindness",
+      Creature.personalityValues.kindness,
       false,
     );
     priority -= kindnessModifier;
@@ -698,14 +698,14 @@ class GoalBounceToy extends Goal {
 
     const playfulnessModifier = this.getPersonalityModifier(
       self,
-      "playfulness",
+      Creature.personalityValues.playfulness,
       true
     );
     priority -= playfulnessModifier;
     
     const livelinessModifier = this.getPersonalityModifier(
       self,
-      "liveliness",
+      Creature.personalityValues.liveliness,
       true
     );
     priority -= livelinessModifier;
@@ -779,21 +779,21 @@ class GoalCuddleToy extends Goal {
 
     const playfulnessModifier = this.getPersonalityModifier(
       self,
-      "playfulness",
+      Creature.personalityValues.playfulness,
       true
     );
     priority -= playfulnessModifier;
     
     const livelinessModifier = this.getPersonalityModifier(
       self,
-      "liveliness",
+      Creature.personalityValues.liveliness,
       false
     );
     priority -= livelinessModifier;
     
     const kindnessModifier = this.getPersonalityModifier(
       self,
-      "kindness",
+      Creature.personalityValues.kindness,
       true
     );
     priority -= kindnessModifier;
@@ -2341,15 +2341,15 @@ class Creature extends Entity {
     cuddleToy: "&#x1FAC2;",
   };
 
-  static personalityValues = [
-    "liveliness",
-    "patience",
-    "naughtiness",
-    "metabolism",
-    "playfulness",
-    "finickiness",
-    "kindness",
-  ];
+  static personalityValues = {
+    liveliness: "liveliness",
+    patience: "patience",
+    naughtiness: "naughtiness",
+    metabolism: "metabolism",
+    playfulness: "playfulness",
+    finickiness: "finickiness",
+    kindness: "kindness",
+  };
 
   static validFaves = {
     flavors: [
@@ -2385,10 +2385,9 @@ class Creature extends Entity {
       },
     };
 
-    let maxPersonalityValue = this.maxMotive;
-    Creature.personalityValues.forEach((value) => {
-      this.personality.values[value] = utilities.rand(maxPersonalityValue);
-    });
+    for (let value in Creature.personalityValues) {
+      this.personality.values[Creature.personalityValues[value]] = utilities.rand(this.maxMotive);
+    }
     let personalityValues = this.getPersonalityValues();
 
     this.personality.decayThresholds = {

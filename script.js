@@ -84,6 +84,25 @@ class Goal {
   getCalledBy() {
     return this.calledBy;
   }
+
+  getPersonalityModifier(self, personalityType, positive = true) {
+    const personalityValues = self.getPersonalityValues();
+    const personalityValue = personalityValues[personalityType];
+    if (!personalityValue) {
+      console.error(`Error: no personality value found for ${personalityType}`);
+      return 0;
+    }
+    const maxMotive = self.getMaxMotive();
+    const scaler = 3;
+
+    let factor = Math.min(1, personalityValue / maxMotive);
+    if (!positive) {
+      factor = 1 - factor;
+    }
+
+    const modifier = Math.floor(scaler * factor);
+    return modifier;
+  }
 }
 
 class GoalWander extends Goal {
@@ -93,7 +112,6 @@ class GoalWander extends Goal {
   filter(self, nonReactive = false) {
     const motives = self.getMotives();
     const maxMotive = self.getMaxMotive();
-    const personalityValues = self.getPersonalityValues();
 
     for (let motive in motives) {
       if (motives[motive] <= maxMotive / 10) {
@@ -112,12 +130,14 @@ class GoalWander extends Goal {
 
     let priority = 7;
 
-    const livelinessFactor = Math.min(
-      1,
-      personalityValues.liveliness / maxMotive
+    const livelinessModifier = this.getPersonalityModifier(
+      self,
+      "liveliness",
+      true
     );
-    const priorityModifier = Math.floor(3 * livelinessFactor);
-    priority -= priorityModifier;
+    priority -= livelinessModifier;
+
+    priority = Math.max(1, priority);
 
     return priority;
   }
@@ -171,12 +191,14 @@ class GoalEat extends Goal {
       }
     }
 
-    const metabolismFactor = Math.min(
-      1,
-      personalityValues.metabolism / maxMotive
+    const metabolismModifier = this.getPersonalityModifier(
+      self,
+      "metabolism",
+      true
     );
-    const priorityModifier = Math.floor(3 * metabolismFactor);
-    priority = Math.max(1, priority - priorityModifier);
+    priority -= metabolismModifier;
+
+    priority = Math.max(1, priority);
 
     return priority;
   }
@@ -241,12 +263,14 @@ class GoalDrink extends Goal {
       }
     }
 
-    const livelinessFactor = Math.min(
-      1,
-      personalityValues.liveliness / maxMotive
+    const livelinessModifier = this.getPersonalityModifier(
+      self,
+      "liveliness",
+      true
     );
-    const priorityModifier = Math.floor(3 * livelinessFactor);
-    priority = Math.max(1, priority - priorityModifier);
+    priority -= livelinessModifier;
+
+    priority = Math.max(1, priority);
 
     return priority;
   }
@@ -308,10 +332,14 @@ class GoalSleep extends Goal {
       }
     }
 
-    const livelinessFactor =
-      1 - Math.min(1, personalityValues.liveliness / maxMotive);
-    const priorityModifier = Math.floor(3 * livelinessFactor);
-    priority = Math.max(1, priority - priorityModifier);
+    const livelinessModifier = this.getPersonalityModifier(
+      self,
+      "liveliness",
+      false
+    );
+    priority -= livelinessModifier;
+
+    priority = Math.max(1, priority);
 
     return priority;
   }
@@ -410,10 +438,14 @@ class GoalSitAround extends Goal {
       priority += 1;
     }
 
-    const livelinessFactor =
-      1 - Math.min(1, personalityValues.liveliness / maxMotive);
-    const priorityModifier = Math.floor(3 * livelinessFactor);
-    priority = Math.max(1, priority - priorityModifier);
+    const livelinessModifier = this.getPersonalityModifier(
+      self,
+      "liveliness",
+      false
+    );
+    priority -= livelinessModifier;
+
+    priority = Math.max(1, priority);
 
     return priority;
   }
@@ -499,21 +531,26 @@ class GoalKnockItemFromToybox extends Goal {
 
     let priority = 5;
 
-    const patienceFactor =
-      1 - Math.min(1, personalityValues.patience / maxMotive);
-    const patienceModifier = Math.floor(3 * patienceFactor);
+    
+    const patienceModifier = this.getPersonalityModifier(
+      self,
+      "patience",
+      false
+    );
     priority -= patienceModifier;
     
-    const kindnessFactor =
-      1 - Math.min(1, personalityValues.kindness / maxMotive);
-    const kindnessModifier = Math.floor(3 * kindnessFactor);
-    priority -= kindnessModifier;
-
-    const naughtinessFactor = Math.min(
-      1,
-      personalityValues.naughtiness / maxMotive
+    const kindnessModifier = this.getPersonalityModifier(
+      self,
+      "kindness",
+      false
     );
-    const naughtinessModifier = Math.floor(3 * naughtinessFactor);
+    priority -= kindnessModifier;
+    
+    const naughtinessModifier = this.getPersonalityModifier(
+      self,
+      "naughtiness",
+      true
+    );
     priority -= naughtinessModifier;
 
     priority = Math.max(1, priority);
@@ -570,17 +607,19 @@ class GoalChewToy extends Goal {
     }
 
     let priority = 7;
-
-    const playfulnessFactor = Math.min(
-      1,
-      personalityValues.playfulness / maxMotive
+    
+    const playfulnessModifier = this.getPersonalityModifier(
+      self,
+      "playfulness",
+      true
     );
-    const playfulnessModifier = Math.floor(3 * playfulnessFactor);
     priority -= playfulnessModifier;
-
-    const livelinessFactor =
-      1 - Math.min(1, personalityValues.liveliness / maxMotive);
-    const livelinessModifier = Math.floor(3 * livelinessFactor);
+    
+    const livelinessModifier = this.getPersonalityModifier(
+      self,
+      "liveliness",
+      false
+    );
     priority -= livelinessModifier;
 
     priority = Math.max(1, priority);
@@ -650,19 +689,21 @@ class GoalBounceToy extends Goal {
 
     let priority = 7;
 
-    const playfulnessFactor = Math.min(
-      1,
-      personalityValues.playfulness / maxMotive
+    const playfulnessModifier = this.getPersonalityModifier(
+      self,
+      "playfulness",
+      true
     );
-    const playfulnessModifier = Math.floor(3 * playfulnessFactor);
     priority -= playfulnessModifier;
-
-    const livelinessFactor = Math.min(
-      1,
-      personalityValues.liveliness / maxMotive
+    
+    const livelinessModifier = this.getPersonalityModifier(
+      self,
+      "liveliness",
+      true
     );
-    const livelinessModifier = Math.floor(3 * livelinessFactor);
     priority -= livelinessModifier;
+    
+    priority = Math.max(1, priority);
 
     return priority;
   }
@@ -712,7 +753,7 @@ class GoalCuddleToy extends Goal {
         return -1;
       }
     }
-    
+
     const personalityValues = self.getPersonalityValues();
     const nearbyToys = self.queries.getItemsByAdjective(
       self,
@@ -726,25 +767,29 @@ class GoalCuddleToy extends Goal {
     ) {
       return -1;
     }
-    
+
     let priority = 7;
 
-    const playfulnessFactor = Math.min(
-      1,
-      personalityValues.playfulness / maxMotive
+    const playfulnessModifier = this.getPersonalityModifier(
+      self,
+      "playfulness",
+      true
     );
-    const playfulnessModifier = Math.floor(3 * playfulnessFactor);
     priority -= playfulnessModifier;
-
-    const livelinessFactor =
-      1 - Math.min(1, personalityValues.liveliness / maxMotive);
-    const livelinessModifier = Math.floor(3 * livelinessFactor);
+    
+    const livelinessModifier = this.getPersonalityModifier(
+      self,
+      "liveliness",
+      false
+    );
     priority -= livelinessModifier;
     
-    const kindnessFactor = Math.min(1, personalityValues.kindness / maxMotive);
-    const kindnessModifier = Math.floor(3 * kindnessFactor);
+    const kindnessModifier = this.getPersonalityModifier(
+      self,
+      "kindness",
+      true
+    );
     priority -= kindnessModifier;
-
 
     priority = Math.max(1, priority);
 

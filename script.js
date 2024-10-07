@@ -472,6 +472,9 @@ class GoalKnockItemFromToybox extends Goal {
         case Creature.goalList.bounceToy:
           adj = Entity.adjectiveList.bounce;
           break;
+        case Creature.goalList.cuddleToy:
+          adj = Entity.adjectiveList.soft;
+          break;
       }
       if (adj && self.queries.getItemsByAdjective(self, adj).length) {
         return -1;

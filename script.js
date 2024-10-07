@@ -621,6 +621,13 @@ class GoalChewToy extends Goal {
       false
     );
     priority -= livelinessModifier;
+    
+    const kindnessModifier = this.getPersonalityModifier(
+      self,
+      "kindness",
+      false,
+    );
+    priority -= kindnessModifier;
 
     priority = Math.max(1, priority);
 

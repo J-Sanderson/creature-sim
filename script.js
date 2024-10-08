@@ -76,6 +76,10 @@ class Goal {
   getTicks() {
     return this.ticks;
   }
+  
+  setTicks(val) {
+    this.ticks = val;
+  }
 
   setTarget(target) {
     this.target = target;
@@ -908,6 +912,7 @@ const plans = {
       self.goalManager.suspendGoal(goal);
       self.goalManager.addGoal(self, Creature.goalList.knockItemFromToybox, {
         calledBy: goal,
+        personality: self.getPersonalityValues()
       });
     }
 
@@ -943,6 +948,7 @@ const plans = {
       self.goalManager.addGoal(self, Creature.goalList.drink, {
         priority: 1,
         suspended: false,
+        personality: self.getPersonalityValues(),
       });
       self.goalManager.suspendGoal(Creature.goalList.eat);
     }
@@ -963,6 +969,7 @@ const plans = {
       self.goalManager.addGoal(self, Creature.goalList.drink, {
         priority: 1,
         suspended: false,
+        personality: self.getPersonalityValues(),
       });
       self.goalManager.suspendGoal(Creature.goalList.sleep);
     }
@@ -970,6 +977,7 @@ const plans = {
       self.goalManager.addGoal(self, Creature.goalList.eat, {
         priority: 1,
         suspended: false,
+        personality: self.getPersonalityValues(),
       });
       self.goalManager.suspendGoal(Creature.goalList.sleep);
     }
@@ -1465,7 +1473,7 @@ class GoalManager {
         break;
       }
     }
-    this.addGoal(self, chosenGoal, { ticks: 5 });
+    this.addGoal(self, chosenGoal, { ticks: 5, personality: self.getPersonalityValues() });
   }
 
   addGoal(self, name, params, isCurrent = true) {
@@ -2455,6 +2463,7 @@ class Creature extends Entity {
         priority: 1,
         suspended: false,
         ticks: 1,
+        personality: self.getPersonalityValues(),
       });
     };
     this.outputs.icon.addEventListener(
@@ -2495,7 +2504,7 @@ class Creature extends Entity {
       !(Creature.goalList.eat in this.goalManager.getGoalList()) &&
       this.queries.amIHungry(this)
     ) {
-      this.goalManager.addGoal(this, Creature.goalList.eat, {}, false);
+      this.goalManager.addGoal(this, Creature.goalList.eat, {personality: this.getPersonalityValues()}, false);
     }
 
     // hydration decay
@@ -2513,7 +2522,7 @@ class Creature extends Entity {
       !(Creature.goalList.drink in this.goalManager.getGoalList()) &&
       this.queries.amIThirsty(this)
     ) {
-      this.goalManager.addGoal(this, Creature.goalList.drink, {}, false);
+      this.goalManager.addGoal(this, Creature.goalList.drink, {personality: this.getPersonalityValues()}, false);
     }
 
     // energy decay
@@ -2529,7 +2538,7 @@ class Creature extends Entity {
       !(Creature.goalList.sleep in this.goalManager.getGoalList()) &&
       this.queries.amITired(this)
     ) {
-      this.goalManager.addGoal(this, Creature.goalList.sleep, {}, false);
+      this.goalManager.addGoal(this, Creature.goalList.sleep, {personality: this.getPersonalityValues()}, false);
     }
   }
 

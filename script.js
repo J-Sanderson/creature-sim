@@ -172,14 +172,14 @@ class GoalEat extends Goal {
 
     let priority = 6;
 
-    if (plan === Creature.planList.eat || motives.fullness <= maxMotive / 10) {
+    if (plan === Creature.planList.eat || motives[Entity.motiveList.fullness] <= maxMotive / 10) {
       priority = 1;
     }
 
     if (nearbyFood.length) {
-      if (motives.fullness <= maxMotive / 2) {
+      if (motives[Entity.motiveList.fullness] <= maxMotive / 2) {
         priority = 4;
-      } else if (motives.fullness <= maxMotive / 1.53) {
+      } else if (motives[Entity.motiveList.fullness] <= maxMotive / 1.53) {
         priority = 5;
       }
       const pref = self.getFavorites().flavor;
@@ -203,7 +203,7 @@ class GoalEat extends Goal {
     return priority;
   }
   execute(self) {
-    if (self.getMotive("fullness") >= self.getMaxMotive()) {
+    if (self.getMotive(Entity.motiveList.fullness) >= self.getMaxMotive()) {
       self.goalManager.deleteGoal(Creature.goalList.eat);
     }
     let goals = self.getGoals();
@@ -250,15 +250,15 @@ class GoalDrink extends Goal {
 
     if (
       plan === Creature.planList.drink ||
-      motives.hydration <= maxMotive / 10
+      motives[Entity.motiveList.hydration] <= maxMotive / 10
     ) {
       priority = 1;
     }
 
     if (nearbyWater.length) {
-      if (motives.hydration <= maxMotive / 2) {
+      if (motives[Entity.motiveList.hydration] <= maxMotive / 2) {
         priority = 4;
-      } else if (motives.hydration <= maxMotive / 1.53) {
+      } else if (motives[Entity.motiveList.hydration] <= maxMotive / 1.53) {
         priority = 5;
       }
     }
@@ -275,7 +275,7 @@ class GoalDrink extends Goal {
     return priority;
   }
   execute(self) {
-    if (self.getMotive("hydration") >= self.getMaxMotive()) {
+    if (self.getMotive(Entity.motiveList.hydration) >= self.getMaxMotive()) {
       self.goalManager.deleteGoal(Creature.goalList.drink);
     }
     let goals = self.getGoals();
@@ -320,14 +320,14 @@ class GoalSleep extends Goal {
 
     let priority = 6;
 
-    if (plan === Creature.planList.sleep || motives.energy <= maxMotive / 10) {
+    if (plan === Creature.planList.sleep || motives[Entity.motiveList.energy] <= maxMotive / 10) {
       priority = 1;
     }
 
     if (nearbyBeds.length) {
-      if (motives.energy <= maxMotive / 2) {
+      if (motives[Entity.motiveList.energy] <= maxMotive / 2) {
         priority = 4;
-      } else if (motives.energy <= maxMotive / 1.53) {
+      } else if (motives[Entity.motiveList.energy] <= maxMotive / 1.53) {
         priority = 5;
       }
     }
@@ -344,7 +344,7 @@ class GoalSleep extends Goal {
     return priority;
   }
   execute(self) {
-    if (self.getMotive("energy") >= self.getMaxMotive()) {
+    if (self.getMotive(Entity.motiveList.energy) >= self.getMaxMotive()) {
       self.goalManager.deleteGoal(Creature.goalList.sleep);
     }
     let goals = self.getGoals();
@@ -434,7 +434,7 @@ class GoalSitAround extends Goal {
 
     let priority = 7;
 
-    if (motives.energy <= maxMotive / 3) {
+    if (motives[Entity.motiveList.energy] <= maxMotive / 3) {
       priority += 1;
     }
 
@@ -925,7 +925,7 @@ const plans = {
   },
   planDrink: function (self) {
     self.setPlan(Creature.planList.drink);
-    const hydration = self.getMotive("hydration");
+    const hydration = self.getMotive(Entity.motiveList.hydration);
     const maxVal = self.getMaxMotive();
     if (hydration >= maxVal) {
       return;
@@ -934,12 +934,12 @@ const plans = {
   },
   planEat: function (self) {
     const motives = self.getMotives();
-    if (!motives.hasOwnProperty("fullness")) {
-      console.error("Error: no fullness motive found");
+    if (!motives.hasOwnProperty(Entity.motiveList.fullness)) {
+      console.error(`Error: no ${Entity.motiveList.fullness} motive found`);
       return;
     }
     self.setPlan(Creature.planList.eat);
-    if (motives.hydration < 10) {
+    if (motives[Entity.motiveList.hydration] < 10) {
       self.goalManager.addGoal(self, Creature.goalList.drink, {
         priority: 1,
         suspended: false,
@@ -947,26 +947,26 @@ const plans = {
       self.goalManager.suspendGoal(Creature.goalList.eat);
     }
     const maxVal = self.getMaxMotive();
-    if (motives.fullness >= maxVal) {
+    if (motives[Entity.motiveList.fullness] >= maxVal) {
       return;
     }
     self.states.stateEat(self, motives, maxVal);
   },
   planSleep: function (self) {
     const motives = self.getMotives();
-    if (!motives.hasOwnProperty("energy")) {
-      console.error("Error: no energy motive found");
+    if (!motives.hasOwnProperty(Entity.motiveList.energy)) {
+      console.error(`Error: no ${Entity.motiveList.energy} motive found`);
       return;
     }
     self.setPlan(Creature.planList.sleep);
-    if (motives.hydration < 10) {
+    if (motives[Entity.motiveList.hydration] < 10) {
       self.goalManager.addGoal(self, Creature.goalList.drink, {
         priority: 1,
         suspended: false,
       });
       self.goalManager.suspendGoal(Creature.goalList.sleep);
     }
-    if (motives.fullness < 10) {
+    if (motives[Entity.motiveList.fullness] < 10) {
       self.goalManager.addGoal(self, Creature.goalList.eat, {
         priority: 1,
         suspended: false,
@@ -974,10 +974,10 @@ const plans = {
       self.goalManager.suspendGoal(Creature.goalList.sleep);
     }
     const maxVal = self.getMaxMotive();
-    if (motives.energy >= maxVal) {
+    if (motives[Entity.motiveList.energy] >= maxVal) {
       return;
     }
-    self.states.stateSleep(self, motives.energy, maxVal);
+    self.states.stateSleep(self, motives[Entity.motiveList.energy], maxVal);
   },
   planPetHappy: function (self) {
     self.setPlan(Creature.planList.petHappy);
@@ -1167,7 +1167,7 @@ const states = {
       self.getGoals()[Creature.goalList.drink].target
     );
     if (item) {
-      const amount = item.getMotive("amount");
+      const amount = item.getMotive(Entity.motiveList.amount);
       if (amount > 0) {
         self.setState(Creature.stateList.drink);
         self.showMotive(Creature.motiveIcons.drink);
@@ -1176,8 +1176,8 @@ const states = {
         if (newVal > maxVal) {
           newVal = maxVal;
         }
-        self.setMotive("hydration", newVal);
-        item.setMotive("amount", amount - transfer);
+        self.setMotive(Entity.motiveList.hydration, newVal);
+        item.setMotive(Entity.motiveList.amount, amount - transfer);
       } else {
         const world = worldManager.getWorld(self.world);
         world.deleteEntity(item.getGUID());
@@ -1194,19 +1194,19 @@ const states = {
     );
 
     if (item) {
-      const amount = item.getMotive("amount");
+      const amount = item.getMotive(Entity.motiveList.amount);
       if (amount > 0) {
         self.setState(Creature.stateList.eat);
         self.showMotive(Creature.motiveIcons.eat);
         const transfer = 10;
-        let newVal = (motives.fullness += transfer);
+        let newVal = (motives[Entity.motiveList.fullness] += transfer);
         if (newVal > maxVal) {
           newVal = maxVal;
         }
-        self.setMotive("fullness", newVal);
-        item.setMotive("amount", amount - transfer);
-        if (motives.hydration > 0) {
-          self.setMotive("hydration", motives.hydration - 1);
+        self.setMotive(Entity.motiveList.fullness, newVal);
+        item.setMotive(Entity.motiveList.amount, amount - transfer);
+        if (motives[Entity.motiveList.hydration] > 0) {
+          self.setMotive(Entity.motiveList.hydration, motives[Entity.motiveList.hydration] - 1);
         }
       } else {
         const world = worldManager.getWorld(self.world);
@@ -1224,7 +1224,7 @@ const states = {
     if (newVal > maxVal) {
       newVal = maxVal;
     }
-    self.setMotive("energy", newVal);
+    self.setMotive(Entity.motiveList.energy, newVal);
   },
   statePetHappy(self) {
     self.setState(Creature.stateList.petHappy);
@@ -1290,13 +1290,13 @@ const queries = {
     if (faves.length) {
       threshold *= 1.1;
     }
-    return self.getMotive("fullness") < threshold;
+    return self.getMotive(Entity.motiveList.fullness) < threshold;
   },
   amIThirsty(self) {
-    return self.getMotive("hydration") < self.getDesireThreshold("drink");
+    return self.getMotive(Entity.motiveList.hydration) < self.getDesireThreshold("drink");
   },
   amITired(self) {
-    return self.getMotive("energy") < self.getDesireThreshold("sleep");
+    return self.getMotive(Entity.motiveList.energy) < self.getDesireThreshold("sleep");
   },
   amIFinicky(self) {
     const finickiness = self.getPersonalityValue("finickiness");
@@ -1950,6 +1950,13 @@ class Entity {
     grey: "grey",
     clear: "clear",
   };
+  
+  static motiveList = {
+    fullness: "fullness",
+    hydration: "hydration",
+    energy: "energy",
+    amount: "amount",
+  };
 
   constructor(world, params = {}) {
     let worldObj = worldManager.getWorld(world);
@@ -2100,7 +2107,7 @@ class Water extends Item {
     this.properties.colors.push(...Water.colors);
     this.icon = Water.icon;
 
-    this.status.motives.amount = this.maxMotive * 2.5;
+    this.status.motives[Entity.motiveList.amount] = this.maxMotive * 2.5;
 
     this.setIcon();
   }
@@ -2120,7 +2127,7 @@ class Steak extends Item {
     this.properties.colors.push(...Steak.colors);
     this.icon = Steak.icon;
 
-    this.status.motives.amount = this.maxMotive * 1.5;
+    this.status.motives[Entity.motiveList.amount] = this.maxMotive * 1.5;
 
     this.setIcon();
   }
@@ -2140,7 +2147,7 @@ class Chicken extends Item {
     this.properties.colors.push(...Chicken.colors);
     this.icon = Chicken.icon;
 
-    this.status.motives.amount = this.maxMotive * 1.5;
+    this.status.motives[Entity.motiveList.amount] = this.maxMotive * 1.5;
 
     this.setIcon();
   }
@@ -2160,7 +2167,7 @@ class Fish extends Item {
     this.properties.colors.push(...Fish.colors);
     this.icon = Fish.icon;
 
-    this.status.motives.amount = this.maxMotive * 1.5;
+    this.status.motives[Entity.motiveList.amount] = this.maxMotive * 1.5;
 
     this.setIcon();
   }
@@ -2350,6 +2357,12 @@ class Creature extends Entity {
     finickiness: "finickiness",
     kindness: "kindness",
   };
+  
+  static validMotives = [
+    Entity.motiveList.fullness,
+    Entity.motiveList.hydration,
+    Entity.motiveList.energy,
+  ];
 
   static validFaves = {
     flavors: [
@@ -2374,7 +2387,8 @@ class Creature extends Entity {
     this.order = 2;
     this.properties.adjectives.push(...Creature.adjectives);
 
-    ["fullness", "hydration", "energy"].forEach((motive) => {
+
+    Creature.validMotives.forEach(motive => {
       this.status.motives[motive] = utilities.rand(this.maxMotive);
     });
 
@@ -2470,10 +2484,10 @@ class Creature extends Entity {
       if (
         (this.status.state !== Creature.stateList.sleep ||
           Math.random() < 0.25) &&
-        this.status.motives.fullness > 0
+        this.status.motives[Entity.motiveList.fullness] > 0
       ) {
-        if (Math.random() < decayThresholds.fullness) {
-          this.setMotive("fullness", this.status.motives.fullness - 1);
+        if (Math.random() < decayThresholds[Entity.motiveList.fullness]) {
+          this.setMotive(Entity.motiveList.fullness, this.status.motives[Entity.motiveList.fullness] - 1);
         }
       }
     }
@@ -2489,10 +2503,10 @@ class Creature extends Entity {
       if (
         (this.status.state !== Creature.stateList.sleep ||
           Math.random() < 0.25) &&
-        this.status.motives.hydration > 0 &&
-        Math.random() < decayThresholds.hydration
+        this.status.motives[Entity.motiveList.hydration] > 0 &&
+        Math.random() < decayThresholds[Entity.motiveList.hydration]
       ) {
-        this.status.motives.hydration--;
+        this.status.motives[Entity.motiveList.hydration]--;
       }
     }
     if (
@@ -2505,10 +2519,10 @@ class Creature extends Entity {
     // energy decay
     if (
       this.status.state !== Creature.stateList.sleep &&
-      this.status.motives.energy > 0
+      this.status.motives[Entity.motiveList.energy] > 0
     ) {
-      if (Math.random() < decayThresholds.energy) {
-        this.setMotive("energy", this.status.motives.energy - 1);
+      if (Math.random() < decayThresholds[Entity.motiveList.energy]) {
+        this.setMotive(Entity.motiveList.energy, this.status.motives[Entity.motiveList.energy] - 1);
       }
     }
     if (

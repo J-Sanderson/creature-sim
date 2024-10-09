@@ -83,6 +83,14 @@ class Goal {
     this.ticks = val;
   }
 
+  getDecayThreshold() {
+    return this.decayThreshold;
+  }
+
+  setDecayThreshold(val) {
+    this.decayThreshold = val;
+  }
+
   setTarget(target) {
     this.target = target;
   }
@@ -110,23 +118,46 @@ class Goal {
     return modifier;
   }
 
-  calculateModifiedTicks(personalityType, maxMotive, ticks, positive = true) {
-    if (!personalityType || !maxMotive) {
+  calculateModifiedTicks(personalityVal, maxMotive, ticks, positive = true) {
+    if (!personalityVal || !maxMotive) {
       console.error(
-        `Error: could not find personality type ${personalityType} or max motive value`
+        `Error: could not find personality value or max motive value`
       );
       return 0;
     }
     const scaler = 0.5;
     const baseline = 1;
 
-    let factor = Math.min(1, personalityType / maxMotive);
+    let factor = Math.min(1, personalityVal / maxMotive);
     if (!positive) {
       factor = 1 - factor;
     }
 
     const adjustedTicks = Math.floor(ticks * (baseline + scaler * factor));
     return adjustedTicks;
+  }
+
+  calculateModifiedDecayThreshold(personalityVal, maxMotive, threshold, positive = true) {
+    const max = 1;
+    const min = 0.4;
+    if (!personalityVal || !maxMotive) {
+      console.error(
+        `Error: could not find personality value or max motive value`
+      );
+      return max;
+    }
+
+    let factor = personalityVal / maxMotive;
+    if (!positive) {
+      factor = 1 - factor;
+    }
+    
+    factor = threshold - factor;
+
+    factor = Math.min(max, factor);
+    factor = Math.max(min, factor);
+
+    return factor;
   }
 }
 
@@ -148,6 +179,15 @@ class GoalWander extends Goal {
           true
         );
         this.setTicks(adjustedTicks);
+
+        let threshold = this.getDecayThreshold();
+        const adjustedThreshold = this.calculateModifiedDecayThreshold(
+          modifiers.personality[Creature.personalityValues.liveliness],
+          modifiers.maxMotive,
+          threshold,
+          true
+        );
+        this.setDecayThreshold(adjustedThreshold);
       }
     }
   }

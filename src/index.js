@@ -1,4 +1,4 @@
-import { World } from './script.js';
+import { World } from './world/World';
 
 const CreatureSim = World;
 window.CreatureSim = CreatureSim;

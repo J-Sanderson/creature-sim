@@ -89,7 +89,7 @@ class Goal {
     return this.calledBy;
   }
 
-  getPersonalityModifier(self, personalityType, positive = true) {
+  calculatePersonalityModifier(self, personalityType, positive = true) {
     const personalityValues = self.getPersonalityValues();
     const personalityValue = personalityValues[personalityType];
     if (!personalityValue) {
@@ -170,7 +170,7 @@ class GoalWander extends Goal {
 
     let priority = 7;
 
-    const livelinessModifier = this.getPersonalityModifier(
+    const livelinessModifier = this.calculatePersonalityModifier(
       self,
       Creature.personalityValues.liveliness,
       true
@@ -234,7 +234,7 @@ class GoalEat extends Goal {
       }
     }
 
-    const metabolismModifier = this.getPersonalityModifier(
+    const metabolismModifier = this.calculatePersonalityModifier(
       self,
       Creature.personalityValues.metabolism,
       true
@@ -306,7 +306,7 @@ class GoalDrink extends Goal {
       }
     }
 
-    const livelinessModifier = this.getPersonalityModifier(
+    const livelinessModifier = this.calculatePersonalityModifier(
       self,
       Creature.personalityValues.liveliness,
       true
@@ -378,7 +378,7 @@ class GoalSleep extends Goal {
       }
     }
 
-    const livelinessModifier = this.getPersonalityModifier(
+    const livelinessModifier = this.calculatePersonalityModifier(
       self,
       Creature.personalityValues.liveliness,
       false
@@ -501,7 +501,7 @@ class GoalSitAround extends Goal {
       priority += 1;
     }
 
-    const livelinessModifier = this.getPersonalityModifier(
+    const livelinessModifier = this.calculatePersonalityModifier(
       self,
       Creature.personalityValues.liveliness,
       false
@@ -594,21 +594,21 @@ class GoalKnockItemFromToybox extends Goal {
 
     let priority = 5;
 
-    const patienceModifier = this.getPersonalityModifier(
+    const patienceModifier = this.calculatePersonalityModifier(
       self,
       Creature.personalityValues.patience,
       false
     );
     priority -= patienceModifier;
 
-    const kindnessModifier = this.getPersonalityModifier(
+    const kindnessModifier = this.calculatePersonalityModifier(
       self,
       Creature.personalityValues.kindness,
       false
     );
     priority -= kindnessModifier;
 
-    const naughtinessModifier = this.getPersonalityModifier(
+    const naughtinessModifier = this.calculatePersonalityModifier(
       self,
       Creature.personalityValues.naughtiness,
       true
@@ -693,21 +693,21 @@ class GoalChewToy extends Goal {
 
     let priority = 7;
 
-    const playfulnessModifier = this.getPersonalityModifier(
+    const playfulnessModifier = this.calculatePersonalityModifier(
       self,
       Creature.personalityValues.playfulness,
       true
     );
     priority -= playfulnessModifier;
 
-    const livelinessModifier = this.getPersonalityModifier(
+    const livelinessModifier = this.calculatePersonalityModifier(
       self,
       Creature.personalityValues.liveliness,
       false
     );
     priority -= livelinessModifier;
 
-    const kindnessModifier = this.getPersonalityModifier(
+    const kindnessModifier = this.calculatePersonalityModifier(
       self,
       Creature.personalityValues.kindness,
       false
@@ -804,14 +804,14 @@ class GoalBounceToy extends Goal {
 
     let priority = 7;
 
-    const playfulnessModifier = this.getPersonalityModifier(
+    const playfulnessModifier = this.calculatePersonalityModifier(
       self,
       Creature.personalityValues.playfulness,
       true
     );
     priority -= playfulnessModifier;
 
-    const livelinessModifier = this.getPersonalityModifier(
+    const livelinessModifier = this.calculatePersonalityModifier(
       self,
       Creature.personalityValues.liveliness,
       true
@@ -914,21 +914,21 @@ class GoalCuddleToy extends Goal {
 
     let priority = 7;
 
-    const playfulnessModifier = this.getPersonalityModifier(
+    const playfulnessModifier = this.calculatePersonalityModifier(
       self,
       Creature.personalityValues.playfulness,
       true
     );
     priority -= playfulnessModifier;
 
-    const livelinessModifier = this.getPersonalityModifier(
+    const livelinessModifier = this.calculatePersonalityModifier(
       self,
       Creature.personalityValues.liveliness,
       false
     );
     priority -= livelinessModifier;
 
-    const kindnessModifier = this.getPersonalityModifier(
+    const kindnessModifier = this.calculatePersonalityModifier(
       self,
       Creature.personalityValues.kindness,
       true

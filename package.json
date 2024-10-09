@@ -1,0 +1,19 @@
+{
+  "name": "creature-sim",
+  "version": "1.0.0",
+  "description": "Petz (1995-2002) inspired creature simulator",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/J-Sanderson/creature-sim.git"
+  },
+  "author": "J Sanderson",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/J-Sanderson/creature-sim/issues"
+  },
+  "homepage": "https://github.com/J-Sanderson/creature-sim#readme"
+}

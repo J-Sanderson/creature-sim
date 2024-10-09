@@ -1,5 +1,5 @@
 import { World } from '../world/World';
-import worldManager from '../world/WorldManager';
+import worldManager from '../managers/WorldManager';
 import { utilities } from '../utils/Utilities';
 
 export default class Entity {

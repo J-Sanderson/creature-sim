@@ -1,4 +1,4 @@
-import { utilities } from '../../utils/Utilities';
+import { utilities } from '../utils/Utilities';
 
 export class GoalManager {
   constructor() {

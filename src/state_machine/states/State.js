@@ -1,6 +1,6 @@
 import Creature from '../../entities/Creature';
 import Entity from '../../entities/Entity';
-import worldManager from '../../world/WorldManager';
+import worldManager from '../../managers/WorldManager';
 
 export default {
   stateMoveRandomly: function (self, pos) {

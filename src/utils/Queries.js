@@ -1,4 +1,4 @@
-import worldManager from '../world/WorldManager';
+import worldManager from '../managers/WorldManager';
 import Entity from '../entities/Entity';
 
 export const queries = {

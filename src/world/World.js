@@ -1,5 +1,5 @@
 import { utilities } from '../utils/Utilities';
-import worldManager from './WorldManager';
+import worldManager from '../managers/WorldManager';
 import items from '../entities/items';
 import Creature from '../entities/Creature';
 

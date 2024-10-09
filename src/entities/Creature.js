@@ -1,5 +1,5 @@
 import Entity from './Entity';
-import { GoalManager } from '../state_machine/goals/GoalManager';
+import { GoalManager } from '../managers/GoalManager';
 import { utilities } from '../utils/Utilities';
 import { queries } from '../utils/Queries';
 import states from '../state_machine/states/State';

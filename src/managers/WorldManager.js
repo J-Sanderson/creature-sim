@@ -1,5 +1,3 @@
-import { World } from './World';
-
 class WorldManager {
   constructor() {
     this.worlds = new Map();

@@ -34,6 +34,7 @@ class Goal {
     priority: 1,
     suspended: false,
     ticks: -1,
+    decayThreshold: 1,
     target: null,
     calledBy: null,
     type: Goal.types.idle,
@@ -68,7 +69,8 @@ class Goal {
   }
 
   decrementTicks() {
-    if (this.ticks > 0) {
+    const threshold = this.decayThreshold;
+    if (this.ticks > 0 && (threshold === 1 || Math.random() <= threshold)) {
       this.ticks--;
     }
   }
@@ -182,9 +184,7 @@ class GoalWander extends Goal {
     return priority;
   }
   execute(self) {
-    if (Math.random() < self.getDecayThreshold("wander")) {
-      this.decrementTicks();
-    }
+    this.decrementTicks();
     if (this.getTicks() <= 0) {
       self.goalManager.deleteGoal(Creature.goalList.wander);
     }
@@ -520,9 +520,7 @@ class GoalSitAround extends Goal {
       return;
     }
 
-    if (Math.random() < self.getDecayThreshold("sitAround")) {
-      this.decrementTicks();
-    }
+    this.decrementTicks();
     if (this.getTicks() <= 0) {
       self.goalManager.deleteGoal(Creature.goalList.sitAround);
     }
@@ -745,7 +743,7 @@ class GoalBounceToy extends Goal {
   constructor(params) {
     super(params);
     this.type = Goal.types.narrative;
-    
+
     if (params && params.hasOwnProperty("tickModifiers")) {
       const modifiers = params.tickModifiers;
       if (
@@ -849,7 +847,7 @@ class GoalCuddleToy extends Goal {
   constructor(params) {
     super(params);
     this.type = Goal.types.narrative;
-    
+
     if (params && params.hasOwnProperty("tickModifiers")) {
       const modifiers = params.tickModifiers;
       if (
@@ -2579,8 +2577,6 @@ class Creature extends Entity {
         1 -
         (1 - personalityValues.metabolism / this.maxMotive) *
           (1 + personalityValues.liveliness / this.maxMotive),
-      sitAround: personalityValues.liveliness / this.maxMotive,
-      wander: 1 - personalityValues.liveliness / this.maxMotive,
     };
     for (let threshold in this.personality.decayThresholds) {
       this.personality.decayThresholds[threshold] = Math.max(

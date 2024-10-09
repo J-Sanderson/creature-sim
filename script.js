@@ -108,17 +108,21 @@ class Goal {
     return modifier;
   }
 
-  calculateModifiedTicks(personalityType, maxMotive) {
+  calculateModifiedTicks(personalityType, maxMotive, ticks, positive = true) {
     if (!personalityType || !maxMotive) {
       console.error(
         `Error: could not find personality type ${personalityType} or max motive value`
       );
       return 0;
     }
-    const ticks = this.getTicks();
     const scaler = 0.5;
     const baseline = 1;
-    const factor = Math.min(1, personalityType / maxMotive);
+
+    let factor = Math.min(1, personalityType / maxMotive);
+    if (!positive) {
+      factor = 1 - factor;
+    }
+    
     const adjustedTicks = Math.floor(ticks * (baseline + scaler * factor));
     return adjustedTicks;
   }
@@ -134,9 +138,12 @@ class GoalWander extends Goal {
         modifiers.hasOwnProperty("maxMotive") &&
         modifiers.hasOwnProperty("personality")
       ) {
+        let ticks = this.getTicks();
         const adjustedTicks = this.calculateModifiedTicks(
           modifiers.personality[Creature.personalityValues.liveliness],
-          modifiers.maxMotive
+          modifiers.maxMotive,
+          ticks,
+          true
         );
         this.setTicks(adjustedTicks);
       }
@@ -450,6 +457,23 @@ class GoalBePetted extends Goal {
 class GoalSitAround extends Goal {
   constructor(params) {
     super(params);
+    
+    if (params && params.hasOwnProperty("tickModifiers")) {
+      const modifiers = params.tickModifiers;
+      if (
+        modifiers.hasOwnProperty("maxMotive") &&
+        modifiers.hasOwnProperty("personality")
+      ) {
+        let ticks = this.getTicks();
+        const adjustedTicks = this.calculateModifiedTicks(
+          modifiers.personality[Creature.personalityValues.liveliness],
+          modifiers.maxMotive,
+          ticks,
+          false
+        );
+        this.setTicks(adjustedTicks);
+      }
+    }
   }
   filter(self, nonReactive = false) {
     const motives = self.getMotives();

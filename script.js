@@ -122,7 +122,7 @@ class Goal {
     if (!positive) {
       factor = 1 - factor;
     }
-    
+
     const adjustedTicks = Math.floor(ticks * (baseline + scaler * factor));
     return adjustedTicks;
   }
@@ -457,7 +457,7 @@ class GoalBePetted extends Goal {
 class GoalSitAround extends Goal {
   constructor(params) {
     super(params);
-    
+
     if (params && params.hasOwnProperty("tickModifiers")) {
       const modifiers = params.tickModifiers;
       if (
@@ -634,6 +634,29 @@ class GoalChewToy extends Goal {
   constructor(params) {
     super(params);
     this.type = Goal.types.narrative;
+
+    if (params && params.hasOwnProperty("tickModifiers")) {
+      const modifiers = params.tickModifiers;
+      if (
+        modifiers.hasOwnProperty("maxMotive") &&
+        modifiers.hasOwnProperty("personality")
+      ) {
+        let ticks = this.getTicks();
+        let adjustedTicks = this.calculateModifiedTicks(
+          modifiers.personality[Creature.personalityValues.naughtiness],
+          modifiers.maxMotive,
+          ticks,
+          true
+        );
+        adjustedTicks = this.calculateModifiedTicks(
+          modifiers.personality[Creature.personalityValues.playfulness],
+          modifiers.maxMotive,
+          adjustedTicks,
+          true
+        );
+        this.setTicks(adjustedTicks);
+      }
+    }
   }
   filter(self, nonReactive = false) {
     const currentGoal = self.getCurrentGoal();
@@ -722,6 +745,29 @@ class GoalBounceToy extends Goal {
   constructor(params) {
     super(params);
     this.type = Goal.types.narrative;
+    
+    if (params && params.hasOwnProperty("tickModifiers")) {
+      const modifiers = params.tickModifiers;
+      if (
+        modifiers.hasOwnProperty("maxMotive") &&
+        modifiers.hasOwnProperty("personality")
+      ) {
+        let ticks = this.getTicks();
+        let adjustedTicks = this.calculateModifiedTicks(
+          modifiers.personality[Creature.personalityValues.liveliness],
+          modifiers.maxMotive,
+          ticks,
+          true
+        );
+        adjustedTicks = this.calculateModifiedTicks(
+          modifiers.personality[Creature.personalityValues.playfulness],
+          modifiers.maxMotive,
+          adjustedTicks,
+          true
+        );
+        this.setTicks(adjustedTicks);
+      }
+    }
   }
   filter(self, nonReactive = false) {
     const currentGoal = self.getCurrentGoal();
@@ -803,6 +849,35 @@ class GoalCuddleToy extends Goal {
   constructor(params) {
     super(params);
     this.type = Goal.types.narrative;
+    
+    if (params && params.hasOwnProperty("tickModifiers")) {
+      const modifiers = params.tickModifiers;
+      if (
+        modifiers.hasOwnProperty("maxMotive") &&
+        modifiers.hasOwnProperty("personality")
+      ) {
+        let ticks = this.getTicks();
+        let adjustedTicks = this.calculateModifiedTicks(
+          modifiers.personality[Creature.personalityValues.liveliness],
+          modifiers.maxMotive,
+          ticks,
+          false
+        );
+        adjustedTicks = this.calculateModifiedTicks(
+          modifiers.personality[Creature.personalityValues.playfulness],
+          modifiers.maxMotive,
+          adjustedTicks,
+          true
+        );
+        adjustedTicks = this.calculateModifiedTicks(
+          modifiers.personality[Creature.personalityValues.kindness],
+          modifiers.maxMotive,
+          adjustedTicks,
+          true
+        );
+        this.setTicks(adjustedTicks);
+      }
+    }
   }
   filter(self, nonReactive = false) {
     const currentGoal = self.getCurrentGoal();

@@ -4,7 +4,7 @@ import { utilities } from '../utils/Utilities';
 import { queries } from '../utils/Queries';
 import states from '../state_machine/states/State';
 import plans from '../state_machine/plans/Plan';
-import goals from '../state_machine/goals/Goal';
+import goals from '../state_machine/goals/';
 
 export default class Creature extends Entity {
   static goalList = {

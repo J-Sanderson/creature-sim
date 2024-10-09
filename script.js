@@ -512,6 +512,15 @@ class GoalSitAround extends Goal {
           false
         );
         this.setTicks(adjustedTicks);
+        
+        let threshold = this.getDecayThreshold();
+        const adjustedThreshold = this.calculateModifiedDecayThreshold(
+          modifiers.personality[Creature.personalityValues.liveliness],
+          modifiers.maxMotive,
+          threshold,
+          false
+        );
+        this.setDecayThreshold(adjustedThreshold);
       }
     }
   }
@@ -693,6 +702,23 @@ class GoalChewToy extends Goal {
           true
         );
         this.setTicks(adjustedTicks);
+        
+        let threshold = this.getDecayThreshold();
+        let adjustedThreshold = this.calculateModifiedDecayThreshold(
+          modifiers.personality[Creature.personalityValues.naughtiness],
+          modifiers.maxMotive,
+          threshold,
+          true
+        );
+        
+        adjustedThreshold = this.calculateModifiedDecayThreshold(
+          modifiers.personality[Creature.personalityValues.kindness],
+          modifiers.maxMotive,
+          threshold,
+          false
+        );
+
+        this.setDecayThreshold(adjustedThreshold);
       }
     }
   }
@@ -804,6 +830,23 @@ class GoalBounceToy extends Goal {
           true
         );
         this.setTicks(adjustedTicks);
+        
+        let threshold = this.getDecayThreshold();
+        let adjustedThreshold = this.calculateModifiedDecayThreshold(
+          modifiers.personality[Creature.personalityValues.liveliness],
+          modifiers.maxMotive,
+          threshold,
+          true
+        );
+        
+        adjustedThreshold = this.calculateModifiedDecayThreshold(
+          modifiers.personality[Creature.personalityValues.playfulness],
+          modifiers.maxMotive,
+          threshold,
+          true
+        );
+
+        this.setDecayThreshold(adjustedThreshold);
       }
     }
   }
@@ -914,6 +957,23 @@ class GoalCuddleToy extends Goal {
           true
         );
         this.setTicks(adjustedTicks);
+        
+        let threshold = this.getDecayThreshold();
+        let adjustedThreshold = this.calculateModifiedDecayThreshold(
+          modifiers.personality[Creature.personalityValues.liveliness],
+          modifiers.maxMotive,
+          threshold,
+          false
+        );
+        
+        adjustedThreshold = this.calculateModifiedDecayThreshold(
+          modifiers.personality[Creature.personalityValues.kindness],
+          modifiers.maxMotive,
+          threshold,
+          true
+        );
+
+        this.setDecayThreshold(adjustedThreshold);
       }
     }
   }

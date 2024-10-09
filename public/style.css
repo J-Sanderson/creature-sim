@@ -18,7 +18,8 @@ body {
 }
 
 .toybox button.item-active {
-  color:transparent; text-shadow: 0 0 0 grey;
+  color: transparent;
+  text-shadow: 0 0 0 grey;
 }
 
 .entity {

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -7,37 +7,60 @@
     <link rel="stylesheet" href="./style.css" />
   </head>
   <body>
-<div id="world"></div>
+    <div id="world"></div>
 
-<hr />
+    <hr />
 
-<p>This is a simple creature simulator that is based upon an understanding of the AI in the P.F. Magic Petz games (1995-2002). The simulator consists of a World object containing various Entity objects. Entities are divided into Item (subdivided into different item types) and Creature objects that inherit from the base Entity object.</p>
+    <p>
+      This is a simple creature simulator that is based upon an understanding of
+      the AI in the P.F. Magic Petz games (1995-2002). The simulator consists of
+      a World object containing various Entity objects. Entities are divided
+      into Item (subdivided into different item types) and Creature objects that
+      inherit from the base Entity object.
+    </p>
 
-<p>The Creature object has different motives that can be satisfied by moving toward items that emit the correct adjective - e.g. if hungry it will seek out items marked as 'tasty' - and run the relevant plan and state functions to fulfil its current goal. This mimics the adjective-based system implemented in the Petz games, albeit greatly simplified. Factors such as motives, personality values, and favourite foods and colours influence the creature's choice.</p>
-    
-  <p>Note that due to the use of emojis for graphics, the creature's preferred colour may or may not actually match up to the colour of the item that you see, depending on your system.</p>
+    <p>
+      The Creature object has different motives that can be satisfied by moving
+      toward items that emit the correct adjective - e.g. if hungry it will seek
+      out items marked as 'tasty' - and run the relevant plan and state
+      functions to fulfil its current goal. This mimics the adjective-based
+      system implemented in the Petz games, albeit greatly simplified. Factors
+      such as motives, personality values, and favourite foods and colours
+      influence the creature's choice.
+    </p>
 
+    <p>
+      Note that due to the use of emojis for graphics, the creature's preferred
+      colour may or may not actually match up to the colour of the item that you
+      see, depending on your system.
+    </p>
 
-<p>References:</p>
+    <p>References:</p>
 
-<ul>
-  <li>
-    <a href="https://web.archive.org/web/20121001022009/http://www.interactivestory.net/papers/PetzAndBabyz.html" target="_blank">
-      https://web.archive.org/web/20121001022009/http://www.interactivestory.net/papers/PetzAndBabyz.html
-    </a>
-  </li>
-  <li>
-    <a href="https://ratshack.neocities.org/text/petz/statemachine" target="_blank">
-      https://ratshack.neocities.org/text/petz/statemachine
-    </a>
-  </li>
-</ul>
+    <ul>
+      <li>
+        <a
+          href="https://web.archive.org/web/20121001022009/http://www.interactivestory.net/papers/PetzAndBabyz.html"
+          target="_blank"
+        >
+          https://web.archive.org/web/20121001022009/http://www.interactivestory.net/papers/PetzAndBabyz.html
+        </a>
+      </li>
+      <li>
+        <a
+          href="https://ratshack.neocities.org/text/petz/statemachine"
+          target="_blank"
+        >
+          https://ratshack.neocities.org/text/petz/statemachine
+        </a>
+      </li>
+    </ul>
   </body>
 
   <script src="/bundle.js" type="module" defer></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      let worldEl = document.getElementById("world");
+      let worldEl = document.getElementById('world');
       if (worldEl) {
         new CreatureSim(worldEl, {
           speed: 750,

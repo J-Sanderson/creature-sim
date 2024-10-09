@@ -11,15 +11,15 @@ import Basketball from './Basketball';
 import Disc from './Disc';
 
 export default [
-    Water,
-    Steak,
-    Chicken,
-    Fish,
-    Bed,
-    Bone,
-    TennisBall,
-    TeddyBear,
-    Yarn,
-    Basketball,
-    Disc,
-]
+  Water,
+  Steak,
+  Chicken,
+  Fish,
+  Bed,
+  Bone,
+  TennisBall,
+  TeddyBear,
+  Yarn,
+  Basketball,
+  Disc,
+];

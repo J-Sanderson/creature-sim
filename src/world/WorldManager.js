@@ -1,23 +1,23 @@
-import { World } from "./World";
+import { World } from './World';
 
 class WorldManager {
-    constructor() {
-      this.worlds = new Map();
-    }
-  
-    addWorld(worldId, worldInstance) {
-      this.worlds.set(worldId, worldInstance);
-    }
-  
-    getWorld(worldId) {
-      return this.worlds.get(worldId);
-    }
-  
-    removeWorld(worldId) {
-      this.worlds.delete(worldId);
-    }
+  constructor() {
+    this.worlds = new Map();
   }
 
-  const worldManager = new WorldManager;
+  addWorld(worldId, worldInstance) {
+    this.worlds.set(worldId, worldInstance);
+  }
 
-  export default worldManager;
+  getWorld(worldId) {
+    return this.worlds.get(worldId);
+  }
+
+  removeWorld(worldId) {
+    this.worlds.delete(worldId);
+  }
+}
+
+const worldManager = new WorldManager();
+
+export default worldManager;

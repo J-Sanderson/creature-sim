@@ -76,7 +76,7 @@ class Goal {
   getTicks() {
     return this.ticks;
   }
-  
+
   setTicks(val) {
     this.ticks = val;
   }
@@ -107,11 +107,40 @@ class Goal {
     const modifier = Math.floor(scaler * factor);
     return modifier;
   }
+
+  calculateModifiedTicks(personalityType, maxMotive) {
+    if (!personalityType || !maxMotive) {
+      console.error(
+        `Error: could not find personality type ${personalityType} or max motive value`
+      );
+      return 0;
+    }
+    const ticks = this.getTicks();
+    const scaler = 0.5;
+    const baseline = 1;
+    const factor = Math.min(1, personalityType / maxMotive);
+    const adjustedTicks = Math.floor(ticks * (baseline + scaler * factor));
+    return adjustedTicks;
+  }
 }
 
 class GoalWander extends Goal {
   constructor(params) {
     super(params);
+
+    if (params && params.hasOwnProperty("tickModifiers")) {
+      const modifiers = params.tickModifiers;
+      if (
+        modifiers.hasOwnProperty("maxMotive") &&
+        modifiers.hasOwnProperty("personality")
+      ) {
+        const adjustedTicks = this.calculateModifiedTicks(
+          modifiers.personality[Creature.personalityValues.liveliness],
+          modifiers.maxMotive
+        );
+        this.setTicks(adjustedTicks);
+      }
+    }
   }
   filter(self, nonReactive = false) {
     const motives = self.getMotives();
@@ -176,7 +205,10 @@ class GoalEat extends Goal {
 
     let priority = 6;
 
-    if (plan === Creature.planList.eat || motives[Entity.motiveList.fullness] <= maxMotive / 10) {
+    if (
+      plan === Creature.planList.eat ||
+      motives[Entity.motiveList.fullness] <= maxMotive / 10
+    ) {
       priority = 1;
     }
 
@@ -324,7 +356,10 @@ class GoalSleep extends Goal {
 
     let priority = 6;
 
-    if (plan === Creature.planList.sleep || motives[Entity.motiveList.energy] <= maxMotive / 10) {
+    if (
+      plan === Creature.planList.sleep ||
+      motives[Entity.motiveList.energy] <= maxMotive / 10
+    ) {
       priority = 1;
     }
 
@@ -535,21 +570,20 @@ class GoalKnockItemFromToybox extends Goal {
 
     let priority = 5;
 
-    
     const patienceModifier = this.getPersonalityModifier(
       self,
       Creature.personalityValues.patience,
       false
     );
     priority -= patienceModifier;
-    
+
     const kindnessModifier = this.getPersonalityModifier(
       self,
       Creature.personalityValues.kindness,
       false
     );
     priority -= kindnessModifier;
-    
+
     const naughtinessModifier = this.getPersonalityModifier(
       self,
       Creature.personalityValues.naughtiness,
@@ -611,25 +645,25 @@ class GoalChewToy extends Goal {
     }
 
     let priority = 7;
-    
+
     const playfulnessModifier = this.getPersonalityModifier(
       self,
       Creature.personalityValues.playfulness,
       true
     );
     priority -= playfulnessModifier;
-    
+
     const livelinessModifier = this.getPersonalityModifier(
       self,
       Creature.personalityValues.liveliness,
       false
     );
     priority -= livelinessModifier;
-    
+
     const kindnessModifier = this.getPersonalityModifier(
       self,
       Creature.personalityValues.kindness,
-      false,
+      false
     );
     priority -= kindnessModifier;
 
@@ -706,14 +740,14 @@ class GoalBounceToy extends Goal {
       true
     );
     priority -= playfulnessModifier;
-    
+
     const livelinessModifier = this.getPersonalityModifier(
       self,
       Creature.personalityValues.liveliness,
       true
     );
     priority -= livelinessModifier;
-    
+
     priority = Math.max(1, priority);
 
     return priority;
@@ -787,14 +821,14 @@ class GoalCuddleToy extends Goal {
       true
     );
     priority -= playfulnessModifier;
-    
+
     const livelinessModifier = this.getPersonalityModifier(
       self,
       Creature.personalityValues.liveliness,
       false
     );
     priority -= livelinessModifier;
-    
+
     const kindnessModifier = this.getPersonalityModifier(
       self,
       Creature.personalityValues.kindness,
@@ -912,7 +946,10 @@ const plans = {
       self.goalManager.suspendGoal(goal);
       self.goalManager.addGoal(self, Creature.goalList.knockItemFromToybox, {
         calledBy: goal,
-        personality: self.getPersonalityValues()
+        tickModifiers: {
+          personality: self.getPersonalityValues(),
+          maxMotive: self.getMaxMotive(),
+        },
       });
     }
 
@@ -948,7 +985,10 @@ const plans = {
       self.goalManager.addGoal(self, Creature.goalList.drink, {
         priority: 1,
         suspended: false,
-        personality: self.getPersonalityValues(),
+        tickModifiers: {
+          personality: self.getPersonalityValues(),
+          maxMotive: self.getMaxMotive(),
+        },
       });
       self.goalManager.suspendGoal(Creature.goalList.eat);
     }
@@ -969,7 +1009,10 @@ const plans = {
       self.goalManager.addGoal(self, Creature.goalList.drink, {
         priority: 1,
         suspended: false,
-        personality: self.getPersonalityValues(),
+        tickModifiers: {
+          personality: self.getPersonalityValues(),
+          maxMotive: self.getMaxMotive(),
+        },
       });
       self.goalManager.suspendGoal(Creature.goalList.sleep);
     }
@@ -977,7 +1020,10 @@ const plans = {
       self.goalManager.addGoal(self, Creature.goalList.eat, {
         priority: 1,
         suspended: false,
-        personality: self.getPersonalityValues(),
+        tickModifiers: {
+          personality: self.getPersonalityValues(),
+          maxMotive: self.getMaxMotive(),
+        },
       });
       self.goalManager.suspendGoal(Creature.goalList.sleep);
     }
@@ -1214,7 +1260,10 @@ const states = {
         self.setMotive(Entity.motiveList.fullness, newVal);
         item.setMotive(Entity.motiveList.amount, amount - transfer);
         if (motives[Entity.motiveList.hydration] > 0) {
-          self.setMotive(Entity.motiveList.hydration, motives[Entity.motiveList.hydration] - 1);
+          self.setMotive(
+            Entity.motiveList.hydration,
+            motives[Entity.motiveList.hydration] - 1
+          );
         }
       } else {
         const world = worldManager.getWorld(self.world);
@@ -1301,10 +1350,16 @@ const queries = {
     return self.getMotive(Entity.motiveList.fullness) < threshold;
   },
   amIThirsty(self) {
-    return self.getMotive(Entity.motiveList.hydration) < self.getDesireThreshold("drink");
+    return (
+      self.getMotive(Entity.motiveList.hydration) <
+      self.getDesireThreshold("drink")
+    );
   },
   amITired(self) {
-    return self.getMotive(Entity.motiveList.energy) < self.getDesireThreshold("sleep");
+    return (
+      self.getMotive(Entity.motiveList.energy) <
+      self.getDesireThreshold("sleep")
+    );
   },
   amIFinicky(self) {
     const finickiness = self.getPersonalityValue("finickiness");
@@ -1473,7 +1528,13 @@ class GoalManager {
         break;
       }
     }
-    this.addGoal(self, chosenGoal, { ticks: 5, personality: self.getPersonalityValues() });
+    this.addGoal(self, chosenGoal, {
+      ticks: 5,
+      tickModifiers: {
+        personality: self.getPersonalityValues(),
+        maxMotive: self.getMaxMotive(),
+      },
+    });
   }
 
   addGoal(self, name, params, isCurrent = true) {
@@ -1958,7 +2019,7 @@ class Entity {
     grey: "grey",
     clear: "clear",
   };
-  
+
   static motiveList = {
     fullness: "fullness",
     hydration: "hydration",
@@ -2365,7 +2426,7 @@ class Creature extends Entity {
     finickiness: "finickiness",
     kindness: "kindness",
   };
-  
+
   static validMotives = [
     Entity.motiveList.fullness,
     Entity.motiveList.hydration,
@@ -2395,8 +2456,7 @@ class Creature extends Entity {
     this.order = 2;
     this.properties.adjectives.push(...Creature.adjectives);
 
-
-    Creature.validMotives.forEach(motive => {
+    Creature.validMotives.forEach((motive) => {
       this.status.motives[motive] = utilities.rand(this.maxMotive);
     });
 
@@ -2408,7 +2468,8 @@ class Creature extends Entity {
     };
 
     for (let value in Creature.personalityValues) {
-      this.personality.values[Creature.personalityValues[value]] = utilities.rand(this.maxMotive);
+      this.personality.values[Creature.personalityValues[value]] =
+        utilities.rand(this.maxMotive);
     }
     let personalityValues = this.getPersonalityValues();
 
@@ -2463,7 +2524,10 @@ class Creature extends Entity {
         priority: 1,
         suspended: false,
         ticks: 1,
-        personality: self.getPersonalityValues(),
+        tickModifiers: {
+          personality: self.getPersonalityValues(),
+          maxMotive: self.getMaxMotive(),
+        },
       });
     };
     this.outputs.icon.addEventListener(
@@ -2496,7 +2560,10 @@ class Creature extends Entity {
         this.status.motives[Entity.motiveList.fullness] > 0
       ) {
         if (Math.random() < decayThresholds[Entity.motiveList.fullness]) {
-          this.setMotive(Entity.motiveList.fullness, this.status.motives[Entity.motiveList.fullness] - 1);
+          this.setMotive(
+            Entity.motiveList.fullness,
+            this.status.motives[Entity.motiveList.fullness] - 1
+          );
         }
       }
     }
@@ -2504,7 +2571,17 @@ class Creature extends Entity {
       !(Creature.goalList.eat in this.goalManager.getGoalList()) &&
       this.queries.amIHungry(this)
     ) {
-      this.goalManager.addGoal(this, Creature.goalList.eat, {personality: this.getPersonalityValues()}, false);
+      this.goalManager.addGoal(
+        this,
+        Creature.goalList.eat,
+        {
+          tickModifiers: {
+            personality: this.getPersonalityValues(),
+            maxMotive: this.getMaxMotive(),
+          },
+        },
+        false
+      );
     }
 
     // hydration decay
@@ -2522,7 +2599,17 @@ class Creature extends Entity {
       !(Creature.goalList.drink in this.goalManager.getGoalList()) &&
       this.queries.amIThirsty(this)
     ) {
-      this.goalManager.addGoal(this, Creature.goalList.drink, {personality: this.getPersonalityValues()}, false);
+      this.goalManager.addGoal(
+        this,
+        Creature.goalList.drink,
+        {
+          tickModifiers: {
+            personality: this.getPersonalityValues(),
+            maxMotive: this.getMaxMotive(),
+          },
+        },
+        false
+      );
     }
 
     // energy decay
@@ -2531,14 +2618,27 @@ class Creature extends Entity {
       this.status.motives[Entity.motiveList.energy] > 0
     ) {
       if (Math.random() < decayThresholds[Entity.motiveList.energy]) {
-        this.setMotive(Entity.motiveList.energy, this.status.motives[Entity.motiveList.energy] - 1);
+        this.setMotive(
+          Entity.motiveList.energy,
+          this.status.motives[Entity.motiveList.energy] - 1
+        );
       }
     }
     if (
       !(Creature.goalList.sleep in this.goalManager.getGoalList()) &&
       this.queries.amITired(this)
     ) {
-      this.goalManager.addGoal(this, Creature.goalList.sleep, {personality: this.getPersonalityValues()}, false);
+      this.goalManager.addGoal(
+        this,
+        Creature.goalList.sleep,
+        {
+          tickModifiers: {
+            personality: this.getPersonalityValues(),
+            maxMotive: this.getMaxMotive(),
+          },
+        },
+        false
+      );
     }
   }
 

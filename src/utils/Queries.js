@@ -1,5 +1,5 @@
 import worldManager from '../managers/WorldManager';
-import { motiveList } from '../defaults';
+import { motiveList, personalityValueList } from '../defaults';
 
 export const queries = {
   amIOnItem(self, id) {
@@ -23,22 +23,33 @@ export const queries = {
       self,
       self.getFavorites().flavor
     );
-    let threshold = self.getDesireThreshold('eat');
+    let threshold = self.getDesireThreshold(motiveList.energy);
+    if (!threshold) {
+      return false;
+    }
     if (faves.length) {
       threshold *= 1.1;
     }
     return self.getMotive(motiveList.fullness) < threshold;
   },
   amIThirsty(self) {
-    return (
-      self.getMotive(motiveList.hydration) < self.getDesireThreshold('drink')
-    );
+    const threshold = self.getDesireThreshold(motiveList.hydration);
+    if (!threshold) {
+      return false;
+    }
+    return self.getMotive(motiveList.hydration) < threshold;
   },
   amITired(self) {
-    return self.getMotive(motiveList.energy) < self.getDesireThreshold('sleep');
+    const threshold = self.getDesireThreshold(motiveList.energy);
+    if (!threshold) {
+      return false;
+    }
+    return self.getMotive(motiveList.energy) < threshold;
   },
   amIFinicky(self) {
-    const finickiness = self.getPersonalityValue('finickiness');
+    const finickiness = self.getPersonalityValue(
+      personalityValueList.finickiness
+    );
     const maxMotive = self.getMaxMotive();
     const ratio = finickiness / maxMotive;
     return Math.random() <= ratio;

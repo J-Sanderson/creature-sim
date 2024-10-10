@@ -91,6 +91,7 @@ export class GoalManager {
         break;
       }
     }
+    // todo need an exit condition if still nothing is chosen, maybe wander.
     this.addGoal(self, chosenGoal, {
       ticks: 5,
       tickModifiers: {

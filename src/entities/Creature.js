@@ -1,5 +1,6 @@
 import Entity from './Entity';
 import { GoalManager } from '../managers/GoalManager';
+import { MetabolismManager } from '../managers/MetabolismManager';
 import { utilities } from '../utils/Utilities';
 import { queries } from '../utils/Queries';
 import {
@@ -68,27 +69,6 @@ export default class Creature extends Entity {
     }
     let personalityValues = this.getPersonalityValues();
 
-    this.personality.decayThresholds = {
-      fullness: personalityValues.metabolism / this.maxMotive,
-      hydration: 0.4 + personalityValues.liveliness / (this.maxMotive * 3),
-      energy:
-        1 -
-        (1 - personalityValues.metabolism / this.maxMotive) *
-          (1 + personalityValues.liveliness / this.maxMotive),
-    };
-    for (let threshold in this.personality.decayThresholds) {
-      this.personality.decayThresholds[threshold] = Math.max(
-        0,
-        Math.min(1, this.personality.decayThresholds[threshold])
-      );
-    }
-
-    this.personality.desireThresholds = {
-      sleep: this.maxMotive * 0.2 - personalityValues.liveliness / 10,
-      eat: this.maxMotive * 0.4 + personalityValues.metabolism / 10,
-      drink: this.maxMotive * 0.4 + personalityValues.liveliness / 10,
-    };
-
     this.personality.favorites.flavor =
       flavorList[
         Creature.validFaves.flavors[
@@ -118,8 +98,8 @@ export default class Creature extends Entity {
         suspended: false,
         ticks: 1,
         tickModifiers: {
-          personality: self.getPersonalityValues(),
-          maxMotive: self.getMaxMotive(),
+          personality: personalityValues,
+          maxMotive: this.maxMotive,
         },
       });
     };
@@ -134,102 +114,15 @@ export default class Creature extends Entity {
     this.outputs.icon.addEventListener('mouseup', this.eventHandlers.petStop);
 
     this.goalManager = new GoalManager();
+    this.metabolismManager = new MetabolismManager({
+      personalityValues,
+      maxMotive: this.maxMotive,
+    });
   }
 
   update() {
-    this.metabolismManager();
+    this.metabolismManager.update(this);
     this.goalManager.update(this);
-  }
-
-  metabolismManager() {
-    const decayThresholds = this.getDecayThresholds();
-
-    // fullness decay
-    if (this.status.state !== stateList.eat) {
-      if (
-        (this.status.state !== stateList.sleep || Math.random() < 0.25) &&
-        this.status.motives[motiveList.fullness] > 0
-      ) {
-        if (Math.random() < decayThresholds[motiveList.fullness]) {
-          this.setMotive(
-            motiveList.fullness,
-            this.status.motives[motiveList.fullness] - 1
-          );
-        }
-      }
-    }
-    if (
-      !(goalList.eat in this.goalManager.getGoalList()) &&
-      this.queries.amIHungry(this)
-    ) {
-      this.goalManager.addGoal(
-        this,
-        goalList.eat,
-        {
-          tickModifiers: {
-            personality: this.getPersonalityValues(),
-            maxMotive: this.getMaxMotive(),
-          },
-        },
-        false
-      );
-    }
-
-    // hydration decay
-    if (this.status.state !== stateList.drink) {
-      if (
-        (this.status.state !== stateList.sleep || Math.random() < 0.25) &&
-        this.status.motives[motiveList.hydration] > 0 &&
-        Math.random() < decayThresholds[motiveList.hydration]
-      ) {
-        this.status.motives[motiveList.hydration]--;
-      }
-    }
-    if (
-      !(goalList.drink in this.goalManager.getGoalList()) &&
-      this.queries.amIThirsty(this)
-    ) {
-      this.goalManager.addGoal(
-        this,
-        goalList.drink,
-        {
-          tickModifiers: {
-            personality: this.getPersonalityValues(),
-            maxMotive: this.getMaxMotive(),
-          },
-        },
-        false
-      );
-    }
-
-    // energy decay
-    if (
-      this.status.state !== stateList.sleep &&
-      this.status.motives[motiveList.energy] > 0
-    ) {
-      if (Math.random() < decayThresholds[motiveList.energy]) {
-        this.setMotive(
-          motiveList.energy,
-          this.status.motives[motiveList.energy] - 1
-        );
-      }
-    }
-    if (
-      !(goalList.sleep in this.goalManager.getGoalList()) &&
-      this.queries.amITired(this)
-    ) {
-      this.goalManager.addGoal(
-        this,
-        goalList.sleep,
-        {
-          tickModifiers: {
-            personality: this.getPersonalityValues(),
-            maxMotive: this.getMaxMotive(),
-          },
-        },
-        false
-      );
-    }
   }
 
   showMotive(motive) {
@@ -269,28 +162,12 @@ export default class Creature extends Entity {
     return this.personality.favorites;
   }
 
-  getDecayThresholds() {
-    return this.personality.decayThresholds;
-  }
-
-  getDecayThreshold(value) {
-    if (!(value in this.personality.decayThresholds)) {
-      console.error(`Error: no ${value} decay threshold found`);
-      return;
-    }
-    return this.personality.decayThresholds[value];
-  }
-
   getDesireThresholds() {
-    return this.personality.desireThresholds;
+    return this.metabolismManager.getDesireThresholds();
   }
 
   getDesireThreshold(desire) {
-    if (!(desire in this.personality.desireThresholds)) {
-      console.error(`Error: no ${desire} threshold value found`);
-      return;
-    }
-    return this.personality.desireThresholds[desire];
+    return this.metabolismManager.getDesireThreshold(desire);
   }
 
   setState(state) {

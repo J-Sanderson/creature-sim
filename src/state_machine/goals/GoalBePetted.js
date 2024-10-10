@@ -1,5 +1,4 @@
 import Goal from './Goal';
-import Creature from '../../entities/Creature';
 import { goalList, stateList } from '../../defaults';
 
 export default class GoalBePetted extends Goal {

@@ -12,7 +12,7 @@ import {
   stateList,
 } from '../defaults';
 import states from '../state_machine/states/State';
-import plans from '../state_machine/plans/Plan';
+import plans from '../state_machine/plans';
 import goals from '../state_machine/goals/';
 
 export default class Creature extends Entity {

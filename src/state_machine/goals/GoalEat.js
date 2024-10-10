@@ -1,6 +1,6 @@
 import Goal from './Goal';
-import Entity from '../../entities/Entity';
 import Creature from '../../entities/Creature';
+import { adjectiveList, motiveList } from '../../defaults';
 
 export default class GoalEat extends Goal {
   constructor(params) {
@@ -16,22 +16,22 @@ export default class GoalEat extends Goal {
     const plan = self.getPlan();
     const nearbyFood = self.queries.getItemsByAdjective(
       self,
-      Entity.adjectiveList.tasty
+      adjectiveList.tasty
     );
 
     let priority = 6;
 
     if (
       plan === Creature.planList.eat ||
-      motives[Entity.motiveList.fullness] <= maxMotive / 10
+      motives[motiveList.fullness] <= maxMotive / 10
     ) {
       priority = 1;
     }
 
     if (nearbyFood.length) {
-      if (motives[Entity.motiveList.fullness] <= maxMotive / 2) {
+      if (motives[motiveList.fullness] <= maxMotive / 2) {
         priority = 4;
-      } else if (motives[Entity.motiveList.fullness] <= maxMotive / 1.53) {
+      } else if (motives[motiveList.fullness] <= maxMotive / 1.53) {
         priority = 5;
       }
       const pref = self.getFavorites().flavor;
@@ -55,7 +55,7 @@ export default class GoalEat extends Goal {
     return priority;
   }
   execute(self) {
-    if (self.getMotive(Entity.motiveList.fullness) >= self.getMaxMotive()) {
+    if (self.getMotive(motiveList.fullness) >= self.getMaxMotive()) {
       self.goalManager.deleteGoal(Creature.goalList.eat);
     }
     let goals = self.getGoals();
@@ -67,7 +67,7 @@ export default class GoalEat extends Goal {
     if (!target) {
       self.plans.planSeekItem(
         self,
-        Entity.adjectiveList.tasty,
+        adjectiveList.tasty,
         Creature.motiveIcons.hunger,
         Creature.goalList.eat
       );

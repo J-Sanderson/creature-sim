@@ -1,11 +1,17 @@
 import { Item } from './Item';
+import {
+  adjectiveList,
+  flavorList,
+  colorList,
+  motiveList,
+} from '../../defaults';
 
 export default class Fish extends Item {
   static icon = '&#x1F41F;';
   static className = 'Fish';
-  static adjectives = [Fish.adjectiveList.tasty];
-  static flavors = [Fish.flavorList.fish];
-  static colors = [Fish.colorList.blue, Fish.colorList.white];
+  static adjectives = [adjectiveList.tasty];
+  static flavors = [flavorList.fish];
+  static colors = [colorList.blue, colorList.white];
 
   constructor(world, params = {}) {
     super(world, params);
@@ -14,7 +20,7 @@ export default class Fish extends Item {
     this.properties.colors.push(...Fish.colors);
     this.icon = Fish.icon;
 
-    this.status.motives[Fish.motiveList.amount] = this.maxMotive * 1.5;
+    this.status.motives[motiveList.amount] = this.maxMotive * 1.5;
 
     this.setIcon();
   }

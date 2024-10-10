@@ -1,6 +1,6 @@
 import Goal from './Goal';
-import Entity from '../../entities/Entity';
 import Creature from '../../entities/Creature';
+import { adjectiveList, motiveList } from '../../defaults';
 
 export default class GoalSitAround extends Goal {
   constructor(params) {
@@ -54,7 +54,7 @@ export default class GoalSitAround extends Goal {
 
     let priority = 7;
 
-    if (motives[Entity.motiveList.energy] <= maxMotive / 3) {
+    if (motives[motiveList.energy] <= maxMotive / 3) {
       priority += 1;
     }
 
@@ -72,7 +72,7 @@ export default class GoalSitAround extends Goal {
   execute(self) {
     // am I on an item?
     let item = self.queries.getItemIAmOn(self);
-    if (item && !item.getAdjectives().includes(Entity.adjectiveList.restful)) {
+    if (item && !item.getAdjectives().includes(adjectiveList.restful)) {
       self.plans.planMoveFromItem(self);
       return;
     }

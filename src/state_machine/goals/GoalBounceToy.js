@@ -1,6 +1,6 @@
 import Goal from './Goal';
-import Entity from '../../entities/Entity';
 import Creature from '../../entities/Creature';
+import { adjectiveList } from '../../defaults';
 
 export default class GoalBounceToy extends Goal {
   constructor(params) {
@@ -69,7 +69,7 @@ export default class GoalBounceToy extends Goal {
     const personalityValues = self.getPersonalityValues();
     const nearbyToys = self.queries.getItemsByAdjective(
       self,
-      Entity.adjectiveList.bounce
+      adjectiveList.bounce
     );
 
     if (
@@ -105,7 +105,7 @@ export default class GoalBounceToy extends Goal {
     if (!target) {
       self.plans.planSeekItem(
         self,
-        Entity.adjectiveList.bounce,
+        adjectiveList.bounce,
         null,
         Creature.goalList.bounceToy
       );

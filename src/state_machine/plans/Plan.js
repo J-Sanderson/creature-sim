@@ -1,6 +1,6 @@
-import Entity from '../../entities/Entity';
 import Creature from '../../entities/Creature';
 import { utilities } from '../../utils/Utilities';
+import { adjectiveList, motiveList } from '../../defaults';
 
 export default {
   planWander: function (self) {
@@ -28,7 +28,7 @@ export default {
     let interestingItems = self.queries.getItemsByAdjective(self, adj);
     const position = self.getPosition();
 
-    if (adj === Entity.adjectiveList.tasty && self.queries.amIFinicky(self)) {
+    if (adj === adjectiveList.tasty && self.queries.amIFinicky(self)) {
       const pref = self.getFavorites().flavor;
       const preferredItems = interestingItems.filter((item) => {
         return item.getFlavors().includes(pref);
@@ -36,10 +36,7 @@ export default {
       interestingItems = preferredItems;
     }
 
-    if (
-      adj === Entity.adjectiveList.bounce ||
-      adj === Entity.adjectiveList.chew
-    ) {
+    if (adj === adjectiveList.bounce || adj === adjectiveList.chew) {
       const pref = self.getFavorites().color;
       const preferredItems = interestingItems.filter((item) => {
         return item.getColors().includes(pref);
@@ -93,7 +90,7 @@ export default {
   },
   planDrink: function (self) {
     self.setPlan(Creature.planList.drink);
-    const hydration = self.getMotive(Entity.motiveList.hydration);
+    const hydration = self.getMotive(motiveList.hydration);
     const maxVal = self.getMaxMotive();
     if (hydration >= maxVal) {
       return;
@@ -102,12 +99,12 @@ export default {
   },
   planEat: function (self) {
     const motives = self.getMotives();
-    if (!motives.hasOwnProperty(Entity.motiveList.fullness)) {
-      console.error(`Error: no ${Entity.motiveList.fullness} motive found`);
+    if (!motives.hasOwnProperty(motiveList.fullness)) {
+      console.error(`Error: no ${motiveList.fullness} motive found`);
       return;
     }
     self.setPlan(Creature.planList.eat);
-    if (motives[Entity.motiveList.hydration] < 10) {
+    if (motives[motiveList.hydration] < 10) {
       self.goalManager.addGoal(self, Creature.goalList.drink, {
         priority: 1,
         suspended: false,
@@ -119,19 +116,19 @@ export default {
       self.goalManager.suspendGoal(Creature.goalList.eat);
     }
     const maxVal = self.getMaxMotive();
-    if (motives[Entity.motiveList.fullness] >= maxVal) {
+    if (motives[motiveList.fullness] >= maxVal) {
       return;
     }
     self.states.stateEat(self, motives, maxVal);
   },
   planSleep: function (self) {
     const motives = self.getMotives();
-    if (!motives.hasOwnProperty(Entity.motiveList.energy)) {
-      console.error(`Error: no ${Entity.motiveList.energy} motive found`);
+    if (!motives.hasOwnProperty(motiveList.energy)) {
+      console.error(`Error: no ${motiveList.energy} motive found`);
       return;
     }
     self.setPlan(Creature.planList.sleep);
-    if (motives[Entity.motiveList.hydration] < 10) {
+    if (motives[motiveList.hydration] < 10) {
       self.goalManager.addGoal(self, Creature.goalList.drink, {
         priority: 1,
         suspended: false,
@@ -142,7 +139,7 @@ export default {
       });
       self.goalManager.suspendGoal(Creature.goalList.sleep);
     }
-    if (motives[Entity.motiveList.fullness] < 10) {
+    if (motives[motiveList.fullness] < 10) {
       self.goalManager.addGoal(self, Creature.goalList.eat, {
         priority: 1,
         suspended: false,
@@ -154,10 +151,10 @@ export default {
       self.goalManager.suspendGoal(Creature.goalList.sleep);
     }
     const maxVal = self.getMaxMotive();
-    if (motives[Entity.motiveList.energy] >= maxVal) {
+    if (motives[motiveList.energy] >= maxVal) {
       return;
     }
-    self.states.stateSleep(self, motives[Entity.motiveList.energy], maxVal);
+    self.states.stateSleep(self, motives[motiveList.energy], maxVal);
   },
   planPetHappy: function (self) {
     self.setPlan(Creature.planList.petHappy);
@@ -189,19 +186,19 @@ export default {
     let calledBy = goals[Creature.goalList.knockItemFromToybox].getCalledBy();
     switch (calledBy) {
       case 'goalEat':
-        adj = Entity.adjectiveList.tasty;
+        adj = adjectiveList.tasty;
         break;
       case 'goalDrink':
-        adj = Entity.adjectiveList.wet;
+        adj = adjectiveList.wet;
         break;
       case 'goalSleep':
-        adj = Entity.adjectiveList.restful;
+        adj = adjectiveList.restful;
         break;
       case 'goalChewToy':
-        adj = Entity.adjectiveList.chew;
+        adj = adjectiveList.chew;
         break;
       case 'goalBounceToy':
-        adj = Entity.adjectiveList.bounce;
+        adj = adjectiveList.bounce;
         break;
       default:
     }
@@ -210,22 +207,17 @@ export default {
     let buttons = Array.from(toybox.querySelectorAll('button'));
     if (adj) {
       let pref;
-      if (adj === Entity.adjectiveList.tasty) {
+      if (adj === adjectiveList.tasty) {
         pref = self.getFavorites().flavor;
       }
-      if (
-        adj === Entity.adjectiveList.bounce ||
-        adj === Entity.adjectiveList.chew
-      ) {
+      if (adj === adjectiveList.bounce || adj === adjectiveList.chew) {
         pref = self.getFavorites().color;
       }
       const nearbyItems = self.queries.getItemsByAdjective(self, adj);
       if (pref) {
         const preferredItems = nearbyItems.filter((item) => {
           const properties =
-            adj === Entity.adjectiveList.tasty
-              ? item.getFlavors()
-              : item.getColors();
+            adj === adjectiveList.tasty ? item.getFlavors() : item.getColors();
           return properties.includes(pref);
         });
         if (preferredItems.length) {
@@ -243,7 +235,7 @@ export default {
           if (pref && self.queries.amIFinicky(self)) {
             const preferredButtons = interestingButtons.filter((button) => {
               const dataset =
-                adj === Entity.adjectiveList.tasty
+                adj === adjectiveList.tasty
                   ? button.dataset.flavors
                   : button.dataset.colors;
               return dataset.split(',').includes(pref);

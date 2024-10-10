@@ -1,6 +1,6 @@
 import Goal from './Goal';
-import Entity from '../../entities/Entity';
 import Creature from '../../entities/Creature';
+import { adjectiveList, motiveList } from '../../defaults';
 
 export default class GoalKnockItemFromToybox extends Goal {
   constructor(params) {
@@ -25,22 +25,22 @@ export default class GoalKnockItemFromToybox extends Goal {
       let adj = '';
       switch (calledBy) {
         case Creature.goalList.sleep:
-          adj = Entity.adjectiveList.restful;
+          adj = adjectiveList.restful;
           break;
         case Creature.goalList.eat:
-          adj = Entity.adjectiveList.tasty;
+          adj = adjectiveList.tasty;
           break;
         case Creature.goalList.drink:
-          adj = Entity.adjectiveList.wet;
+          adj = adjectiveList.wet;
           break;
         case Creature.goalList.chewToy:
-          adj = Entity.adjectiveList.chew;
+          adj = adjectiveList.chew;
           break;
         case Creature.goalList.bounceToy:
-          adj = Entity.adjectiveList.bounce;
+          adj = adjectiveList.bounce;
           break;
         case Creature.goalList.cuddleToy:
-          adj = Entity.adjectiveList.soft;
+          adj = adjectiveList.soft;
           break;
       }
       if (adj && self.queries.getItemsByAdjective(self, adj).length) {

@@ -1,10 +1,11 @@
 import { Item } from './Item';
+import { adjectiveList, colorList } from '../../defaults';
 
 export default class Bone extends Item {
   static icon = '&#x1F9B4;';
   static className = 'Bone';
-  static adjectives = [Bone.adjectiveList.chew];
-  static colors = [Bone.colorList.white];
+  static adjectives = [adjectiveList.chew];
+  static colors = [colorList.white];
 
   constructor(world, params = {}) {
     super(world, params);

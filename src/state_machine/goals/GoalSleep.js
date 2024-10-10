@@ -1,6 +1,6 @@
 import Goal from './Goal';
-import Entity from '../../entities/Entity';
 import Creature from '../../entities/Creature';
+import { adjectiveList, motiveList } from '../../defaults';
 
 export default class GoalSleep extends Goal {
   constructor(params) {
@@ -16,22 +16,22 @@ export default class GoalSleep extends Goal {
     const plan = self.getPlan();
     const nearbyBeds = self.queries.getItemsByAdjective(
       self,
-      Entity.adjectiveList.restful
+      adjectiveList.restful
     );
 
     let priority = 6;
 
     if (
       plan === Creature.planList.sleep ||
-      motives[Entity.motiveList.energy] <= maxMotive / 10
+      motives[motiveList.energy] <= maxMotive / 10
     ) {
       priority = 1;
     }
 
     if (nearbyBeds.length) {
-      if (motives[Entity.motiveList.energy] <= maxMotive / 2) {
+      if (motives[motiveList.energy] <= maxMotive / 2) {
         priority = 4;
-      } else if (motives[Entity.motiveList.energy] <= maxMotive / 1.53) {
+      } else if (motives[motiveList.energy] <= maxMotive / 1.53) {
         priority = 5;
       }
     }
@@ -48,7 +48,7 @@ export default class GoalSleep extends Goal {
     return priority;
   }
   execute(self) {
-    if (self.getMotive(Entity.motiveList.energy) >= self.getMaxMotive()) {
+    if (self.getMotive(motiveList.energy) >= self.getMaxMotive()) {
       self.goalManager.deleteGoal(Creature.goalList.sleep);
     }
     let goals = self.getGoals();
@@ -60,7 +60,7 @@ export default class GoalSleep extends Goal {
     if (!target) {
       self.plans.planSeekItem(
         self,
-        Entity.adjectiveList.restful,
+        adjectiveList.restful,
         Creature.motiveIcons.tired,
         Creature.goalList.sleep
       );

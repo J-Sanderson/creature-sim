@@ -1,7 +1,8 @@
 import Entity from '../Entity';
+import { adjectiveList } from '../../defaults';
 
 export class Item extends Entity {
-  static adjectives = [Entity.adjectiveList.inanimate];
+  static adjectives = [adjectiveList.inanimate];
 
   constructor(world, params = {}) {
     super(world, params);

@@ -1,5 +1,4 @@
 import Goal from './Goal';
-import Entity from '../../entities/Entity';
 import Creature from '../../entities/Creature';
 
 export default class GoalWander extends Goal {

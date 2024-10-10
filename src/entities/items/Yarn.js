@@ -1,14 +1,15 @@
 import { Item } from './Item';
+import { adjectiveList, colorList } from '../../defaults';
 
 export default class Yarn extends Item {
   static icon = '&#x1F9F6;';
   static className = 'Yarn';
   static adjectives = [
-    Yarn.adjectiveList.chew,
-    Yarn.adjectiveList.bounce,
-    Yarn.adjectiveList.soft,
+    adjectiveList.chew,
+    adjectiveList.bounce,
+    adjectiveList.soft,
   ];
-  static colors = [Yarn.colorList.red];
+  static colors = [colorList.red];
 
   constructor(world, params = {}) {
     super(world, params);

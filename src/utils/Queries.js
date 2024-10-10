@@ -1,5 +1,5 @@
 import worldManager from '../managers/WorldManager';
-import Entity from '../entities/Entity';
+import { motiveList } from '../defaults';
 
 export const queries = {
   amIOnItem(self, id) {
@@ -27,19 +27,15 @@ export const queries = {
     if (faves.length) {
       threshold *= 1.1;
     }
-    return self.getMotive(Entity.motiveList.fullness) < threshold;
+    return self.getMotive(motiveList.fullness) < threshold;
   },
   amIThirsty(self) {
     return (
-      self.getMotive(Entity.motiveList.hydration) <
-      self.getDesireThreshold('drink')
+      self.getMotive(motiveList.hydration) < self.getDesireThreshold('drink')
     );
   },
   amITired(self) {
-    return (
-      self.getMotive(Entity.motiveList.energy) <
-      self.getDesireThreshold('sleep')
-    );
+    return self.getMotive(motiveList.energy) < self.getDesireThreshold('sleep');
   },
   amIFinicky(self) {
     const finickiness = self.getPersonalityValue('finickiness');

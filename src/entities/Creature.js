@@ -2,6 +2,7 @@ import Entity from './Entity';
 import { GoalManager } from '../managers/GoalManager';
 import { utilities } from '../utils/Utilities';
 import { queries } from '../utils/Queries';
+import { motiveList, flavorList, colorList, adjectiveList } from '../defaults';
 import states from '../state_machine/states/State';
 import plans from '../state_machine/plans/Plan';
 import goals from '../state_machine/goals/';
@@ -83,28 +84,24 @@ export default class Creature extends Entity {
   };
 
   static validMotives = [
-    Entity.motiveList.fullness,
-    Entity.motiveList.hydration,
-    Entity.motiveList.energy,
+    motiveList.fullness,
+    motiveList.hydration,
+    motiveList.energy,
   ];
 
   static validFaves = {
-    flavors: [
-      Entity.flavorList.chicken,
-      Entity.flavorList.beef,
-      Entity.flavorList.fish,
-    ],
+    flavors: [flavorList.chicken, flavorList.beef, flavorList.fish],
     colors: [
-      Entity.colorList.white,
-      Entity.colorList.green,
-      Entity.colorList.brown,
-      Entity.colorList.red,
-      Entity.colorList.orange,
-      Entity.colorList.blue,
+      colorList.white,
+      colorList.green,
+      colorList.brown,
+      colorList.red,
+      colorList.orange,
+      colorList.blue,
     ],
   };
 
-  static adjectives = [Entity.adjectiveList.animate];
+  static adjectives = [adjectiveList.animate];
 
   constructor(world, params = {}) {
     super(world, params);
@@ -159,13 +156,13 @@ export default class Creature extends Entity {
     };
 
     this.personality.favorites.flavor =
-      Entity.flavorList[
+      flavorList[
         Creature.validFaves.flavors[
           utilities.rand(Creature.validFaves.flavors.length)
         ]
       ];
     this.personality.favorites.color =
-      Entity.colorList[
+      colorList[
         Creature.validFaves.colors[
           utilities.rand(Creature.validFaves.colors.length)
         ]
@@ -211,7 +208,6 @@ export default class Creature extends Entity {
   }
 
   metabolismManager() {
-    const personalityValues = this.getPersonalityValues();
     const decayThresholds = this.getDecayThresholds();
 
     // fullness decay
@@ -219,12 +215,12 @@ export default class Creature extends Entity {
       if (
         (this.status.state !== Creature.stateList.sleep ||
           Math.random() < 0.25) &&
-        this.status.motives[Entity.motiveList.fullness] > 0
+        this.status.motives[motiveList.fullness] > 0
       ) {
-        if (Math.random() < decayThresholds[Entity.motiveList.fullness]) {
+        if (Math.random() < decayThresholds[motiveList.fullness]) {
           this.setMotive(
-            Entity.motiveList.fullness,
-            this.status.motives[Entity.motiveList.fullness] - 1
+            motiveList.fullness,
+            this.status.motives[motiveList.fullness] - 1
           );
         }
       }
@@ -251,10 +247,10 @@ export default class Creature extends Entity {
       if (
         (this.status.state !== Creature.stateList.sleep ||
           Math.random() < 0.25) &&
-        this.status.motives[Entity.motiveList.hydration] > 0 &&
-        Math.random() < decayThresholds[Entity.motiveList.hydration]
+        this.status.motives[motiveList.hydration] > 0 &&
+        Math.random() < decayThresholds[motiveList.hydration]
       ) {
-        this.status.motives[Entity.motiveList.hydration]--;
+        this.status.motives[motiveList.hydration]--;
       }
     }
     if (
@@ -277,12 +273,12 @@ export default class Creature extends Entity {
     // energy decay
     if (
       this.status.state !== Creature.stateList.sleep &&
-      this.status.motives[Entity.motiveList.energy] > 0
+      this.status.motives[motiveList.energy] > 0
     ) {
-      if (Math.random() < decayThresholds[Entity.motiveList.energy]) {
+      if (Math.random() < decayThresholds[motiveList.energy]) {
         this.setMotive(
-          Entity.motiveList.energy,
-          this.status.motives[Entity.motiveList.energy] - 1
+          motiveList.energy,
+          this.status.motives[motiveList.energy] - 1
         );
       }
     }

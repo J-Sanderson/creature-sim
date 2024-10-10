@@ -3,46 +3,6 @@ import worldManager from '../managers/WorldManager';
 import { utilities } from '../utils/Utilities';
 
 export default class Entity {
-  static adjectiveList = {
-    inanimate: 'inanimate',
-    animate: 'animate',
-    tasty: 'tasty',
-    wet: 'wet',
-    restful: 'restful',
-    chew: 'chew',
-    bounce: 'bounce',
-    soft: 'soft',
-  };
-
-  static flavorList = {
-    chicken: 'chicken',
-    beef: 'beef',
-    fish: 'fish',
-    water: 'water',
-  };
-
-  static colorList = {
-    white: 'white',
-    black: 'black',
-    red: 'red',
-    green: 'green',
-    yellow: 'yellow',
-    blue: 'blue',
-    purple: 'purple',
-    pink: 'pink',
-    orange: 'orange',
-    brown: 'brown',
-    grey: 'grey',
-    clear: 'clear',
-  };
-
-  static motiveList = {
-    fullness: 'fullness',
-    hydration: 'hydration',
-    energy: 'energy',
-    amount: 'amount',
-  };
-
   constructor(world, params = {}) {
     let worldObj = worldManager.getWorld(world);
     if (!worldObj || !(worldObj instanceof World)) {

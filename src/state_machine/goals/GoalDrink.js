@@ -1,6 +1,6 @@
 import Goal from './Goal';
-import Entity from '../../entities/Entity';
 import Creature from '../../entities/Creature';
+import { adjectiveList, motiveList } from '../../defaults';
 
 export default class GoalDrink extends Goal {
   constructor(params) {
@@ -16,22 +16,22 @@ export default class GoalDrink extends Goal {
     const plan = self.getPlan();
     const nearbyWater = self.queries.getItemsByAdjective(
       self,
-      Entity.adjectiveList.wet
+      adjectiveList.wet
     );
 
     let priority = 6;
 
     if (
       plan === Creature.planList.drink ||
-      motives[Entity.motiveList.hydration] <= maxMotive / 10
+      motives[motiveList.hydration] <= maxMotive / 10
     ) {
       priority = 1;
     }
 
     if (nearbyWater.length) {
-      if (motives[Entity.motiveList.hydration] <= maxMotive / 2) {
+      if (motives[motiveList.hydration] <= maxMotive / 2) {
         priority = 4;
-      } else if (motives[Entity.motiveList.hydration] <= maxMotive / 1.53) {
+      } else if (motives[motiveList.hydration] <= maxMotive / 1.53) {
         priority = 5;
       }
     }
@@ -48,7 +48,7 @@ export default class GoalDrink extends Goal {
     return priority;
   }
   execute(self) {
-    if (self.getMotive(Entity.motiveList.hydration) >= self.getMaxMotive()) {
+    if (self.getMotive(motiveList.hydration) >= self.getMaxMotive()) {
       self.goalManager.deleteGoal(Creature.goalList.drink);
     }
     let goals = self.getGoals();
@@ -60,7 +60,7 @@ export default class GoalDrink extends Goal {
     if (!target) {
       self.plans.planSeekItem(
         self,
-        Entity.adjectiveList.wet,
+        adjectiveList.wet,
         Creature.motiveIcons.thirst,
         Creature.goalList.drink
       );

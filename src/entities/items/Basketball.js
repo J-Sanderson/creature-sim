@@ -1,13 +1,11 @@
 import { Item } from './Item';
+import { adjectiveList, colorList } from '../../defaults';
 
 export default class Basketball extends Item {
   static icon = '&#x1F3C0;';
   static className = 'Basketball';
-  static adjectives = [
-    Basketball.adjectiveList.chew,
-    Basketball.adjectiveList.bounce,
-  ];
-  static colors = [Basketball.colorList.orange];
+  static adjectives = [adjectiveList.chew, adjectiveList.bounce];
+  static colors = [colorList.orange];
 
   constructor(world, params = {}) {
     super(world, params);

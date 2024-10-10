@@ -1,6 +1,6 @@
 import Creature from '../../entities/Creature';
-import Entity from '../../entities/Entity';
 import worldManager from '../../managers/WorldManager';
+import { motiveList } from '../../defaults';
 
 export default {
   stateMoveRandomly: function (self, pos) {
@@ -45,7 +45,7 @@ export default {
       self.getGoals()[Creature.goalList.drink].target
     );
     if (item) {
-      const amount = item.getMotive(Entity.motiveList.amount);
+      const amount = item.getMotive(motiveList.amount);
       if (amount > 0) {
         self.setState(Creature.stateList.drink);
         self.showMotive(Creature.motiveIcons.drink);
@@ -54,8 +54,8 @@ export default {
         if (newVal > maxVal) {
           newVal = maxVal;
         }
-        self.setMotive(Entity.motiveList.hydration, newVal);
-        item.setMotive(Entity.motiveList.amount, amount - transfer);
+        self.setMotive(motiveList.hydration, newVal);
+        item.setMotive(motiveList.amount, amount - transfer);
       } else {
         const world = worldManager.getWorld(self.world);
         world.deleteEntity(item.getGUID());
@@ -72,21 +72,21 @@ export default {
     );
 
     if (item) {
-      const amount = item.getMotive(Entity.motiveList.amount);
+      const amount = item.getMotive(motiveList.amount);
       if (amount > 0) {
         self.setState(Creature.stateList.eat);
         self.showMotive(Creature.motiveIcons.eat);
         const transfer = 10;
-        let newVal = (motives[Entity.motiveList.fullness] += transfer);
+        let newVal = (motives[motiveList.fullness] += transfer);
         if (newVal > maxVal) {
           newVal = maxVal;
         }
-        self.setMotive(Entity.motiveList.fullness, newVal);
-        item.setMotive(Entity.motiveList.amount, amount - transfer);
-        if (motives[Entity.motiveList.hydration] > 0) {
+        self.setMotive(motiveList.fullness, newVal);
+        item.setMotive(motiveList.amount, amount - transfer);
+        if (motives[motiveList.hydration] > 0) {
           self.setMotive(
-            Entity.motiveList.hydration,
-            motives[Entity.motiveList.hydration] - 1
+            motiveList.hydration,
+            motives[motiveList.hydration] - 1
           );
         }
       } else {
@@ -105,7 +105,7 @@ export default {
     if (newVal > maxVal) {
       newVal = maxVal;
     }
-    self.setMotive(Entity.motiveList.energy, newVal);
+    self.setMotive(motiveList.energy, newVal);
   },
   statePetHappy(self) {
     self.setState(Creature.stateList.petHappy);

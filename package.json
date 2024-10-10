@@ -1,0 +1,31 @@
+{
+  "name": "creature-sim",
+  "version": "1.0.0",
+  "description": "Petz (1995-2002) inspired creature simulator",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack --mode production",
+    "start": "webpack serve --mode development",
+    "format": "prettier --write ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/J-Sanderson/creature-sim.git"
+  },
+  "author": "J Sanderson",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/J-Sanderson/creature-sim/issues"
+  },
+  "homepage": "https://github.com/J-Sanderson/creature-sim#readme",
+  "devDependencies": {
+    "@babel/core": "^7.25.7",
+    "@babel/preset-env": "^7.25.7",
+    "babel-loader": "^9.2.1",
+    "prettier": "^3.3.3",
+    "webpack": "^5.95.0",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^5.1.0"
+  }
+}

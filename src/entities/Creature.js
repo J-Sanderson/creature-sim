@@ -11,9 +11,9 @@ import {
   goalList,
   stateList,
 } from '../defaults';
-import states from '../state_machine/states/State';
+import states from '../state_machine/states';
 import plans from '../state_machine/plans';
-import goals from '../state_machine/goals/';
+import goals from '../state_machine/goals';
 
 export default class Creature extends Entity {
   static validMotives = [

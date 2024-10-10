@@ -1,10 +1,15 @@
 import Goal from './Goal';
-import { adjectiveList, personalityValueList, goalList } from '../../defaults';
+import {
+  adjectiveList,
+  personalityValueList,
+  goalList,
+  goalTypeList,
+} from '../../defaults';
 
 export default class GoalKnockItemFromToybox extends Goal {
   constructor(params) {
     super(params);
-    this.type = Goal.types.narrative;
+    this.type = goalTypeList.narrative;
   }
   filter(self, nonReactive = false) {
     const personalityValues = self.getPersonalityValues();

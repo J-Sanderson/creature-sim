@@ -6,12 +6,13 @@ import {
   goalList,
   planList,
   motiveIconList,
+  goalTypeList,
 } from '../../defaults';
 
 export default class GoalEat extends Goal {
   constructor(params) {
     super(params);
-    this.type = Goal.types.motive;
+    this.type = goalTypeList.motive;
   }
   filter(self, nonReactive = false) {
     if (nonReactive) return -1;

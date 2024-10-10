@@ -112,3 +112,9 @@ export const motiveIconList = {
   bounceToy: '&#x26F9;',
   cuddleToy: '&#x1FAC2;',
 };
+
+export const goalTypeList = {
+  motive: 'motive',
+  idle: 'idle',
+  narrative: 'narrative',
+};

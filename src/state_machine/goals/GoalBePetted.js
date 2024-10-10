@@ -1,10 +1,10 @@
 import Goal from './Goal';
-import { goalList, stateList } from '../../defaults';
+import { goalList, stateList, goalTypeList } from '../../defaults';
 
 export default class GoalBePetted extends Goal {
   constructor(params) {
     super(params);
-    this.type = Goal.types.narrative;
+    this.type = goalTypeList.narrative;
   }
   filter(self, nonReactive = false) {
     if (nonReactive) return -1;

@@ -1,10 +1,6 @@
-export default class Goal {
-  static types = {
-    motive: 'motive',
-    idle: 'idle',
-    narrative: 'narrative',
-  };
+import { goalTypeList } from '../../defaults';
 
+export default class Goal {
   static defaults = {
     priority: 1,
     suspended: false,
@@ -12,7 +8,7 @@ export default class Goal {
     decayThreshold: 1,
     target: null,
     calledBy: null,
-    type: Goal.types.idle,
+    type: goalTypeList.idle,
   };
 
   constructor(params = {}) {

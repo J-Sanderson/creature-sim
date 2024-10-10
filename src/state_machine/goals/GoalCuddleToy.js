@@ -1,10 +1,15 @@
 import Goal from './Goal';
-import { adjectiveList, personalityValueList, goalList } from '../../defaults';
+import {
+  adjectiveList,
+  personalityValueList,
+  goalList,
+  goalTypeList,
+} from '../../defaults';
 
 export default class GoalCuddleToy extends Goal {
   constructor(params) {
     super(params);
-    this.type = Goal.types.narrative;
+    this.type = goalTypeList.narrative;
 
     if (params && params.hasOwnProperty('tickModifiers')) {
       const modifiers = params.tickModifiers;

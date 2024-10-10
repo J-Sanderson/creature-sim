@@ -1,6 +1,12 @@
 import Goal from './Goal';
-import Creature from '../../entities/Creature';
-import { adjectiveList, motiveList } from '../../defaults';
+import {
+  adjectiveList,
+  motiveList,
+  personalityValueList,
+  goalList,
+  planList,
+  motiveIconList,
+} from '../../defaults';
 
 export default class GoalDrink extends Goal {
   constructor(params) {
@@ -12,7 +18,6 @@ export default class GoalDrink extends Goal {
 
     const motives = self.getMotives();
     const maxMotive = self.getMaxMotive();
-    const personalityValues = self.getPersonalityValues();
     const plan = self.getPlan();
     const nearbyWater = self.queries.getItemsByAdjective(
       self,
@@ -22,7 +27,7 @@ export default class GoalDrink extends Goal {
     let priority = 6;
 
     if (
-      plan === Creature.planList.drink ||
+      plan === planList.drink ||
       motives[motiveList.hydration] <= maxMotive / 10
     ) {
       priority = 1;
@@ -38,7 +43,7 @@ export default class GoalDrink extends Goal {
 
     const livelinessModifier = this.calculatePersonalityModifier(
       self,
-      Creature.personalityValues.liveliness,
+      personalityValueList.liveliness,
       true
     );
     priority -= livelinessModifier;
@@ -49,26 +54,26 @@ export default class GoalDrink extends Goal {
   }
   execute(self) {
     if (self.getMotive(motiveList.hydration) >= self.getMaxMotive()) {
-      self.goalManager.deleteGoal(Creature.goalList.drink);
+      self.goalManager.deleteGoal(goalList.drink);
     }
     let goals = self.getGoals();
-    if (!goals[Creature.goalList.drink]) {
+    if (!goals[goalList.drink]) {
       return;
     }
 
-    let target = goals[Creature.goalList.drink].target;
+    let target = goals[goalList.drink].target;
     if (!target) {
       self.plans.planSeekItem(
         self,
         adjectiveList.wet,
-        Creature.motiveIcons.thirst,
-        Creature.goalList.drink
+        motiveIconList.thirst,
+        goalList.drink
       );
     } else {
       if (self.queries.amIOnItem(self, target)) {
         self.plans.planDrink(self);
       } else {
-        self.plans.planMoveToItem(self, target, Creature.goalList.drink);
+        self.plans.planMoveToItem(self, target, goalList.drink);
       }
     }
   }

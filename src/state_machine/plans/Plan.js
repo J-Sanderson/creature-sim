@@ -1,10 +1,9 @@
-import Creature from '../../entities/Creature';
 import { utilities } from '../../utils/Utilities';
-import { adjectiveList, motiveList } from '../../defaults';
+import { adjectiveList, motiveList, goalList, planList } from '../../defaults';
 
 export default {
   planWander: function (self) {
-    self.setPlan(Creature.planList.wander);
+    self.setPlan(planList.wander);
     const validDirections = self.queries.getValidDirections(self);
 
     if (validDirections.length > 0) {
@@ -23,7 +22,7 @@ export default {
     }
   },
   planSeekItem: function (self, adj, motive, goal) {
-    self.setPlan(Creature.planList.seekItem);
+    self.setPlan(planList.seekItem);
 
     let interestingItems = self.queries.getItemsByAdjective(self, adj);
     const position = self.getPosition();
@@ -67,7 +66,7 @@ export default {
       }
     } else {
       self.goalManager.suspendGoal(goal);
-      self.goalManager.addGoal(self, Creature.goalList.knockItemFromToybox, {
+      self.goalManager.addGoal(self, goalList.knockItemFromToybox, {
         calledBy: goal,
         tickModifiers: {
           personality: self.getPersonalityValues(),
@@ -89,7 +88,7 @@ export default {
     self.states.stateMoveToPosition(self, itemPos);
   },
   planDrink: function (self) {
-    self.setPlan(Creature.planList.drink);
+    self.setPlan(planList.drink);
     const hydration = self.getMotive(motiveList.hydration);
     const maxVal = self.getMaxMotive();
     if (hydration >= maxVal) {
@@ -103,9 +102,9 @@ export default {
       console.error(`Error: no ${motiveList.fullness} motive found`);
       return;
     }
-    self.setPlan(Creature.planList.eat);
+    self.setPlan(planList.eat);
     if (motives[motiveList.hydration] < 10) {
-      self.goalManager.addGoal(self, Creature.goalList.drink, {
+      self.goalManager.addGoal(self, goalList.drink, {
         priority: 1,
         suspended: false,
         tickModifiers: {
@@ -113,7 +112,7 @@ export default {
           maxMotive: self.getMaxMotive(),
         },
       });
-      self.goalManager.suspendGoal(Creature.goalList.eat);
+      self.goalManager.suspendGoal(goalList.eat);
     }
     const maxVal = self.getMaxMotive();
     if (motives[motiveList.fullness] >= maxVal) {
@@ -127,9 +126,9 @@ export default {
       console.error(`Error: no ${motiveList.energy} motive found`);
       return;
     }
-    self.setPlan(Creature.planList.sleep);
+    self.setPlan(planList.sleep);
     if (motives[motiveList.hydration] < 10) {
-      self.goalManager.addGoal(self, Creature.goalList.drink, {
+      self.goalManager.addGoal(self, goalList.drink, {
         priority: 1,
         suspended: false,
         tickModifiers: {
@@ -137,10 +136,10 @@ export default {
           maxMotive: self.getMaxMotive(),
         },
       });
-      self.goalManager.suspendGoal(Creature.goalList.sleep);
+      self.goalManager.suspendGoal(goalList.sleep);
     }
     if (motives[motiveList.fullness] < 10) {
-      self.goalManager.addGoal(self, Creature.goalList.eat, {
+      self.goalManager.addGoal(self, goalList.eat, {
         priority: 1,
         suspended: false,
         tickModifiers: {
@@ -148,7 +147,7 @@ export default {
           maxMotive: self.getMaxMotive(),
         },
       });
-      self.goalManager.suspendGoal(Creature.goalList.sleep);
+      self.goalManager.suspendGoal(goalList.sleep);
     }
     const maxVal = self.getMaxMotive();
     if (motives[motiveList.energy] >= maxVal) {
@@ -157,33 +156,33 @@ export default {
     self.states.stateSleep(self, motives[motiveList.energy], maxVal);
   },
   planPetHappy: function (self) {
-    self.setPlan(Creature.planList.petHappy);
+    self.setPlan(planList.petHappy);
     self.states.statePetHappy(self);
   },
   planPetAnnoyed: function (self) {
-    self.setPlan(Creature.planList.petAnnoyed);
+    self.setPlan(planList.petAnnoyed);
     self.states.statePetAnnoyed(self);
   },
   planSitAround: function (self) {
-    self.setPlan(Creature.planList.sitAround);
+    self.setPlan(planList.sitAround);
     self.states.stateSitAround(self);
   },
   planMoveToToybox: function (self) {
-    self.setPlan(Creature.planList.moveToToybox);
+    self.setPlan(planList.moveToToybox);
     self.states.stateMoveToToybox(self);
   },
   planPushItemFromToybox(self) {
-    self.setPlan(Creature.planList.pushItemFromToybox);
+    self.setPlan(planList.pushItemFromToybox);
 
     let goals = self.getGoals();
-    if (!goals[Creature.goalList.knockItemFromToybox]) {
+    if (!goals[goalList.knockItemFromToybox]) {
       console.error(
-        `Error: no relevant goal found for ${Creature.goalList.knockItemFromToybox}`
+        `Error: no relevant goal found for ${goalList.knockItemFromToybox}`
       );
     }
 
     let adj = '';
-    let calledBy = goals[Creature.goalList.knockItemFromToybox].getCalledBy();
+    let calledBy = goals[goalList.knockItemFromToybox].getCalledBy();
     switch (calledBy) {
       case 'goalEat':
         adj = adjectiveList.tasty;
@@ -225,7 +224,7 @@ export default {
         }
       }
       if (nearbyItems.length) {
-        self.goalManager.deleteGoal(Creature.goalList.knockItemFromToybox);
+        self.goalManager.deleteGoal(goalList.knockItemFromToybox);
         self.goalManager.unsuspendGoal(calledBy);
       } else {
         let interestingButtons = buttons.filter((button) => {
@@ -247,7 +246,7 @@ export default {
             interestingButtons[utilities.rand(interestingButtons.length - 1)];
           button.click();
         } else {
-          self.goalManager.deleteGoal(Creature.goalList.knockItemFromToybox);
+          self.goalManager.deleteGoal(goalList.knockItemFromToybox);
           self.goalManager.unsuspendGoal(calledBy);
         }
       }
@@ -261,23 +260,23 @@ export default {
           interestingButtons[utilities.rand(interestingButtons.length - 1)];
         button.click();
       }
-      self.goalManager.deleteGoal(Creature.goalList.knockItemFromToybox);
+      self.goalManager.deleteGoal(goalList.knockItemFromToybox);
     }
   },
   planChewToy(self) {
-    self.setPlan(Creature.planList.chewToy);
+    self.setPlan(planList.chewToy);
     self.states.stateChewToy(self);
   },
   planBounceToy(self) {
-    self.setPlan(Creature.planList.bounceToy);
+    self.setPlan(planList.bounceToy);
     self.states.stateBounceToy(self);
   },
   planCuddleToy(self) {
-    self.setPlan(Creature.planList.cuddleToy);
+    self.setPlan(planList.cuddleToy);
     self.states.stateCuddleToy(self);
   },
   planMoveFromItem(self) {
-    self.setPlan(Creature.planList.moveFromItem);
+    self.setPlan(planList.moveFromItem);
     const validDirections = self.queries.getValidDirections(self);
 
     // todo should try to move to an empty square if possible

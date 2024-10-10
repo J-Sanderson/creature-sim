@@ -1,5 +1,6 @@
 import Goal from './Goal';
 import Creature from '../../entities/Creature';
+import { goalList, stateList } from '../../defaults';
 
 export default class GoalBePetted extends Goal {
   constructor(params) {
@@ -13,14 +14,14 @@ export default class GoalBePetted extends Goal {
   }
   execute(self) {
     if (
-      self.status.state === Creature.stateList.drink ||
-      self.status.state === Creature.stateList.eat ||
-      self.status.state === Creature.stateList.sleep ||
-      self.status.state === Creature.stateList.petAnnoyed
+      self.status.state === stateList.drink ||
+      self.status.state === stateList.eat ||
+      self.status.state === stateList.sleep ||
+      self.status.state === stateList.petAnnoyed
     ) {
       this.decrementTicks();
       if (this.getTicks() <= 0) {
-        self.goalManager.deleteGoal(Creature.goalList.pet);
+        self.goalManager.deleteGoal(goalList.pet);
       }
       self.plans.planPetAnnoyed(self);
     } else {
@@ -31,7 +32,7 @@ export default class GoalBePetted extends Goal {
       ) {
         this.decrementTicks();
         if (this.getTicks() <= 0) {
-          self.goalManager.deleteGoal(Creature.goalList.pet);
+          self.goalManager.deleteGoal(goalList.pet);
         }
       }
       self.plans.planPetHappy(self);

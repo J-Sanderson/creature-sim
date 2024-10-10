@@ -1,5 +1,5 @@
 import Goal from './Goal';
-import Creature from '../../entities/Creature';
+import { personalityValueList, goalList } from '../../defaults';
 
 export default class GoalWander extends Goal {
   constructor(params) {
@@ -13,7 +13,7 @@ export default class GoalWander extends Goal {
       ) {
         let ticks = this.getTicks();
         const adjustedTicks = this.calculateModifiedTicks(
-          modifiers.personality[Creature.personalityValues.liveliness],
+          modifiers.personality[personalityValueList.liveliness],
           modifiers.maxMotive,
           ticks,
           true
@@ -22,7 +22,7 @@ export default class GoalWander extends Goal {
 
         let threshold = this.getDecayThreshold();
         const adjustedThreshold = this.calculateModifiedDecayThreshold(
-          modifiers.personality[Creature.personalityValues.liveliness],
+          modifiers.personality[personalityValueList.liveliness],
           modifiers.maxMotive,
           threshold,
           true
@@ -43,9 +43,9 @@ export default class GoalWander extends Goal {
 
     const goals = self.getGoals();
     if (
-      goals.hasOwnProperty(Creature.goalList.eat) ||
-      goals.hasOwnProperty(Creature.goalList.drink) ||
-      goals.hasOwnProperty(Creature.goalList.sleep)
+      goals.hasOwnProperty(goalList.eat) ||
+      goals.hasOwnProperty(goalList.drink) ||
+      goals.hasOwnProperty(goalList.sleep)
     ) {
       return -1;
     }
@@ -54,7 +54,7 @@ export default class GoalWander extends Goal {
 
     const livelinessModifier = this.calculatePersonalityModifier(
       self,
-      Creature.personalityValues.liveliness,
+      personalityValueList.liveliness,
       true
     );
     priority -= livelinessModifier;
@@ -66,7 +66,7 @@ export default class GoalWander extends Goal {
   execute(self) {
     this.decrementTicks();
     if (this.getTicks() <= 0) {
-      self.goalManager.deleteGoal(Creature.goalList.wander);
+      self.goalManager.deleteGoal(goalList.wander);
     }
 
     self.plans.planWander(self);

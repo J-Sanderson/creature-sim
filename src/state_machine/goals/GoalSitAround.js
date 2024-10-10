@@ -1,6 +1,10 @@
 import Goal from './Goal';
-import Creature from '../../entities/Creature';
-import { adjectiveList, motiveList } from '../../defaults';
+import {
+  adjectiveList,
+  motiveList,
+  personalityValueList,
+  goalList,
+} from '../../defaults';
 
 export default class GoalSitAround extends Goal {
   constructor(params) {
@@ -14,7 +18,7 @@ export default class GoalSitAround extends Goal {
       ) {
         let ticks = this.getTicks();
         const adjustedTicks = this.calculateModifiedTicks(
-          modifiers.personality[Creature.personalityValues.liveliness],
+          modifiers.personality[personalityValueList.liveliness],
           modifiers.maxMotive,
           ticks,
           false
@@ -23,7 +27,7 @@ export default class GoalSitAround extends Goal {
 
         let threshold = this.getDecayThreshold();
         const adjustedThreshold = this.calculateModifiedDecayThreshold(
-          modifiers.personality[Creature.personalityValues.liveliness],
+          modifiers.personality[personalityValueList.liveliness],
           modifiers.maxMotive,
           threshold,
           false
@@ -35,7 +39,6 @@ export default class GoalSitAround extends Goal {
   filter(self, nonReactive = false) {
     const motives = self.getMotives();
     const maxMotive = self.getMaxMotive();
-    const personalityValues = self.getPersonalityValues();
 
     for (let motive in motives) {
       if (motives[motive] <= maxMotive / 10) {
@@ -45,9 +48,9 @@ export default class GoalSitAround extends Goal {
 
     const goals = self.getGoals();
     if (
-      goals.hasOwnProperty(Creature.goalList.eat) ||
-      goals.hasOwnProperty(Creature.goalList.drink) ||
-      goals.hasOwnProperty(Creature.goalList.sleep)
+      goals.hasOwnProperty(goalList.eat) ||
+      goals.hasOwnProperty(goalList.drink) ||
+      goals.hasOwnProperty(goalList.sleep)
     ) {
       return -1;
     }
@@ -60,7 +63,7 @@ export default class GoalSitAround extends Goal {
 
     const livelinessModifier = this.calculatePersonalityModifier(
       self,
-      Creature.personalityValues.liveliness,
+      personalityValueList.liveliness,
       false
     );
     priority -= livelinessModifier;
@@ -79,7 +82,7 @@ export default class GoalSitAround extends Goal {
 
     this.decrementTicks();
     if (this.getTicks() <= 0) {
-      self.goalManager.deleteGoal(Creature.goalList.sitAround);
+      self.goalManager.deleteGoal(goalList.sitAround);
     }
     self.plans.planSitAround(self);
   }

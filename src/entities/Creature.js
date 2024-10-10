@@ -2,87 +2,20 @@ import Entity from './Entity';
 import { GoalManager } from '../managers/GoalManager';
 import { utilities } from '../utils/Utilities';
 import { queries } from '../utils/Queries';
-import { motiveList, flavorList, colorList, adjectiveList } from '../defaults';
+import {
+  motiveList,
+  flavorList,
+  colorList,
+  adjectiveList,
+  personalityValueList,
+  goalList,
+  stateList,
+} from '../defaults';
 import states from '../state_machine/states/State';
 import plans from '../state_machine/plans/Plan';
 import goals from '../state_machine/goals/';
 
 export default class Creature extends Entity {
-  static goalList = {
-    drink: 'goalDrink',
-    eat: 'goalEat',
-    sleep: 'goalSleep',
-    wander: 'goalWander',
-    pet: 'goalBePetted',
-    sitAround: 'goalSitAround',
-    knockItemFromToybox: 'goalKnockItemFromToybox',
-    chewToy: 'goalChewToy',
-    bounceToy: 'goalBounceToy',
-    cuddleToy: 'goalCuddleToy',
-  };
-
-  static planList = {
-    wander: 'planWander',
-    seekItem: 'planSeekItem',
-    moveToItem: 'planMoveToItem',
-    sleep: 'planSleep',
-    eat: 'planEat',
-    drink: 'planDrink',
-    petHappy: 'planPetHappy',
-    petAnnoyed: 'planPetAnnoyed',
-    sitAround: 'planSitAround',
-    moveToToybox: 'planMoveToToybox',
-    pushItemFromToybox: 'planPushItemFromToybox',
-    chewToy: 'planChewToy',
-    bounceToy: 'planBounceToy',
-    cuddleToy: 'planCuddleToy',
-    moveFromItem: 'planMoveFromItem',
-  };
-
-  static stateList = {
-    wander: 'stateMoveRandomly',
-    seekItem: 'stateSeekItem',
-    moveToPosition: 'stateMoveToPosition',
-    sleep: 'stateSleep',
-    eat: 'stateEat',
-    drink: 'stateDrink',
-    petHappy: 'statePetHappy',
-    petAnnoyed: 'statePetAnnoyed',
-    sitAround: 'stateSitAround',
-    moveToToybox: 'stateMoveToToybox',
-    pushItemFromToybox: 'statePushItemFromToybox',
-    chewToy: 'stateChewToy',
-    bounceToy: 'stateBounceToy',
-    cuddleToy: 'stateCuddleToy',
-  };
-
-  static motiveIcons = {
-    thirst: '&#x1F4A7;',
-    hunger: '&#x1F374;',
-    tired: '&#x1F634;',
-    drink: '&#x1F445;',
-    eat: '&#x1F37D;',
-    sleep: '&#x1F4A4;',
-    petHappy: '&#x1FA77;',
-    petAnnoyed: '&#x1F620;',
-    movingToTarget: '&#x1F43E;',
-    sitAround: '&#x2601;',
-    pushItemFromToybox: '&#x1F4A5;',
-    chewToy: '&#x1F9B7;',
-    bounceToy: '&#x26F9;',
-    cuddleToy: '&#x1FAC2;',
-  };
-
-  static personalityValues = {
-    liveliness: 'liveliness',
-    patience: 'patience',
-    naughtiness: 'naughtiness',
-    metabolism: 'metabolism',
-    playfulness: 'playfulness',
-    finickiness: 'finickiness',
-    kindness: 'kindness',
-  };
-
   static validMotives = [
     motiveList.fullness,
     motiveList.hydration,
@@ -128,9 +61,10 @@ export default class Creature extends Entity {
       },
     };
 
-    for (let value in Creature.personalityValues) {
-      this.personality.values[Creature.personalityValues[value]] =
-        utilities.rand(this.maxMotive);
+    for (let value in personalityValueList) {
+      this.personality.values[personalityValueList[value]] = utilities.rand(
+        this.maxMotive
+      );
     }
     let personalityValues = this.getPersonalityValues();
 
@@ -179,7 +113,7 @@ export default class Creature extends Entity {
     this.setIcon();
 
     this.eventHandlers.petStart = () => {
-      this.goalManager.addGoal(this, Creature.goalList.pet, {
+      this.goalManager.addGoal(this, goalList.pet, {
         priority: 1,
         suspended: false,
         ticks: 1,
@@ -195,7 +129,7 @@ export default class Creature extends Entity {
     );
 
     this.eventHandlers.petStop = () => {
-      this.goalManager.deleteGoal(Creature.goalList.pet);
+      this.goalManager.deleteGoal(goalList.pet);
     };
     this.outputs.icon.addEventListener('mouseup', this.eventHandlers.petStop);
 
@@ -211,10 +145,9 @@ export default class Creature extends Entity {
     const decayThresholds = this.getDecayThresholds();
 
     // fullness decay
-    if (this.status.state !== Creature.stateList.eat) {
+    if (this.status.state !== stateList.eat) {
       if (
-        (this.status.state !== Creature.stateList.sleep ||
-          Math.random() < 0.25) &&
+        (this.status.state !== stateList.sleep || Math.random() < 0.25) &&
         this.status.motives[motiveList.fullness] > 0
       ) {
         if (Math.random() < decayThresholds[motiveList.fullness]) {
@@ -226,12 +159,12 @@ export default class Creature extends Entity {
       }
     }
     if (
-      !(Creature.goalList.eat in this.goalManager.getGoalList()) &&
+      !(goalList.eat in this.goalManager.getGoalList()) &&
       this.queries.amIHungry(this)
     ) {
       this.goalManager.addGoal(
         this,
-        Creature.goalList.eat,
+        goalList.eat,
         {
           tickModifiers: {
             personality: this.getPersonalityValues(),
@@ -243,10 +176,9 @@ export default class Creature extends Entity {
     }
 
     // hydration decay
-    if (this.status.state !== Creature.stateList.drink) {
+    if (this.status.state !== stateList.drink) {
       if (
-        (this.status.state !== Creature.stateList.sleep ||
-          Math.random() < 0.25) &&
+        (this.status.state !== stateList.sleep || Math.random() < 0.25) &&
         this.status.motives[motiveList.hydration] > 0 &&
         Math.random() < decayThresholds[motiveList.hydration]
       ) {
@@ -254,12 +186,12 @@ export default class Creature extends Entity {
       }
     }
     if (
-      !(Creature.goalList.drink in this.goalManager.getGoalList()) &&
+      !(goalList.drink in this.goalManager.getGoalList()) &&
       this.queries.amIThirsty(this)
     ) {
       this.goalManager.addGoal(
         this,
-        Creature.goalList.drink,
+        goalList.drink,
         {
           tickModifiers: {
             personality: this.getPersonalityValues(),
@@ -272,7 +204,7 @@ export default class Creature extends Entity {
 
     // energy decay
     if (
-      this.status.state !== Creature.stateList.sleep &&
+      this.status.state !== stateList.sleep &&
       this.status.motives[motiveList.energy] > 0
     ) {
       if (Math.random() < decayThresholds[motiveList.energy]) {
@@ -283,12 +215,12 @@ export default class Creature extends Entity {
       }
     }
     if (
-      !(Creature.goalList.sleep in this.goalManager.getGoalList()) &&
+      !(goalList.sleep in this.goalManager.getGoalList()) &&
       this.queries.amITired(this)
     ) {
       this.goalManager.addGoal(
         this,
-        Creature.goalList.sleep,
+        goalList.sleep,
         {
           tickModifiers: {
             personality: this.getPersonalityValues(),

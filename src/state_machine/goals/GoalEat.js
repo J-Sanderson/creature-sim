@@ -1,6 +1,12 @@
 import Goal from './Goal';
-import Creature from '../../entities/Creature';
-import { adjectiveList, motiveList } from '../../defaults';
+import {
+  adjectiveList,
+  motiveList,
+  personalityValueList,
+  goalList,
+  planList,
+  motiveIconList,
+} from '../../defaults';
 
 export default class GoalEat extends Goal {
   constructor(params) {
@@ -12,7 +18,6 @@ export default class GoalEat extends Goal {
 
     const motives = self.getMotives();
     const maxMotive = self.getMaxMotive();
-    const personalityValues = self.getPersonalityValues();
     const plan = self.getPlan();
     const nearbyFood = self.queries.getItemsByAdjective(
       self,
@@ -22,7 +27,7 @@ export default class GoalEat extends Goal {
     let priority = 6;
 
     if (
-      plan === Creature.planList.eat ||
+      plan === planList.eat ||
       motives[motiveList.fullness] <= maxMotive / 10
     ) {
       priority = 1;
@@ -45,7 +50,7 @@ export default class GoalEat extends Goal {
 
     const metabolismModifier = this.calculatePersonalityModifier(
       self,
-      Creature.personalityValues.metabolism,
+      personalityValueList.metabolism,
       true
     );
     priority -= metabolismModifier;
@@ -56,26 +61,26 @@ export default class GoalEat extends Goal {
   }
   execute(self) {
     if (self.getMotive(motiveList.fullness) >= self.getMaxMotive()) {
-      self.goalManager.deleteGoal(Creature.goalList.eat);
+      self.goalManager.deleteGoal(goalList.eat);
     }
     let goals = self.getGoals();
-    if (!goals[Creature.goalList.eat]) {
+    if (!goals[goalList.eat]) {
       return;
     }
 
-    let target = goals[Creature.goalList.eat].target;
+    let target = goals[goalList.eat].target;
     if (!target) {
       self.plans.planSeekItem(
         self,
         adjectiveList.tasty,
-        Creature.motiveIcons.hunger,
-        Creature.goalList.eat
+        motiveIconList.hunger,
+        goalList.eat
       );
     } else {
       if (self.queries.amIOnItem(self, target)) {
         self.plans.planEat(self);
       } else {
-        self.plans.planMoveToItem(self, target, Creature.goalList.eat);
+        self.plans.planMoveToItem(self, target, goalList.eat);
       }
     }
   }

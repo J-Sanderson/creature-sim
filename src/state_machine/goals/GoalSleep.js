@@ -1,6 +1,12 @@
 import Goal from './Goal';
-import Creature from '../../entities/Creature';
-import { adjectiveList, motiveList } from '../../defaults';
+import {
+  adjectiveList,
+  motiveList,
+  personalityValueList,
+  goalList,
+  planList,
+  motiveIconList,
+} from '../../defaults';
 
 export default class GoalSleep extends Goal {
   constructor(params) {
@@ -12,7 +18,6 @@ export default class GoalSleep extends Goal {
 
     const motives = self.getMotives();
     const maxMotive = self.getMaxMotive();
-    const personalityValues = self.getPersonalityValues();
     const plan = self.getPlan();
     const nearbyBeds = self.queries.getItemsByAdjective(
       self,
@@ -22,7 +27,7 @@ export default class GoalSleep extends Goal {
     let priority = 6;
 
     if (
-      plan === Creature.planList.sleep ||
+      plan === planList.sleep ||
       motives[motiveList.energy] <= maxMotive / 10
     ) {
       priority = 1;
@@ -38,7 +43,7 @@ export default class GoalSleep extends Goal {
 
     const livelinessModifier = this.calculatePersonalityModifier(
       self,
-      Creature.personalityValues.liveliness,
+      personalityValueList.liveliness,
       false
     );
     priority -= livelinessModifier;
@@ -49,26 +54,26 @@ export default class GoalSleep extends Goal {
   }
   execute(self) {
     if (self.getMotive(motiveList.energy) >= self.getMaxMotive()) {
-      self.goalManager.deleteGoal(Creature.goalList.sleep);
+      self.goalManager.deleteGoal(goalList.sleep);
     }
     let goals = self.getGoals();
-    if (!goals[Creature.goalList.sleep]) {
+    if (!goals[goalList.sleep]) {
       return;
     }
 
-    let target = goals[Creature.goalList.sleep].target;
+    let target = goals[goalList.sleep].target;
     if (!target) {
       self.plans.planSeekItem(
         self,
         adjectiveList.restful,
-        Creature.motiveIcons.tired,
-        Creature.goalList.sleep
+        motiveIconList.tired,
+        goalList.sleep
       );
     } else {
       if (self.queries.amIOnItem(self, target)) {
         self.plans.planSleep(self);
       } else {
-        self.plans.planMoveToItem(self, target, Creature.goalList.sleep);
+        self.plans.planMoveToItem(self, target, goalList.sleep);
       }
     }
   }

@@ -1,6 +1,5 @@
 import Goal from './Goal';
-import Creature from '../../entities/Creature';
-import { adjectiveList, motiveList } from '../../defaults';
+import { adjectiveList, personalityValueList, goalList } from '../../defaults';
 
 export default class GoalCuddleToy extends Goal {
   constructor(params) {
@@ -15,19 +14,19 @@ export default class GoalCuddleToy extends Goal {
       ) {
         let ticks = this.getTicks();
         let adjustedTicks = this.calculateModifiedTicks(
-          modifiers.personality[Creature.personalityValues.liveliness],
+          modifiers.personality[personalityValueList.liveliness],
           modifiers.maxMotive,
           ticks,
           false
         );
         adjustedTicks = this.calculateModifiedTicks(
-          modifiers.personality[Creature.personalityValues.playfulness],
+          modifiers.personality[personalityValueList.playfulness],
           modifiers.maxMotive,
           adjustedTicks,
           true
         );
         adjustedTicks = this.calculateModifiedTicks(
-          modifiers.personality[Creature.personalityValues.kindness],
+          modifiers.personality[personalityValueList.kindness],
           modifiers.maxMotive,
           adjustedTicks,
           true
@@ -36,14 +35,14 @@ export default class GoalCuddleToy extends Goal {
 
         let threshold = this.getDecayThreshold();
         let adjustedThreshold = this.calculateModifiedDecayThreshold(
-          modifiers.personality[Creature.personalityValues.liveliness],
+          modifiers.personality[personalityValueList.liveliness],
           modifiers.maxMotive,
           threshold,
           false
         );
 
         adjustedThreshold = this.calculateModifiedDecayThreshold(
-          modifiers.personality[Creature.personalityValues.kindness],
+          modifiers.personality[personalityValueList.kindness],
           modifiers.maxMotive,
           threshold,
           true
@@ -57,8 +56,8 @@ export default class GoalCuddleToy extends Goal {
     const currentGoal = self.getCurrentGoal();
     if (
       this.getIsSuspended() &&
-      currentGoal !== Creature.goalList.knockItemFromToybox &&
-      currentGoal !== Creature.goalList.cuddleToy
+      currentGoal !== goalList.knockItemFromToybox &&
+      currentGoal !== goalList.cuddleToy
     ) {
       return -1;
     }
@@ -90,21 +89,21 @@ export default class GoalCuddleToy extends Goal {
 
     const playfulnessModifier = this.calculatePersonalityModifier(
       self,
-      Creature.personalityValues.playfulness,
+      personalityValueList.playfulness,
       true
     );
     priority -= playfulnessModifier;
 
     const livelinessModifier = this.calculatePersonalityModifier(
       self,
-      Creature.personalityValues.liveliness,
+      personalityValueList.liveliness,
       false
     );
     priority -= livelinessModifier;
 
     const kindnessModifier = this.calculatePersonalityModifier(
       self,
-      Creature.personalityValues.kindness,
+      personalityValueList.kindness,
       true
     );
     priority -= kindnessModifier;
@@ -120,17 +119,17 @@ export default class GoalCuddleToy extends Goal {
         self,
         adjectiveList.soft,
         null,
-        Creature.goalList.cuddleToy
+        goalList.cuddleToy
       );
     } else {
       if (self.queries.amIOnItem(self, target)) {
         this.decrementTicks();
         if (this.getTicks() <= 0) {
-          self.goalManager.deleteGoal(Creature.goalList.cuddleToy);
+          self.goalManager.deleteGoal(goalList.cuddleToy);
         }
         self.plans.planCuddleToy(self);
       } else {
-        self.plans.planMoveToItem(self, target, Creature.goalList.cuddleToy);
+        self.plans.planMoveToItem(self, target, goalList.cuddleToy);
       }
     }
   }

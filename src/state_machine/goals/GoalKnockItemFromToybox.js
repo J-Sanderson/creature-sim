@@ -1,6 +1,5 @@
 import Goal from './Goal';
-import Creature from '../../entities/Creature';
-import { adjectiveList, motiveList } from '../../defaults';
+import { adjectiveList, personalityValueList, goalList } from '../../defaults';
 
 export default class GoalKnockItemFromToybox extends Goal {
   constructor(params) {
@@ -19,27 +18,26 @@ export default class GoalKnockItemFromToybox extends Goal {
     }
 
     const goals = self.getGoals();
-    const calledBy =
-      goals[Creature.goalList.knockItemFromToybox]?.getCalledBy();
+    const calledBy = goals[goalList.knockItemFromToybox]?.getCalledBy();
     if (calledBy) {
       let adj = '';
       switch (calledBy) {
-        case Creature.goalList.sleep:
+        case goalList.sleep:
           adj = adjectiveList.restful;
           break;
-        case Creature.goalList.eat:
+        case goalList.eat:
           adj = adjectiveList.tasty;
           break;
-        case Creature.goalList.drink:
+        case goalList.drink:
           adj = adjectiveList.wet;
           break;
-        case Creature.goalList.chewToy:
+        case goalList.chewToy:
           adj = adjectiveList.chew;
           break;
-        case Creature.goalList.bounceToy:
+        case goalList.bounceToy:
           adj = adjectiveList.bounce;
           break;
-        case Creature.goalList.cuddleToy:
+        case goalList.cuddleToy:
           adj = adjectiveList.soft;
           break;
       }
@@ -55,9 +53,9 @@ export default class GoalKnockItemFromToybox extends Goal {
     }
 
     if (
-      calledBy !== Creature.goalList.sleep &&
-      calledBy !== Creature.goalList.eat &&
-      calledBy !== Creature.goalList.drink &&
+      calledBy !== goalList.sleep &&
+      calledBy !== goalList.eat &&
+      calledBy !== goalList.drink &&
       personalityValues.naughtiness < maxMotive * 0.9 &&
       personalityValues.patience > maxMotive * 0.1
     ) {
@@ -68,21 +66,21 @@ export default class GoalKnockItemFromToybox extends Goal {
 
     const patienceModifier = this.calculatePersonalityModifier(
       self,
-      Creature.personalityValues.patience,
+      personalityValueList.patience,
       false
     );
     priority -= patienceModifier;
 
     const kindnessModifier = this.calculatePersonalityModifier(
       self,
-      Creature.personalityValues.kindness,
+      personalityValueList.kindness,
       false
     );
     priority -= kindnessModifier;
 
     const naughtinessModifier = this.calculatePersonalityModifier(
       self,
-      Creature.personalityValues.naughtiness,
+      personalityValueList.naughtiness,
       true
     );
     priority -= naughtinessModifier;

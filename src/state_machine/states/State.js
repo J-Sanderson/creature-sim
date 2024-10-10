@@ -1,10 +1,14 @@
-import Creature from '../../entities/Creature';
 import worldManager from '../../managers/WorldManager';
-import { motiveList } from '../../defaults';
+import {
+  motiveList,
+  goalList,
+  stateList,
+  motiveIconList,
+} from '../../defaults';
 
 export default {
   stateMoveRandomly: function (self, pos) {
-    self.setState(Creature.stateList.wander);
+    self.setState(stateList.wander);
     self.showMotive('');
     self.setXPosition(pos.x);
     self.setYPosition(pos.y);
@@ -13,14 +17,14 @@ export default {
     world.moveEntity(self.outputs.icon, self.getPosition());
   },
   stateSeekItem: function (self, motive) {
-    self.setState(Creature.stateList.seekItem);
+    self.setState(stateList.seekItem);
     if (motive) {
       self.showMotive(motive);
     }
   },
   stateMoveToPosition(self, newPos) {
-    self.setState(Creature.stateList.moveToPosition);
-    self.showMotive(Creature.motiveIcons.movingToTarget);
+    self.setState(stateList.moveToPosition);
+    self.showMotive(motiveIconList.movingToTarget);
 
     // move toward the item
     const position = self.getPosition();
@@ -42,13 +46,13 @@ export default {
   stateDrink(self, hydration, maxVal) {
     const item = self.queries.getItemFromWorld(
       self,
-      self.getGoals()[Creature.goalList.drink].target
+      self.getGoals()[goalList.drink].target
     );
     if (item) {
       const amount = item.getMotive(motiveList.amount);
       if (amount > 0) {
-        self.setState(Creature.stateList.drink);
-        self.showMotive(Creature.motiveIcons.drink);
+        self.setState(stateList.drink);
+        self.showMotive(motiveIconList.drink);
         const transfer = 20;
         let newVal = (hydration += transfer);
         if (newVal > maxVal) {
@@ -59,23 +63,23 @@ export default {
       } else {
         const world = worldManager.getWorld(self.world);
         world.deleteEntity(item.getGUID());
-        self.goalManager.deleteGoal(Creature.goalList.drink);
+        self.goalManager.deleteGoal(goalList.drink);
       }
     } else {
-      self.goalManager.deleteGoal(Creature.goalList.drink);
+      self.goalManager.deleteGoal(goalList.drink);
     }
   },
   stateEat(self, motives, maxVal) {
     const item = self.queries.getItemFromWorld(
       self,
-      self.getGoals()[Creature.goalList.eat].target
+      self.getGoals()[goalList.eat].target
     );
 
     if (item) {
       const amount = item.getMotive(motiveList.amount);
       if (amount > 0) {
-        self.setState(Creature.stateList.eat);
-        self.showMotive(Creature.motiveIcons.eat);
+        self.setState(stateList.eat);
+        self.showMotive(motiveIconList.eat);
         const transfer = 10;
         let newVal = (motives[motiveList.fullness] += transfer);
         if (newVal > maxVal) {
@@ -92,15 +96,15 @@ export default {
       } else {
         const world = worldManager.getWorld(self.world);
         world.deleteEntity(item.getGUID());
-        self.goalManager.deleteGoal(Creature.goalList.eat);
+        self.goalManager.deleteGoal(goalList.eat);
       }
     } else {
-      self.goalManager.deleteGoal(Creature.goalList.eat);
+      self.goalManager.deleteGoal(goalList.eat);
     }
   },
   stateSleep(self, energy, maxVal) {
-    self.setState(Creature.stateList.sleep);
-    self.showMotive(Creature.motiveIcons.sleep);
+    self.setState(stateList.sleep);
+    self.showMotive(motiveIconList.sleep);
     let newVal = (energy += 1);
     if (newVal > maxVal) {
       newVal = maxVal;
@@ -108,39 +112,39 @@ export default {
     self.setMotive(motiveList.energy, newVal);
   },
   statePetHappy(self) {
-    self.setState(Creature.stateList.petHappy);
-    self.showMotive(Creature.motiveIcons.petHappy);
+    self.setState(stateList.petHappy);
+    self.showMotive(motiveIconList.petHappy);
   },
   statePetAnnoyed(self) {
-    self.setState(Creature.stateList.petAnnoyed);
-    self.showMotive(Creature.motiveIcons.petAnnoyed);
+    self.setState(stateList.petAnnoyed);
+    self.showMotive(motiveIconList.petAnnoyed);
   },
   stateSitAround(self) {
-    self.setState(Creature.stateList.sitAround);
-    self.showMotive(Creature.motiveIcons.sitAround);
+    self.setState(stateList.sitAround);
+    self.showMotive(motiveIconList.sitAround);
   },
   stateMoveToToybox(self) {
-    self.setState(Creature.stateList.moveToToybox);
-    self.showMotive(Creature.motiveIcons.movingToTarget);
+    self.setState(stateList.moveToToybox);
+    self.showMotive(motiveIconList.movingToTarget);
     const pos = self.getPosition();
     self.setYPosition(pos.y + 1);
     const world = worldManager.getWorld(self.world);
     world.moveEntity(self.outputs.icon, self.getPosition());
   },
   statePushItemFromToybox(self) {
-    self.setState(Creature.stateList.pushItemFromToybox);
-    self.showMotive(Creature.motiveIcons.pushItemFromToybox);
+    self.setState(stateList.pushItemFromToybox);
+    self.showMotive(motiveIconList.pushItemFromToybox);
   },
   stateChewToy(self) {
-    self.setState(Creature.stateList.chewToy);
-    self.showMotive(Creature.motiveIcons.chewToy);
+    self.setState(stateList.chewToy);
+    self.showMotive(motiveIconList.chewToy);
   },
   stateBounceToy(self) {
-    self.setState(Creature.stateList.bounceToy);
-    self.showMotive(Creature.motiveIcons.bounceToy);
+    self.setState(stateList.bounceToy);
+    self.showMotive(motiveIconList.bounceToy);
   },
   stateCuddleToy(self) {
-    self.setState(Creature.stateList.cuddleToy);
-    self.showMotive(Creature.motiveIcons.cuddleToy);
+    self.setState(stateList.cuddleToy);
+    self.showMotive(motiveIconList.cuddleToy);
   },
 };

@@ -46,6 +46,7 @@ export const personalityValueList = {
   playfulness: 'playfulness',
   finickiness: 'finickiness',
   kindness: 'kindness',
+  independence: 'independence',
 };
 
 export const goalList = {

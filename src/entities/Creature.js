@@ -10,7 +10,6 @@ import {
   adjectiveList,
   personalityValueList,
   goalList,
-  stateList,
 } from '../defaults';
 import states from '../state_machine/states';
 import plans from '../state_machine/plans';
@@ -112,6 +111,23 @@ export default class Creature extends Entity {
       this.goalManager.deleteGoal(goalList.pet);
     };
     this.outputs.icon.addEventListener('mouseup', this.eventHandlers.petStop);
+
+    this.eventHandlers.itemDeleted = (e) => {
+      this.goalManager.addGoal(this, goalList.missingItem, {
+        priority: 5,
+        suspended: false,
+        ticks: 1,
+        tickModifiers: {
+          personality: personalityValues,
+          maxMotive: this.maxMotive,
+        },
+        target: e.detail,
+      });
+    };
+    this.outputs.icon.addEventListener(
+      'deleteItem',
+      this.eventHandlers.itemDeleted
+    );
 
     this.goalManager = new GoalManager();
     this.metabolismManager = new MetabolismManager({

@@ -155,6 +155,11 @@ export class World {
   toggleItem(button, item) {
     let entityId = button.dataset.entityId;
     if (entityId) {
+      const event = new CustomEvent('deleteItem', { detail: entityId });
+      const creatures = this.getCreatures();
+      creatures.forEach((creature) => {
+        creature.getOutputs().icon.dispatchEvent(event);
+      });
       this.deleteEntity(entityId);
     } else {
       let existingItems = this.getItems();
@@ -373,6 +378,10 @@ export class World {
 
   getItems() {
     return this.entities.items;
+  }
+
+  getCreatures() {
+    return this.entities.creatures;
   }
 
   getBounds() {

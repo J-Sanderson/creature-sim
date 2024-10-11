@@ -12,6 +12,7 @@ import { statePushItemFromToybox } from './StatePushItemFromToybox';
 import { stateChewToy } from './StateChewToy';
 import { stateBounceToy } from './StateBounceToy';
 import { stateCuddleToy } from './StateCuddleToy';
+import { stateMissingItem } from './StateMissingItem';
 
 export default {
   stateMoveRandomly,
@@ -28,4 +29,5 @@ export default {
   stateChewToy,
   stateBounceToy,
   stateCuddleToy,
+  stateMissingItem,
 };

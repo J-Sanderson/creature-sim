@@ -66,6 +66,10 @@ export default class Goal {
     this.target = target;
   }
 
+  getTarget() {
+    return this.target;
+  }
+
   getCalledBy() {
     return this.calledBy;
   }

@@ -59,6 +59,7 @@ export const goalList = {
   chewToy: 'goalChewToy',
   bounceToy: 'goalBounceToy',
   cuddleToy: 'goalCuddleToy',
+  missingItem: 'goalMissingItem',
 };
 
 export const planList = {
@@ -77,6 +78,7 @@ export const planList = {
   bounceToy: 'planBounceToy',
   cuddleToy: 'planCuddleToy',
   moveFromItem: 'planMoveFromItem',
+  missingItem: 'planMissingItem',
 };
 
 export const stateList = {
@@ -94,6 +96,7 @@ export const stateList = {
   chewToy: 'stateChewToy',
   bounceToy: 'stateBounceToy',
   cuddleToy: 'stateCuddleToy',
+  missingItem: 'stateMissingItem',
 };
 
 export const motiveIconList = {
@@ -111,6 +114,7 @@ export const motiveIconList = {
   chewToy: '&#x1F9B7;',
   bounceToy: '&#x26F9;',
   cuddleToy: '&#x1FAC2;',
+  missingItem: '&#x2049;',
 };
 
 export const goalTypeList = {

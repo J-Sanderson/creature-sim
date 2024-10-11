@@ -259,7 +259,7 @@ export class World {
       creature.setOutputEl(`slider-${motive}`, slider);
 
       slider.addEventListener('change', (e) => {
-        creature.setMotive(motive, e.target.value);
+        creature.setMotive(motive, parseInt(e.target.value));
       });
     }
 

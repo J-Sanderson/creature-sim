@@ -77,7 +77,7 @@ export default class Goal {
   calculatePersonalityModifier(self, personalityType, positive = true) {
     const personalityValues = self.getPersonalityValues();
     const personalityValue = personalityValues[personalityType];
-    if (!personalityValue) {
+    if (typeof personalityValue !== 'number') {
       console.error(`Error: no personality value found for ${personalityType}`);
       return 0;
     }
@@ -94,7 +94,7 @@ export default class Goal {
   }
 
   calculateModifiedTicks(personalityVal, maxMotive, ticks, positive = true) {
-    if (!personalityVal || !maxMotive) {
+    if (typeof personalityVal !== 'number' || !maxMotive) {
       console.error(
         `Error: could not find personality value or max motive value`
       );

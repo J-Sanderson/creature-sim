@@ -14,6 +14,7 @@ import { planBounceToy } from './PlanBounceToy';
 import { planCuddleToy } from './PlanCuddleToy';
 import { planMoveFromItem } from './PlanMoveFromItem';
 import { planMissingItem } from './PlanMissingItem';
+import { planAddedItem } from './PlanAddedItem';
 
 export default {
   planWander,
@@ -32,4 +33,5 @@ export default {
   planCuddleToy,
   planMoveFromItem,
   planMissingItem,
+  planAddedItem,
 };

@@ -9,6 +9,7 @@ import GoalChewToy from './GoalChewToy';
 import GoalBounceToy from './GoalBounceToy';
 import GoalCuddleToy from './GoalCuddleToy';
 import GoalMissingItem from './GoalMissingItem';
+import GoalAddedItem from './GoalAddedItem';
 
 export default {
   goalWander: GoalWander,
@@ -22,4 +23,5 @@ export default {
   goalBounceToy: GoalBounceToy,
   goalCuddleToy: GoalCuddleToy,
   goalMissingItem: GoalMissingItem,
+  goalAddedItem: GoalAddedItem,
 };

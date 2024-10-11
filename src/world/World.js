@@ -80,8 +80,8 @@ export class World {
       button.dataset.adjectives = item.adjectives;
       button.dataset.flavors = item.flavors ? item.flavors : [];
       button.dataset.colors = item.colors ? item.colors : [];
-      button.addEventListener('click', () => {
-        this.toggleItem(button, item);
+      button.addEventListener('click', (e) => {
+        this.toggleItem(button, item, e.isTrusted);
       });
       this.elements.toybox.appendChild(button);
     });
@@ -152,11 +152,11 @@ export class World {
     });
   }
 
-  toggleItem(button, item) {
+  toggleItem(button, item, isUserClick) {
+    const creatures = this.getCreatures();
     let entityId = button.dataset.entityId;
     if (entityId) {
       const event = new CustomEvent('deleteItem', { detail: entityId });
-      const creatures = this.getCreatures();
       creatures.forEach((creature) => {
         creature.getOutputs().icon.dispatchEvent(event);
       });
@@ -183,9 +183,16 @@ export class World {
         xPos,
         yPos,
       });
-      this.entities.items.set(newItem.getGUID(), newItem);
+      entityId = newItem.getGUID();
+      this.entities.items.set(entityId, newItem);
       button.classList.add('item-active');
-      button.dataset.entityId = newItem.getGUID();
+      button.dataset.entityId = entityId;
+      if (isUserClick) {
+        const event = new CustomEvent('addItem', { detail: entityId });
+        creatures.forEach((creature) => {
+          creature.getOutputs().icon.dispatchEvent(event);
+        });
+      }
     }
   }
 

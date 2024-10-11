@@ -112,15 +112,21 @@ export default class Creature extends Entity {
     };
     this.outputs.icon.addEventListener('mouseup', this.eventHandlers.petStop);
 
+    this.eventHandlers.itemAdded = (e) => {
+      this.goalManager.addGoal(this, goalList.addedItem, {
+        priority: 5,
+        suspended: false,
+        ticks: 1,
+        target: e.detail,
+      });
+    };
+    this.outputs.icon.addEventListener('addItem', this.eventHandlers.itemAdded);
+
     this.eventHandlers.itemDeleted = (e) => {
       this.goalManager.addGoal(this, goalList.missingItem, {
         priority: 5,
         suspended: false,
         ticks: 1,
-        tickModifiers: {
-          personality: personalityValues,
-          maxMotive: this.maxMotive,
-        },
         target: e.detail,
       });
     };

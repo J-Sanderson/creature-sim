@@ -17,21 +17,27 @@ export default class GoalBePetted extends Goal {
     return 1;
   }
   execute(self) {
+    const maxMotive = self.getMaxMotive();
+    const personalityValues = self.getPersonalityValues();
+
     if (
       self.status.state === stateList.drink ||
       self.status.state === stateList.eat ||
       self.status.state === stateList.sleep ||
       self.status.state === stateList.petAnnoyed
     ) {
-      // todo don't get annoyed if very kind or patient, but still return to what it was doing
       this.decrementTicks();
       if (this.getTicks() <= 0) {
         self.goalManager.deleteGoal(goalList.pet);
       }
-      self.plans.planPetAnnoyed(self);
+      const kindness = personalityValues[personalityValueList.kindness];
+      const patience = personalityValues[personalityValueList.patience];
+      if (kindness >= maxMotive - maxMotive / 10 || patience >= maxMotive - maxMotive / 10) {
+        self.plans.planPetHappy(self);
+      } else {
+        self.plans.planPetAnnoyed(self);
+      }
     } else {
-      const maxMotive = self.getMaxMotive();
-      const personalityValues = self.getPersonalityValues();
       const independence = personalityValues[personalityValueList.independence];
       const patience = personalityValues[personalityValueList.patience];
       if (

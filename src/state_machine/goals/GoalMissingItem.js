@@ -1,5 +1,5 @@
 import Goal from './Goal';
-import { goalList, goalTypeList } from '../../defaults';
+import { personalityValueList, goalList, goalTypeList } from '../../defaults';
 
 export default class GoalMissingItem extends Goal {
   constructor(params) {
@@ -12,7 +12,11 @@ export default class GoalMissingItem extends Goal {
     const target = this.getTarget();
     if (!target) return -1;
 
-    // todo personality filtering
+    const maxMotive = self.getMaxMotive();
+    const personalityValues = self.getPersonalityValues();
+    const patience = personalityValues[personalityValueList.patience];
+    if (patience >= maxMotive - (maxMotive / 10)) return -1;
+
     return 1;
   }
   execute(self) {

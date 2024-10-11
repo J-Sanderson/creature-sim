@@ -155,7 +155,7 @@ export default class Creature extends Entity {
   }
 
   getGoals() {
-    return this.goalManager.getGoalList();
+    return this.goalManager.getGoals();
   }
 
   getCurrentGoal() {

@@ -67,7 +67,7 @@ export class MetabolismManager {
         }
       }
       if (
-        !(goalList.eat in self.goalManager.getGoalList()) &&
+        !(goalList.eat in self.goalManager.getGoals()) &&
         self.queries.amIHungry(self)
       ) {
         self.goalManager.addGoal(
@@ -96,7 +96,7 @@ export class MetabolismManager {
         }
       }
       if (
-        !(goalList.drink in self.goalManager.getGoalList()) &&
+        !(goalList.drink in self.goalManager.getGoals()) &&
         self.queries.amIThirsty(self)
       ) {
         self.goalManager.addGoal(
@@ -127,7 +127,7 @@ export class MetabolismManager {
         }
       }
       if (
-        !(goalList.sleep in self.goalManager.getGoalList()) &&
+        !(goalList.sleep in self.goalManager.getGoals()) &&
         self.queries.amITired(self)
       ) {
         self.goalManager.addGoal(

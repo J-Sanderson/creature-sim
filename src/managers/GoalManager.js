@@ -1,17 +1,18 @@
 import { utilities } from '../utils/Utilities';
+import { goalList } from '../defaults';
 
 export class GoalManager {
   constructor() {
-    this.goalList = {};
+    this.goals = {};
     this.currentGoal = '';
   }
 
   update(self) {
     this.updateGoalPriorities(self);
-    let current = this.goalList[this.currentGoal];
+    let current = this.goals[this.currentGoal];
     if (!current || current.getIsSuspended()) {
       // do I have other goals?
-      if (Object.keys(this.goalList).length) {
+      if (Object.keys(this.goals).length) {
         // is there another valid unsuspended goal in the list?
         let newGoal = this.getTopPriorityGoal(true);
         if (!newGoal) {
@@ -19,7 +20,7 @@ export class GoalManager {
           newGoal = this.getTopPriorityGoal();
         }
         // unsuspend if needed
-        if (this.goalList[newGoal].getIsSuspended()) {
+        if (this.goals[newGoal].getIsSuspended()) {
           this.unsuspendGoal(newGoal);
         }
         this.currentGoal = newGoal;
@@ -28,17 +29,17 @@ export class GoalManager {
         this.findInterestingGoals(self);
       }
     }
-    this.goalList[this.currentGoal].execute(self);
+    this.goals[this.currentGoal].execute(self);
   }
 
   updateGoalPriorities(self) {
-    for (let goal in this.goalList) {
+    for (let goal in this.goals) {
       if (goal) {
-        const priority = this.goalList[goal].filter(self);
+        const priority = this.goals[goal].filter(self);
         if (priority < 0) {
-          delete this.goalList[goal];
+          delete this.goals[goal];
         } else {
-          this.goalList[goal].setPriority(priority);
+          this.goals[goal].setPriority(priority);
         }
       }
     }
@@ -48,13 +49,13 @@ export class GoalManager {
     let highestPriority = Infinity;
     let highestPriorityGoal = null;
 
-    for (let goal in this.goalList) {
-      if (this.goalList.hasOwnProperty(goal)) {
+    for (let goal in this.goals) {
+      if (this.goals.hasOwnProperty(goal)) {
         if (
           !excludeSuspended ||
-          (excludeSuspended && !this.goalList[goal].getIsSuspended())
+          (excludeSuspended && !this.goals[goal].getIsSuspended())
         ) {
-          const priority = this.goalList[goal].getPriority();
+          const priority = this.goals[goal].getPriority();
           if (priority < highestPriority) {
             highestPriority = priority;
             highestPriorityGoal = goal;
@@ -75,6 +76,15 @@ export class GoalManager {
         candidateGoals.push({ name: goal, priority });
       }
     }
+    if (!candidateGoals.length) {
+      this.addGoal(self, goalList.wander, {
+        ticks: 5,
+        tickModifiers: {
+          personality: self.getPersonalityValues(),
+          maxMotive: self.getMaxMotive(),
+        },
+      });
+    }
     candidateGoals.sort((a, b) => {
       if (a.priority < b.priority) return -1;
       if (a.priority > b.priority) return 1;
@@ -91,7 +101,6 @@ export class GoalManager {
         break;
       }
     }
-    // todo need an exit condition if still nothing is chosen, maybe wander.
     this.addGoal(self, chosenGoal, {
       ticks: 5,
       tickModifiers: {
@@ -105,35 +114,35 @@ export class GoalManager {
     if (!self.goals.hasOwnProperty(name)) {
       console.error(`Error: no goal object found for ${name}`);
     }
-    if (this.goalList.hasOwnProperty(name)) {
+    if (this.goals.hasOwnProperty(name)) {
       return;
     }
     if (isCurrent) {
       this.currentGoal = name;
     }
-    this.goalList[name] = new self.goals[name](params);
+    this.goals[name] = new self.goals[name](params);
   }
 
   suspendGoal(goalName) {
-    let toSuspend = this.goalList[goalName];
+    let toSuspend = this.goals[goalName];
     if (toSuspend) {
       toSuspend.suspend();
     }
   }
 
   unsuspendGoal(goalName) {
-    let toUnsuspend = this.goalList[goalName];
+    let toUnsuspend = this.goals[goalName];
     if (toUnsuspend) {
       toUnsuspend.unsuspend();
     }
   }
 
   deleteGoal(goalName) {
-    delete this.goalList[goalName];
+    delete this.goals[goalName];
   }
 
-  getGoalList() {
-    return this.goalList;
+  getGoals() {
+    return this.goals;
   }
 
   getCurrentGoal() {

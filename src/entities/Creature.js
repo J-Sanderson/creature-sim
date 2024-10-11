@@ -95,7 +95,7 @@ export default class Creature extends Entity {
       this.goalManager.addGoal(this, goalList.pet, {
         priority: 1,
         suspended: false,
-        ticks: 1,
+        ticks: 5,
         tickModifiers: {
           personality: personalityValues,
           maxMotive: this.maxMotive,

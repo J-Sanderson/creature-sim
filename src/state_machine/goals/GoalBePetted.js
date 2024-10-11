@@ -10,6 +10,50 @@ export default class GoalBePetted extends Goal {
   constructor(params) {
     super(params);
     this.type = goalTypeList.narrative;
+
+    if (params && params.hasOwnProperty('tickModifiers')) {
+      const modifiers = params.tickModifiers;
+      if (
+        modifiers.hasOwnProperty('maxMotive') &&
+        modifiers.hasOwnProperty('personality')
+      ) {
+        let ticks = this.getTicks();
+        let adjustedTicks = this.calculateModifiedTicks(
+          modifiers.personality[personalityValueList.kindness],
+          modifiers.maxMotive,
+          ticks,
+          true
+        );
+        adjustedTicks = this.calculateModifiedTicks(
+          modifiers.personality[personalityValueList.independence],
+          modifiers.maxMotive,
+          ticks,
+          false
+        );
+        this.setTicks(adjustedTicks);
+
+        let threshold = this.getDecayThreshold();
+        let adjustedThreshold = this.calculateModifiedDecayThreshold(
+          modifiers.personality[personalityValueList.kindness],
+          modifiers.maxMotive,
+          threshold,
+          true
+        );
+        adjustedThreshold = this.calculateModifiedDecayThreshold(
+          modifiers.personality[personalityValueList.patience],
+          modifiers.maxMotive,
+          threshold,
+          true
+        );
+        adjustedThreshold = this.calculateModifiedDecayThreshold(
+          modifiers.personality[personalityValueList.independence],
+          modifiers.maxMotive,
+          threshold,
+          false
+        );
+        this.setDecayThreshold(adjustedThreshold);
+      }
+    }
   }
   filter(self, nonReactive = false) {
     if (nonReactive) return -1;
@@ -26,10 +70,6 @@ export default class GoalBePetted extends Goal {
       self.status.state === stateList.sleep ||
       self.status.state === stateList.petAnnoyed
     ) {
-      this.decrementTicks();
-      if (this.getTicks() <= 0) {
-        self.goalManager.deleteGoal(goalList.pet);
-      }
       const kindness = personalityValues[personalityValueList.kindness];
       const patience = personalityValues[personalityValueList.patience];
       if (kindness >= maxMotive - maxMotive / 10 || patience >= maxMotive - maxMotive / 10) {
@@ -37,22 +77,21 @@ export default class GoalBePetted extends Goal {
       } else {
         self.plans.planPetAnnoyed(self);
       }
+      self.goalManager.deleteGoal(goalList.pet);
     } else {
-      const independence = personalityValues[personalityValueList.independence];
-      const patience = personalityValues[personalityValueList.patience];
+      self.plans.planPetHappy(self);
       if (
         self.queries.amIHungry(self) ||
         self.queries.amIThirsty(self) ||
-        self.queries.amITired(self) ||
-        independence >= maxMotive - maxMotive / 7 ||
-        patience <= maxMotive / 7
+        self.queries.amITired(self)
       ) {
+        self.goalManager.deleteGoal(goalList.pet);
+      } else {
         this.decrementTicks();
         if (this.getTicks() <= 0) {
           self.goalManager.deleteGoal(goalList.pet);
         }
       }
-      self.plans.planPetHappy(self);
     }
   }
 }

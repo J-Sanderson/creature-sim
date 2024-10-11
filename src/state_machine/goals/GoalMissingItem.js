@@ -12,22 +12,26 @@ export default class GoalMissingItem extends Goal {
     const target = this.getTarget();
     if (!target) return -1;
 
-    const goals = self.getGoals();
-    const currentGoal = self.getCurrentGoal();
-    const currentTarget = goals[currentGoal]?.getTarget();
-
-    if (!currentTarget || currentTarget !== target) {
-      return -1;
-    } else {
-      // todo add some extra personality filtering here
-      return 1;
-    }
+    // todo personality filtering
+    return 1;
   }
   execute(self) {
+    const goals = self.getGoals();
+    const target = this.getTarget();
+    const targetingGoal = Object.keys(goals).find(goal => {
+        return goal !== goalList.missingItem && goals[goal].getTarget() === target;
+    });
+    if (!targetingGoal) {
+        self.goalManager.deleteGoal(goalList.missingItem);
+        return;
+    }
+
+    self.goalManager.suspendGoal(targetingGoal);
     self.plans.planMissingItem(self);
     this.decrementTicks();
     if (this.getTicks() <= 0) {
       self.goalManager.deleteGoal(goalList.missingItem);
+      self.goalManager.unsuspendGoal(targetingGoal);
     }
   }
 }

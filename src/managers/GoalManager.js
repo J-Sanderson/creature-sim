@@ -1,5 +1,5 @@
 import { utilities } from '../utils/Utilities';
-import { goalList } from '../defaults';
+import { goalList, adjectiveList } from '../defaults';
 
 export class GoalManager {
   constructor() {
@@ -107,6 +107,52 @@ export class GoalManager {
         personality: self.getPersonalityValues(),
         maxMotive: self.getMaxMotive(),
       },
+    });
+  }
+
+  findGoalForItem(self, target) {
+    let candidateGoals = [];
+    const adjectives = target.getAdjectives();
+    if (adjectives.includes(adjectiveList.chew)) {
+      candidateGoals.push({name: goalList.chewToy});
+    }
+    if (adjectives.includes(adjectiveList.bounce)) {
+      candidateGoals.push({name: goalList.bounceToy});
+    }
+    if (adjectives.includes(adjectiveList.soft)) {
+      candidateGoals.push({name: goalList.cuddleToy});
+    }
+    if (!candidateGoals.length) return;
+
+    candidateGoals.forEach(goal => {
+      const tempInstance = new self.goals[goal.name]();
+      const priority = tempInstance.filter(self, true);
+      goal.priority = priority;
+    });
+    candidateGoals = candidateGoals.filter(goal => goal.priority > 0);
+    candidateGoals.sort((a, b) => {
+      if (a.priority < b.priority) return -1;
+      if (a.priority > b.priority) return 1;
+      return 0;
+    });
+    let chosenGoal = '';
+    const threshold = 2;
+    for (let i = 0; i < candidateGoals.length; i++) {
+      if (
+        i === candidateGoals.length - 1 ||
+        utilities.rand(threshold) !== threshold - 1
+      ) {
+        chosenGoal = candidateGoals[i].name;
+        break;
+      }
+    }
+    this.addGoal(self, chosenGoal, {
+      ticks: 5,
+      tickModifiers: {
+        personality: self.getPersonalityValues(),
+        maxMotive: self.getMaxMotive(),
+      },
+      target: target.getGUID(),
     });
   }
 

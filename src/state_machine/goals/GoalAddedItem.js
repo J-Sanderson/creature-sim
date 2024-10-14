@@ -71,11 +71,29 @@ export default class GoalAddedItem extends Goal {
       });
       return;
     }
-    // todo see if it's a colour, flavour etc that we like, or fits our interests, or we just randomly feel curious.
+
+    let curiosityThreshold = 0.4;
+    const colors = target.getColors();
+    if (colors.includes(favorites.color)) {
+      curiosityThreshold = 0.6;
+    } else {
+      if (!self.queries.amIFinicky(self) && Math.random() < curiosityThreshold) {
+        self.goalManager.deleteGoal(goalList.addedItem);
+        self.goalManager.addGoal(self, goalList.snubItem, {
+          target: target.getGUID(),
+          ticks: 1,
+        });
+        return;
+      }
+    }
 
     this.decrementTicks();
     if (this.getTicks() <= 0) {
       self.goalManager.deleteGoal(goalList.addedItem);
+    }
+
+    if (Math.random() < curiosityThreshold) {
+      self.goalManager.findGoalForItem(self, target);
     }
   }
 }

@@ -14,6 +14,7 @@ import { stateBounceToy } from './StateBounceToy';
 import { stateCuddleToy } from './StateCuddleToy';
 import { stateMissingItem } from './StateMissingItem';
 import { stateAddedItem } from './StateAddedItem';
+import { stateSnubItem } from './StateSnubItem';
 
 export default {
   stateMoveRandomly,
@@ -32,4 +33,5 @@ export default {
   stateCuddleToy,
   stateMissingItem,
   stateAddedItem,
+  stateSnubItem,
 };

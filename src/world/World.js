@@ -387,6 +387,19 @@ export class World {
     return this.entities.items;
   }
 
+  getItem(id) {
+    let item;
+    for (let [key, val] of this.entities.items.entries()) {
+      if (val.getGUID() === id);
+      item = val;
+    }
+    if (!item) {
+      console.error(`Error: world ${this.guid} has no item ${id}`);
+      return;
+    }
+    return item;
+  }
+
   getCreatures() {
     return this.entities.creatures;
   }

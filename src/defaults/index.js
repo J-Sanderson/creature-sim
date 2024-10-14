@@ -62,6 +62,7 @@ export const goalList = {
   cuddleToy: 'goalCuddleToy',
   missingItem: 'goalMissingItem',
   addedItem: 'goalAddedItem',
+  snubItem: 'goalSnubItem',
 };
 
 export const planList = {
@@ -82,6 +83,7 @@ export const planList = {
   moveFromItem: 'planMoveFromItem',
   missingItem: 'planMissingItem',
   addedItem: 'planAddedItem',
+  snubItem: 'planSnubItem',
 };
 
 export const stateList = {
@@ -101,6 +103,7 @@ export const stateList = {
   cuddleToy: 'stateCuddleToy',
   missingItem: 'stateMissingItem',
   addedItem: 'stateAddedItem',
+  snubItem: 'stateSnubItem',
 };
 
 export const motiveIconList = {
@@ -120,6 +123,7 @@ export const motiveIconList = {
   cuddleToy: '&#x1FAC2;',
   missingItem: '&#x2049;',
   addedItem: '&#x2753;',
+  snubItem: '&#x274C;',
 };
 
 export const goalTypeList = {

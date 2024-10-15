@@ -159,6 +159,7 @@ export class GoalManager {
   addGoal(self, name, params, isCurrent = true) {
     if (!self.goals.hasOwnProperty(name)) {
       console.error(`Error: no goal object found for ${name}`);
+      return;
     }
     if (this.goals.hasOwnProperty(name)) {
       return;

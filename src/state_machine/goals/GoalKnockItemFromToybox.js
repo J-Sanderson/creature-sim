@@ -17,6 +17,7 @@ export default class GoalKnockItemFromToybox extends Goal {
 
     if (
       personalityValues[personalityValueList.naughtiness] < maxMotive - (maxMotive * 0.1) &&
+      personalityValues[personalityValueList.independence] < maxMotive - (maxMotive * 0.1) &&
       personalityValues[personalityValueList.patience] > maxMotive * 0.1
     ) {
       return -1;
@@ -62,6 +63,7 @@ export default class GoalKnockItemFromToybox extends Goal {
       calledBy !== goalList.eat &&
       calledBy !== goalList.drink &&
       personalityValues[personalityValueList.naughtiness] < maxMotive - (maxMotive * 0.1) &&
+      personalityValues[personalityValueList.independence] < maxMotive - (maxMotive * 0.1) &&
       personalityValues[personalityValueList.patience] > maxMotive * 0.1
     ) {
       return -1;

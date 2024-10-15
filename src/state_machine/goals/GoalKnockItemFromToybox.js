@@ -51,6 +51,9 @@ export default class GoalKnockItemFromToybox extends Goal {
         return -1;
       }
     } else {
+      if (personalityValues[personalityValueList.naughtiness] < maxMotive - (maxMotive * 0.1)) {
+        return -1;
+      }
       let toybox = document.querySelector(`[data-world="${self.world}"]`);
       let buttons = Array.from(toybox.querySelectorAll('button'));
       if (buttons.every((button) => button.classList.contains('item-active'))) {

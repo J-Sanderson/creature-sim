@@ -62,6 +62,7 @@ export default class GoalBePetted extends Goal {
   }
   execute(self) {
     const maxMotive = self.getMaxMotive();
+    const motiveModifier = 0.1;
     const personalityValues = self.getPersonalityValues();
 
     if (
@@ -73,8 +74,8 @@ export default class GoalBePetted extends Goal {
       const kindness = personalityValues[personalityValueList.kindness];
       const patience = personalityValues[personalityValueList.patience];
       if (
-        kindness >= maxMotive - maxMotive / 10 ||
-        patience >= maxMotive - maxMotive / 10
+        kindness >= maxMotive - maxMotive * motiveModifier ||
+        patience >= maxMotive - maxMotive * motiveModifier
       ) {
         self.plans.planPetHappy(self);
       } else {

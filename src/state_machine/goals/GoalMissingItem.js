@@ -13,9 +13,10 @@ export default class GoalMissingItem extends Goal {
     if (!target) return -1;
 
     const maxMotive = self.getMaxMotive();
+    const motiveModifier = 0.1;
     const personalityValues = self.getPersonalityValues();
     const patience = personalityValues[personalityValueList.patience];
-    if (patience >= maxMotive - maxMotive / 10) return -1;
+    if (patience >= maxMotive - maxMotive * motiveModifier) return -1;
 
     return 1;
   }

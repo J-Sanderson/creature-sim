@@ -19,6 +19,7 @@ export default class GoalSleep extends Goal {
 
     const motives = self.getMotives();
     const maxMotive = self.getMaxMotive();
+    const motiveModifier = 0.1;
     const plan = self.getPlan();
     const nearbyBeds = self.queries.getItemsByAdjective(
       self,
@@ -29,7 +30,7 @@ export default class GoalSleep extends Goal {
 
     if (
       plan === planList.sleep ||
-      motives[motiveList.energy] <= maxMotive / 10
+      motives[motiveList.energy] <= maxMotive * motiveModifier
     ) {
       priority = 1;
     }

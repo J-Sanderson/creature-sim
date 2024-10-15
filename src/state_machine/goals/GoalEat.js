@@ -19,6 +19,7 @@ export default class GoalEat extends Goal {
 
     const motives = self.getMotives();
     const maxMotive = self.getMaxMotive();
+    const motiveModifier = 0.1;
     const plan = self.getPlan();
     const nearbyFood = self.queries.getItemsByAdjective(
       self,
@@ -29,7 +30,7 @@ export default class GoalEat extends Goal {
 
     if (
       plan === planList.eat ||
-      motives[motiveList.fullness] <= maxMotive / 10
+      motives[motiveList.fullness] <= maxMotive * motiveModifier
     ) {
       priority = 1;
     }

@@ -69,9 +69,10 @@ export default class GoalCuddleToy extends Goal {
 
     const motives = self.getMotives();
     const maxMotive = self.getMaxMotive();
+    const motiveModifier = 0.1;
 
     for (let motive in motives) {
-      if (motives[motive] <= maxMotive * 0.1) {
+      if (motives[motive] <= maxMotive * motiveModifier) {
         return -1;
       }
     }
@@ -84,9 +85,9 @@ export default class GoalCuddleToy extends Goal {
 
     if (
       !nearbyToys.length &&
-      personalityValues[personalityValueList.naughtiness] < maxMotive - (maxMotive * 0.1) &&
-      personalityValues[personalityValueList.independence] < maxMotive - (maxMotive * 0.1) &&
-      personalityValues[personalityValueList.patience] > maxMotive * 0.1
+      personalityValues[personalityValueList.naughtiness] < maxMotive - (maxMotive * motiveModifier) &&
+      personalityValues[personalityValueList.independence] < maxMotive - (maxMotive * motiveModifier) &&
+      personalityValues[personalityValueList.patience] > maxMotive * motiveModifier
     ) {
       return -1;
     }

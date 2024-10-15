@@ -63,9 +63,10 @@ export default class GoalChewToy extends Goal {
 
     const motives = self.getMotives();
     const maxMotive = self.getMaxMotive();
+    const motiveModifier = 0.1;
 
     for (let motive in motives) {
-      if (motives[motive] <= maxMotive * 0.1) {
+      if (motives[motive] <= maxMotive * motiveModifier) {
         return -1;
       }
     }
@@ -78,8 +79,9 @@ export default class GoalChewToy extends Goal {
 
     if (
       !nearbyToys.length &&
-      personalityValues.naughtiness < maxMotive * 0.9 &&
-      personalityValues.patience > maxMotive * 0.1
+      personalityValues[personalityValueList.naughtiness] < maxMotive - (maxMotive * motiveModifier) &&
+      personalityValues[personalityValueList.independence] < maxMotive - (maxMotive * motiveModifier) &&
+      personalityValues[personalityValueList.patience] > maxMotive * motiveModifier
     ) {
       return -1;
     }

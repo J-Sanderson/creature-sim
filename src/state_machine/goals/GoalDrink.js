@@ -19,6 +19,7 @@ export default class GoalDrink extends Goal {
 
     const motives = self.getMotives();
     const maxMotive = self.getMaxMotive();
+    const motiveModifier = 0.1;
     const plan = self.getPlan();
     const nearbyWater = self.queries.getItemsByAdjective(
       self,
@@ -29,7 +30,7 @@ export default class GoalDrink extends Goal {
 
     if (
       plan === planList.drink ||
-      motives[motiveList.hydration] <= maxMotive / 10
+      motives[motiveList.hydration] <= maxMotive * motiveModifier
     ) {
       priority = 1;
     }

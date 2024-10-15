@@ -46,6 +46,7 @@ export const personalityValueList = {
   playfulness: 'playfulness',
   finickiness: 'finickiness',
   kindness: 'kindness',
+  independence: 'independence',
 };
 
 export const goalList = {
@@ -59,6 +60,9 @@ export const goalList = {
   chewToy: 'goalChewToy',
   bounceToy: 'goalBounceToy',
   cuddleToy: 'goalCuddleToy',
+  missingItem: 'goalMissingItem',
+  addedItem: 'goalAddedItem',
+  snubItem: 'goalSnubItem',
 };
 
 export const planList = {
@@ -77,6 +81,9 @@ export const planList = {
   bounceToy: 'planBounceToy',
   cuddleToy: 'planCuddleToy',
   moveFromItem: 'planMoveFromItem',
+  missingItem: 'planMissingItem',
+  addedItem: 'planAddedItem',
+  snubItem: 'planSnubItem',
 };
 
 export const stateList = {
@@ -94,6 +101,9 @@ export const stateList = {
   chewToy: 'stateChewToy',
   bounceToy: 'stateBounceToy',
   cuddleToy: 'stateCuddleToy',
+  missingItem: 'stateMissingItem',
+  addedItem: 'stateAddedItem',
+  snubItem: 'stateSnubItem',
 };
 
 export const motiveIconList = {
@@ -111,6 +121,9 @@ export const motiveIconList = {
   chewToy: '&#x1F9B7;',
   bounceToy: '&#x26F9;',
   cuddleToy: '&#x1FAC2;',
+  missingItem: '&#x2049;',
+  addedItem: '&#x2753;',
+  snubItem: '&#x274C;',
 };
 
 export const goalTypeList = {

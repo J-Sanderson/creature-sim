@@ -10,7 +10,6 @@ import {
   adjectiveList,
   personalityValueList,
   goalList,
-  stateList,
 } from '../defaults';
 import states from '../state_machine/states';
 import plans from '../state_machine/plans';
@@ -91,19 +90,32 @@ export default class Creature extends Entity {
 
     this.icon = '&#x1F415;';
     this.setIcon();
+    this.setEventHandlers();
+
+    this.goalManager = new GoalManager();
+    this.metabolismManager = new MetabolismManager({
+      personalityValues,
+      maxMotive: this.maxMotive,
+    });
+  }
+
+  setEventHandlers() {
+    const icon = this.getOutputs().icon;
+    const personalityValues = this.getPersonalityValues();
+    const maxMotive = this.getMaxMotive();
 
     this.eventHandlers.petStart = () => {
       this.goalManager.addGoal(this, goalList.pet, {
         priority: 1,
         suspended: false,
-        ticks: 1,
+        ticks: 5,
         tickModifiers: {
           personality: personalityValues,
-          maxMotive: this.maxMotive,
+          maxMotive: maxMotive,
         },
       });
     };
-    this.outputs.icon.addEventListener(
+    icon.addEventListener(
       'mousedown',
       this.eventHandlers.petStart
     );
@@ -111,13 +123,30 @@ export default class Creature extends Entity {
     this.eventHandlers.petStop = () => {
       this.goalManager.deleteGoal(goalList.pet);
     };
-    this.outputs.icon.addEventListener('mouseup', this.eventHandlers.petStop);
+    icon.addEventListener('mouseup', this.eventHandlers.petStop);
 
-    this.goalManager = new GoalManager();
-    this.metabolismManager = new MetabolismManager({
-      personalityValues,
-      maxMotive: this.maxMotive,
-    });
+    this.eventHandlers.itemAdded = (e) => {
+      this.goalManager.addGoal(this, goalList.addedItem, {
+        priority: 5,
+        suspended: false,
+        ticks: 1,
+        target: e.detail,
+      });
+    };
+    icon.addEventListener('addItem', this.eventHandlers.itemAdded);
+
+    this.eventHandlers.itemDeleted = (e) => {
+      this.goalManager.addGoal(this, goalList.missingItem, {
+        priority: 5,
+        suspended: false,
+        ticks: 1,
+        target: e.detail,
+      });
+    };
+    icon.addEventListener(
+      'deleteItem',
+      this.eventHandlers.itemDeleted
+    );
   }
 
   update() {
@@ -139,7 +168,7 @@ export default class Creature extends Entity {
   }
 
   getGoals() {
-    return this.goalManager.getGoalList();
+    return this.goalManager.getGoals();
   }
 
   getCurrentGoal() {

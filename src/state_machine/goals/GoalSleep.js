@@ -64,9 +64,7 @@ export default class GoalSleep extends Goal {
     }
 
     const energy = self.getMotive(motiveList.energy);
-    const maxMotive = self.getMaxMotive();
-    const motiveModifier = 0.1;
-    if (self.getPlan() === planList.passOut && energy < maxMotive * motiveModifier) {
+    if (self.getPlan() === planList.passOut) {
       self.plans[planList.passOut](self);
       return;
     }

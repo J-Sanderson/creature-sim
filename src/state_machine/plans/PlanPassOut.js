@@ -6,6 +6,7 @@ export const planPassOut = function (self) {
     const motiveModifier = 0.1;
     const maxVal = maxMotive * motiveModifier;
     if (energy >= maxVal) {
+        self.setPlan('');
         return;
     }
 

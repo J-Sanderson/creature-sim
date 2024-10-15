@@ -78,8 +78,8 @@ export default class GoalBounceToy extends Goal {
 
     if (
       !nearbyToys.length &&
-      personalityValues.naughtiness < maxMotive - (maxMotive * 0.1) &&
-      personalityValues.patience > maxMotive * 0.1
+      personalityValues[personalityValueList.naughtiness] < maxMotive - (maxMotive * 0.1) &&
+      personalityValues[personalityValueList.patience] > maxMotive * 0.1
     ) {
       return -1;
     }

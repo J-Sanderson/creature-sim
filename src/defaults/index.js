@@ -84,6 +84,7 @@ export const planList = {
   missingItem: 'planMissingItem',
   addedItem: 'planAddedItem',
   snubItem: 'planSnubItem',
+  passOut: 'planPassOut',
 };
 
 export const stateList = {
@@ -104,6 +105,7 @@ export const stateList = {
   missingItem: 'stateMissingItem',
   addedItem: 'stateAddedItem',
   snubItem: 'stateSnubItem',
+  passOut: 'statePassOut',
 };
 
 export const motiveIconList = {
@@ -124,6 +126,7 @@ export const motiveIconList = {
   missingItem: '&#x2049;',
   addedItem: '&#x2753;',
   snubItem: '&#x274C;',
+  passOut: '&#x1F635;',
 };
 
 export const goalTypeList = {

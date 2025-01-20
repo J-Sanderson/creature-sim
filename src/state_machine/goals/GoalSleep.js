@@ -58,13 +58,24 @@ export default class GoalSleep extends Goal {
     if (self.getMotive(motiveList.energy) >= self.getMaxMotive()) {
       self.goalManager.deleteGoal(goalList.sleep);
     }
-    let goals = self.getGoals();
+    const goals = self.getGoals();
     if (!goals[goalList.sleep]) {
       return;
     }
 
-    let target = goals[goalList.sleep].target;
+    const energy = self.getMotive(motiveList.energy);
+    if (self.getPlan() === planList.passOut) {
+      self.plans[planList.passOut](self);
+      return;
+    }
+
+    const target = goals[goalList.sleep].target;
     if (!target) {
+      if (energy === 0) {
+        self.plans[planList.passOut](self);
+        return;
+      }
+
       self.plans.planSeekItem(
         self,
         adjectiveList.restful,
@@ -73,9 +84,9 @@ export default class GoalSleep extends Goal {
       );
     } else {
       if (self.queries.amIOnItem(self, target)) {
-        self.plans.planSleep(self);
+        self.plans[planList.sleep](self);
       } else {
-        self.plans.planMoveToItem(self, target, goalList.sleep);
+        self.plans[planList.moveToItem](self, target, goalList.sleep);
       }
     }
   }

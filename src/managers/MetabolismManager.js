@@ -117,6 +117,7 @@ export class MetabolismManager {
     if (decayThresholds.hasOwnProperty(motiveList.energy)) {
       if (
         self.status.state !== stateList.sleep &&
+        self.status.state !== stateList.passOut &&
         self.status.motives[motiveList.energy] > 0
       ) {
         if (Math.random() < decayThresholds[motiveList.energy]) {

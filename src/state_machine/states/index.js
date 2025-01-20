@@ -15,6 +15,7 @@ import { stateCuddleToy } from './StateCuddleToy';
 import { stateMissingItem } from './StateMissingItem';
 import { stateAddedItem } from './StateAddedItem';
 import { stateSnubItem } from './StateSnubItem';
+import { statePassOut } from './StatePassOut';
 
 export default {
   stateMoveRandomly,
@@ -34,4 +35,5 @@ export default {
   stateMissingItem,
   stateAddedItem,
   stateSnubItem,
+  statePassOut,
 };

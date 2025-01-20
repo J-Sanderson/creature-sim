@@ -16,6 +16,7 @@ import { planMoveFromItem } from './PlanMoveFromItem';
 import { planMissingItem } from './PlanMissingItem';
 import { planAddedItem } from './PlanAddedItem';
 import { planSnubItem } from './PlanSnubItem';
+import { planPassOut } from './PlanPassOut';
 
 export default {
   planWander,
@@ -36,4 +37,5 @@ export default {
   planMissingItem,
   planAddedItem,
   planSnubItem,
+  planPassOut,
 };

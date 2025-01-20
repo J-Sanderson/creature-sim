@@ -77,7 +77,10 @@ export default class GoalAddedItem extends Goal {
     if (colors.includes(favorites.color)) {
       curiosityThreshold = 0.6;
     } else {
-      if (!self.queries.amIFinicky(self) && Math.random() < curiosityThreshold) {
+      if (
+        !self.queries.amIFinicky(self) &&
+        Math.random() < curiosityThreshold
+      ) {
         self.goalManager.deleteGoal(goalList.addedItem);
         self.goalManager.addGoal(self, goalList.snubItem, {
           target: target.getGUID(),

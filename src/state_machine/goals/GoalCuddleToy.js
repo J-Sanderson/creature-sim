@@ -85,9 +85,12 @@ export default class GoalCuddleToy extends Goal {
 
     if (
       !nearbyToys.length &&
-      personalityValues[personalityValueList.naughtiness] < maxMotive - (maxMotive * motiveModifier) &&
-      personalityValues[personalityValueList.independence] < maxMotive - (maxMotive * motiveModifier) &&
-      personalityValues[personalityValueList.patience] > maxMotive * motiveModifier
+      personalityValues[personalityValueList.naughtiness] <
+        maxMotive - maxMotive * motiveModifier &&
+      personalityValues[personalityValueList.independence] <
+        maxMotive - maxMotive * motiveModifier &&
+      personalityValues[personalityValueList.patience] >
+        maxMotive * motiveModifier
     ) {
       return -1;
     }

@@ -1,6 +1,7 @@
 import Entity from './Entity';
 import { GoalManager } from '../managers/GoalManager';
 import { MetabolismManager } from '../managers/MetabolismManager';
+import { EmotionManager } from '../managers/EmotionManager';
 import { utilities } from '../utils/Utilities';
 import { queries } from '../utils/Queries';
 import {
@@ -9,6 +10,7 @@ import {
   colorList,
   adjectiveList,
   personalityValueList,
+  emotionList,
   goalList,
 } from '../defaults';
 import states from '../state_machine/states';
@@ -34,6 +36,8 @@ export default class Creature extends Entity {
     ],
   };
 
+  static validEmotions = [emotionList.happy];
+
   static adjectives = [adjectiveList.animate];
 
   constructor(world, params = {}) {
@@ -52,6 +56,11 @@ export default class Creature extends Entity {
 
     Creature.validMotives.forEach((motive) => {
       this.status.motives[motive] = utilities.rand(this.maxMotive);
+    });
+
+    this.status.emotions = {};
+    Creature.validEmotions.forEach((emotion) => {
+      this.status.emotions[emotion] = this.maxMotive; //temp for testing decay
     });
 
     this.personality = {
@@ -97,6 +106,7 @@ export default class Creature extends Entity {
       personalityValues,
       maxMotive: this.maxMotive,
     });
+    this.emotionManager = new EmotionManager();
   }
 
   setEventHandlers() {
@@ -115,10 +125,7 @@ export default class Creature extends Entity {
         },
       });
     };
-    icon.addEventListener(
-      'mousedown',
-      this.eventHandlers.petStart
-    );
+    icon.addEventListener('mousedown', this.eventHandlers.petStart);
 
     this.eventHandlers.petStop = () => {
       this.goalManager.deleteGoal(goalList.pet);
@@ -143,15 +150,13 @@ export default class Creature extends Entity {
         target: e.detail,
       });
     };
-    icon.addEventListener(
-      'deleteItem',
-      this.eventHandlers.itemDeleted
-    );
+    icon.addEventListener('deleteItem', this.eventHandlers.itemDeleted);
   }
 
   update() {
     this.metabolismManager.update(this);
     this.goalManager.update(this);
+    this.emotionManager.update(this);
   }
 
   showMotive(motive) {
@@ -185,6 +190,18 @@ export default class Creature extends Entity {
       return;
     }
     return this.personality.values[value];
+  }
+
+  getEmotions() {
+    return this.status.emotions;
+  }
+
+  setEmotion(emotion, value) {
+    if (!this.status.emotions.hasOwnProperty(emotion)) {
+      console.error('Invalid emotion');
+      return;
+    }
+    this.status.emotions[emotion] = value;
   }
 
   getFavorites() {

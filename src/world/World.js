@@ -247,8 +247,8 @@ export class World {
       return;
     }
 
-    let sliders = document.createElement('fieldset');
-    sliders.classList.add('sliders');
+    let motiveSliders = document.createElement('fieldset');
+    motiveSliders.classList.add('sliders');
 
     const motives = creature.getMotives();
     for (let motive in motives) {
@@ -262,7 +262,7 @@ export class World {
       slider.value = motives[motive];
       span.innerHTML = `${motive}: `;
       span.appendChild(slider);
-      sliders.appendChild(span);
+      motiveSliders.appendChild(span);
       creature.setOutputEl(`slider-${motive}`, slider);
 
       slider.addEventListener('change', (e) => {
@@ -270,7 +270,32 @@ export class World {
       });
     }
 
-    this.elements.statusWrapper.appendChild(sliders);
+    this.elements.statusWrapper.appendChild(motiveSliders);
+
+    let emotionSliders = document.createElement('fieldset');
+    emotionSliders.classList.add('sliders');
+
+    const emotions = creature.getEmotions();
+    for (let emotion in emotions) {
+      let span = document.createElement('span');
+      span.classList.add('slider-item');
+      let slider = document.createElement('input');
+      slider.setAttribute('type', 'range');
+      slider.setAttribute('min', 0);
+      slider.setAttribute('max', this.params.maxMotive);
+      slider.setAttribute('step', 1);
+      slider.value = emotions[emotion];
+      span.innerHTML = `${emotion}: `;
+      span.appendChild(slider);
+      emotionSliders.appendChild(span);
+      creature.setOutputEl(`slider-${emotion}`, slider);
+
+      slider.addEventListener('change', (e) => {
+        creature.setEmotion(emotion, parseInt(e.target.value));
+      });
+    }
+
+    this.elements.statusWrapper.appendChild(emotionSliders);
   }
 
   showCreaturePersonality(creature) {
@@ -336,6 +361,12 @@ export class World {
     for (let motive in status.motives) {
       if (status.motives.hasOwnProperty(motive)) {
         creature.setOutput(`slider-${motive}`, status.motives[motive], true);
+      }
+    }
+
+    for (let emotion in status.emotions) {
+      if (status.emotions.hasOwnProperty(emotion)) {
+        creature.setOutput(`slider-${emotion}`, status.emotions[emotion], true);
       }
     }
   }

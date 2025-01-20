@@ -77,12 +77,14 @@ export default class GoalBounceToy extends Goal {
       adjectiveList.bounce
     );
 
-
     if (
       !nearbyToys.length &&
-      personalityValues[personalityValueList.naughtiness] < maxMotive - (maxMotive * motiveModifier) &&
-      personalityValues[personalityValueList.independence] < maxMotive - (maxMotive * motiveModifier) &&
-      personalityValues[personalityValueList.patience] > maxMotive * motiveModifier
+      personalityValues[personalityValueList.naughtiness] <
+        maxMotive - maxMotive * motiveModifier &&
+      personalityValues[personalityValueList.independence] <
+        maxMotive - maxMotive * motiveModifier &&
+      personalityValues[personalityValueList.patience] >
+        maxMotive * motiveModifier
     ) {
       return -1;
     }

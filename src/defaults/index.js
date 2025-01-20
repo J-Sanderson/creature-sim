@@ -38,6 +38,10 @@ export const motiveList = {
   amount: 'amount',
 };
 
+export const emotionList = {
+  happy: 'happy',
+};
+
 export const personalityValueList = {
   liveliness: 'liveliness',
   patience: 'patience',

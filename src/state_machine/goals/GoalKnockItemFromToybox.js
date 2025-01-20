@@ -17,9 +17,12 @@ export default class GoalKnockItemFromToybox extends Goal {
     let motiveModifier = 0.1;
 
     if (
-      personalityValues[personalityValueList.naughtiness] < maxMotive - (maxMotive * motiveModifier) &&
-      personalityValues[personalityValueList.independence] < maxMotive - (maxMotive * motiveModifier) &&
-      personalityValues[personalityValueList.patience] > maxMotive * motiveModifier
+      personalityValues[personalityValueList.naughtiness] <
+        maxMotive - maxMotive * motiveModifier &&
+      personalityValues[personalityValueList.independence] <
+        maxMotive - maxMotive * motiveModifier &&
+      personalityValues[personalityValueList.patience] >
+        maxMotive * motiveModifier
     ) {
       return -1;
     }
@@ -52,7 +55,10 @@ export default class GoalKnockItemFromToybox extends Goal {
         return -1;
       }
     } else {
-      if (personalityValues[personalityValueList.naughtiness] < maxMotive - (maxMotive * motiveModifier)) {
+      if (
+        personalityValues[personalityValueList.naughtiness] <
+        maxMotive - maxMotive * motiveModifier
+      ) {
         return -1;
       }
       let toybox = document.querySelector(`[data-world="${self.world}"]`);
@@ -67,9 +73,12 @@ export default class GoalKnockItemFromToybox extends Goal {
       calledBy !== goalList.sleep &&
       calledBy !== goalList.eat &&
       calledBy !== goalList.drink &&
-      personalityValues[personalityValueList.naughtiness] < maxMotive - (maxMotive * motiveModifier) &&
-      personalityValues[personalityValueList.independence] < maxMotive - (maxMotive * motiveModifier) &&
-      personalityValues[personalityValueList.patience] > maxMotive * motiveModifier
+      personalityValues[personalityValueList.naughtiness] <
+        maxMotive - maxMotive * motiveModifier &&
+      personalityValues[personalityValueList.independence] <
+        maxMotive - maxMotive * motiveModifier &&
+      personalityValues[personalityValueList.patience] >
+        maxMotive * motiveModifier
     ) {
       return -1;
     }

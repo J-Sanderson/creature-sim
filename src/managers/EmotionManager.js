@@ -1,10 +1,16 @@
+import { emotionList, stateList } from '../defaults';
+
 export class EmotionManager {
   update(self) {
     const emotions = self.getEmotions();
-    for (let emotion in emotions) {
-      if (emotions[emotion] > 0) {
-        self.setEmotion(emotion, emotions[emotion] - 1);
-      }
+    // happiness decay
+    if (
+      self.status.state !== stateList.bounceToy &&
+      self.status.state !== stateList.chewToy &&
+      self.status.state !== stateList.cuddleToy &&
+      emotions[emotionList.happy] > 0
+    ) {
+      self.setEmotion(emotionList.happy, emotions[emotionList.happy] - 1);
     }
   }
 }

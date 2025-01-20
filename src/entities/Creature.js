@@ -60,7 +60,7 @@ export default class Creature extends Entity {
 
     this.status.emotions = {};
     Creature.validEmotions.forEach((emotion) => {
-      this.status.emotions[emotion] = this.maxMotive; //temp for testing decay
+      this.status.emotions[emotion] = 0;
     });
 
     this.personality = {

@@ -345,7 +345,9 @@ export class World {
     creature.setOutput('plan', plan);
 
     const state = creature.getState();
-    creature.setOutput('state', state);
+    if (state && state.name) {
+      creature.setOutput('state', state.name);
+    }
 
     const goals = creature.getGoals();
     creature.setOutput('goals', goals);

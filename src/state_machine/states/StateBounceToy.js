@@ -6,6 +6,7 @@ export default class StateBounceToy extends State {
     super(params);
 
     this.name = stateList.bounceToy;
+    this.suppressEmotionDecay.push(emotionList.happy);
   }
 
   execute(self, happiness) {

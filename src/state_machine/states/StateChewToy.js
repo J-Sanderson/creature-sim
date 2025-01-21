@@ -6,6 +6,7 @@ export default class StateChewToy extends State {
     super(params);
 
     this.name = stateList.chewToy;
+    this.suppressEmotionDecay.push(emotionList.happy);
   }
 
   execute(self, happiness) {

@@ -12,6 +12,7 @@ export default class StateDrink extends State {
     super(params);
 
     this.name = stateList.drink;
+    this.suppressMotiveDecay.push(motiveList.drink);
   }
 
   execute(self, hydration, maxVal) {

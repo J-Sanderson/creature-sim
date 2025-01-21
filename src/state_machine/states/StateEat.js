@@ -12,6 +12,7 @@ export default class StateEat extends State {
     super(params);
 
     this.name = stateList.eat;
+    this.suppressMotiveDecay.push(motiveList.fullness);
   }
 
   execute(self, motives, maxVal) {

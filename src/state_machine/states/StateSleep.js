@@ -6,6 +6,7 @@ export default class StateSleep extends State {
     super(params);
 
     this.name = stateList.sleep;
+    this.suppressMotiveDecay.push(motiveList.energy);
   }
 
   execute(self, energy, maxVal) {

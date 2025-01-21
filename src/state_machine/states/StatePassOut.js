@@ -6,6 +6,7 @@ export default class StatePassOut extends State {
     super(params);
 
     this.name = stateList.passOut;
+    this.suppressMotiveDecay.push(motiveList.energy);
   }
 
   execute(self, energy, maxVal) {

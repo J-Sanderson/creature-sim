@@ -1,6 +1,12 @@
+import State from './State';
 import { stateList, motiveIconList } from '../../defaults';
 
-export const stateSnubItem = function (self) {
-  self.setState(stateList.snubItem);
-  self.showMotive(motiveIconList.snubItem);
-};
+export default class StateSnubItem extends State {
+  constructor(params) {
+    super(params);
+  }
+
+  execute(self) {
+    self.showMotive(motiveIconList.snubItem);
+  }
+}

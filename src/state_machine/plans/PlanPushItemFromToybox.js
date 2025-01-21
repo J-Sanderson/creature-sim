@@ -1,5 +1,5 @@
 import { utilities } from '../../utils/Utilities';
-import { adjectiveList, goalList, planList } from '../../defaults';
+import { adjectiveList, goalList, planList, stateList } from '../../defaults';
 
 export const planPushItemFromToybox = function (self) {
   self.setPlan(planList.pushItemFromToybox);
@@ -71,7 +71,8 @@ export const planPushItemFromToybox = function (self) {
           });
           interestingButtons = preferredButtons;
         }
-        self.states.statePushItemFromToybox(self);
+        self.setState(stateList.pushItemFromToybox);
+        self.status.state.execute(self);
         const button =
           interestingButtons[utilities.rand(interestingButtons.length - 1)];
         button.click();
@@ -85,7 +86,8 @@ export const planPushItemFromToybox = function (self) {
       return !button.classList.contains('item-active');
     });
     if (interestingButtons.length) {
-      self.states.statePushItemFromToybox(self);
+      self.setState(stateList.pushItemFromToybox);
+      self.status.state.execute(self);
       const button =
         interestingButtons[utilities.rand(interestingButtons.length - 1)];
       button.click();

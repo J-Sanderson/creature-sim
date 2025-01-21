@@ -1,8 +1,14 @@
+import State from './State';
 import { stateList } from '../../defaults';
 
-export const stateSeekItem = function (self, motive) {
-  self.setState(stateList.seekItem);
-  if (motive) {
-    self.showMotive(motive);
+export default class StateSeekItem extends State {
+  constructor(params) {
+    super(params);
   }
-};
+
+  execute(self, motive) {
+    if (motive) {
+      self.showMotive(motive);
+    }
+  }
+}

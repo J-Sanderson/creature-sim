@@ -1,4 +1,4 @@
-import { planList, emotionList } from '../../defaults';
+import { planList, stateList, emotionList } from '../../defaults';
 
 export const planBounceToy = function (self) {
   const emotions = self.getEmotions();
@@ -8,5 +8,6 @@ export const planBounceToy = function (self) {
   }
 
   self.setPlan(planList.bounceToy);
-  self.states.stateBounceToy(self, emotions[emotionList.happy]);
+  self.setState(stateList.bounceToy);
+  self.status.state.execute(self, emotions[emotionList.happy]);
 };

@@ -1,4 +1,4 @@
-import { motiveList, goalList, planList } from '../../defaults';
+import { motiveList, goalList, planList, stateList } from '../../defaults';
 
 export const planSleep = function (self) {
   const motives = self.getMotives();
@@ -35,5 +35,6 @@ export const planSleep = function (self) {
   if (motives[motiveList.energy] >= maxVal) {
     return;
   }
-  self.states.stateSleep(self, motives[motiveList.energy], maxVal);
+  self.setState(stateList.sleep);
+  self.status.state.execute(self, motives[motiveList.energy], maxVal);
 };

@@ -1,4 +1,4 @@
-import { planList } from '../../defaults';
+import { planList, stateList } from '../../defaults';
 
 export const planWander = function (self) {
   self.setPlan(planList.wander);
@@ -12,7 +12,8 @@ export const planWander = function (self) {
     const newX = position.x + dx;
     const newY = position.y + dy;
 
-    self.states.stateMoveRandomly(self, { x: newX, y: newY });
+    self.setState(stateList.wander);
+    self.status.state.execute(self, { x: newX, y: newY });
   } else {
     console.error('No valid movement direction available');
   }

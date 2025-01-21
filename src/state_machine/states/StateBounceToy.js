@@ -1,10 +1,16 @@
+import State from './State';
 import { stateList, motiveIconList, emotionList } from '../../defaults';
 
-export const stateBounceToy = function (self, happiness) {
-  self.setState(stateList.bounceToy);
-  self.showMotive(motiveIconList.bounceToy);
-  const maxMotive = self.getMaxMotive();
-  if (happiness < maxMotive) {
-    self.setEmotion(emotionList.happy, happiness + 1);
+export default class StateBounceToy extends State {
+  constructor(params) {
+    super(params);
   }
-};
+
+  execute(self, happiness) {
+    self.showMotive(motiveIconList.bounceToy);
+    const maxMotive = self.getMaxMotive();
+    if (happiness < maxMotive) {
+      self.setEmotion(emotionList.happy, happiness + 1);
+    }
+  }
+}

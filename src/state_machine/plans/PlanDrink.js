@@ -1,4 +1,4 @@
-import { motiveList, planList } from '../../defaults';
+import { motiveList, planList, stateList } from '../../defaults';
 
 export const planDrink = function (self) {
   self.setPlan(planList.drink);
@@ -7,5 +7,7 @@ export const planDrink = function (self) {
   if (hydration >= maxVal) {
     return;
   }
-  self.states.stateDrink(self, hydration, maxVal);
+
+  self.setState(stateList.drink);
+  self.status.state.execute(self, hydration, maxVal);
 };

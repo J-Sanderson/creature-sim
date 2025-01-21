@@ -1,4 +1,4 @@
-import { planList, emotionList } from '../../defaults';
+import { planList, stateList, emotionList } from '../../defaults';
 
 export const planChewToy = function (self) {
   const emotions = self.getEmotions();
@@ -8,5 +8,6 @@ export const planChewToy = function (self) {
   }
 
   self.setPlan(planList.chewToy);
-  self.states.stateChewToy(self, emotions[emotionList.happy]);
+  self.setState(stateList.chewToy);
+  self.status.state.execute(self, emotions[emotionList.happy]);
 };

@@ -12,6 +12,7 @@ import {
   personalityValueList,
   emotionList,
   goalList,
+  stateList,
 } from '../defaults';
 import states from '../state_machine/states';
 import plans from '../state_machine/plans';
@@ -217,7 +218,7 @@ export default class Creature extends Entity {
   }
 
   setState(state) {
-    this.status.state = state;
+    this.status.state = new states[state]();
   }
 
   setPlan(plan) {

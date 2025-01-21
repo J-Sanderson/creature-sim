@@ -11,5 +11,6 @@ export const planPassOut = function (self) {
   }
 
   self.setPlan(planList.passOut);
-  self.states[stateList.passOut](self, energy, maxVal);
+  self.setState(stateList.passOut);
+  self.status.state.execute(self, energy, maxVal);
 };

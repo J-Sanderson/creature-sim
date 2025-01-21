@@ -1,6 +1,7 @@
-import { planList } from '../../defaults';
+import { planList, stateList } from '../../defaults';
 
 export const planMoveToToybox = function (self) {
   self.setPlan(planList.moveToToybox);
-  self.states.stateMoveToToybox(self);
+  self.setState(stateList.moveToToybox);
+  self.status.state.execute(self);
 };

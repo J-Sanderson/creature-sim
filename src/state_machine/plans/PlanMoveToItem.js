@@ -1,3 +1,5 @@
+import { stateList } from '../../defaults';
+
 export const planMoveToItem = function (self, id, goal) {
   const item = self.queries.getItemFromWorld(self, id);
   if (!item) {
@@ -5,5 +7,6 @@ export const planMoveToItem = function (self, id, goal) {
     return;
   }
   const itemPos = item.getPosition();
-  self.states.stateMoveToPosition(self, itemPos);
+  self.setState(stateList.moveToPosition);
+  self.status.state.execute(self, itemPos);
 };

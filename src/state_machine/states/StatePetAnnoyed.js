@@ -1,6 +1,12 @@
+import State from './State';
 import { stateList, motiveIconList } from '../../defaults';
 
-export const statePetAnnoyed = function (self) {
-  self.setState(stateList.petAnnoyed);
-  self.showMotive(motiveIconList.petAnnoyed);
-};
+export default class StatePetAnnoyed extends State {
+  constructor(params) {
+    super(params);
+  }
+
+  execute(self) {
+    self.showMotive(motiveIconList.petAnnoyed);
+  }
+}

@@ -1,6 +1,7 @@
-import { planList } from '../../defaults';
+import { planList, stateList } from '../../defaults';
 
 export const planSitAround = function (self) {
   self.setPlan(planList.sitAround);
-  self.states.stateSitAround(self);
+  self.setState(stateList.sitAround);
+  self.status.state.execute(self);
 };

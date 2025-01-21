@@ -1,4 +1,4 @@
-import { motiveList, goalList, planList } from '../../defaults';
+import { motiveList, goalList, planList, stateList } from '../../defaults';
 
 export const planEat = function (self) {
   const motives = self.getMotives();
@@ -22,5 +22,7 @@ export const planEat = function (self) {
   if (motives[motiveList.fullness] >= maxVal) {
     return;
   }
-  self.states.stateEat(self, motives, maxVal);
+
+  self.setState(stateList.eat);
+  self.status.state.execute(self, motives, maxVal);
 };

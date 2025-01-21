@@ -1,6 +1,7 @@
-import { planList } from '../../defaults';
+import { planList, stateList } from '../../defaults';
 
 export const planPetHappy = function (self) {
   self.setPlan(planList.petHappy);
-  self.states.statePetHappy(self);
+  self.setState(stateList.petHappy);
+  self.status.state.execute(self);
 };

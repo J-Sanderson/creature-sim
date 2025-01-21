@@ -1,4 +1,4 @@
-import { adjectiveList, goalList, planList } from '../../defaults';
+import { adjectiveList, goalList, planList, stateList } from '../../defaults';
 
 export const planSeekItem = function (self, adj, motive, goal) {
   self.setPlan(planList.seekItem);
@@ -55,5 +55,6 @@ export const planSeekItem = function (self, adj, motive, goal) {
   }
 
   const itemPos = closestItem === null ? null : closestItem.getPosition();
-  self.states.stateSeekItem(self, motive, itemPos);
+  self.setState(stateList.seekItem);
+  self.status.state.execute(self, motive, itemPos);
 };

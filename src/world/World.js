@@ -332,21 +332,20 @@ export class World {
     }
 
     const status = creature.getStatus();
-    const outputs = creature.getOutputs();
     for (let motive in status.motives) {
       if (status.motives.hasOwnProperty(motive)) {
         creature.setOutput(motive, status.motives[motive]);
       }
     }
 
-    World.statusOutputs.forEach((item) => {
-      if (outputs.hasOwnProperty(item)) {
-        creature.setOutput(item, status[item]);
-      }
-    });
-
     const goal = creature.getCurrentGoal();
     creature.setOutput('currentGoal', goal);
+
+    const plan = creature.getPlan();
+    creature.setOutput('plan', plan);
+
+    const state = creature.getState();
+    creature.setOutput('state', state);
 
     const goals = creature.getGoals();
     creature.setOutput('goals', goals);

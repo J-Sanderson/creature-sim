@@ -10,6 +10,8 @@ import {
 export default class StateDrink extends State {
   constructor(params) {
     super(params);
+
+    this.name = stateList.drink;
   }
 
   execute(self, hydration, maxVal) {

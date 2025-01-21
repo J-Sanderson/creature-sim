@@ -5,6 +5,8 @@ import { stateList, motiveIconList } from '../../defaults';
 export default class StateMoveToPosition extends State {
   constructor(params) {
     super(params);
+
+    this.name = stateList.moveToPosition;
   }
 
   execute(self, newPos) {

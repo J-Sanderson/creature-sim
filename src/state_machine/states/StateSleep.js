@@ -4,6 +4,8 @@ import { motiveList, stateList, motiveIconList } from '../../defaults';
 export default class StateSleep extends State {
   constructor(params) {
     super(params);
+
+    this.name = stateList.sleep;
   }
 
   execute(self, energy, maxVal) {

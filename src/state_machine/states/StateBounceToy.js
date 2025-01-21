@@ -4,6 +4,8 @@ import { stateList, motiveIconList, emotionList } from '../../defaults';
 export default class StateBounceToy extends State {
   constructor(params) {
     super(params);
+
+    this.name = stateList.bounceToy;
   }
 
   execute(self, happiness) {

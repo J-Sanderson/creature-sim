@@ -4,6 +4,8 @@ import { stateList, motiveList, motiveIconList } from '../../defaults';
 export default class StatePassOut extends State {
   constructor(params) {
     super(params);
+
+    this.name = stateList.passOut;
   }
 
   execute(self, energy, maxVal) {

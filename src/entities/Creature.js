@@ -221,6 +221,11 @@ export default class Creature extends Entity {
     this.status.state = new states[state]();
   }
 
+  getState() {
+    if (!this.status.state || !this.status.state.name) return;
+    return this.status.state.name;
+  }
+
   setPlan(plan) {
     this.status.plan = plan;
   }

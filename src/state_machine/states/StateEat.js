@@ -10,6 +10,8 @@ import {
 export default class StateEat extends State {
   constructor(params) {
     super(params);
+
+    this.name = stateList.eat;
   }
 
   execute(self, motives, maxVal) {

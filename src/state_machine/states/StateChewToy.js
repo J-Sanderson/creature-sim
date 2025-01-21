@@ -1,9 +1,11 @@
 import State from './State';
-import { emotionList, motiveIconList } from '../../defaults';
+import { emotionList, motiveIconList, stateList } from '../../defaults';
 
 export default class StateChewToy extends State {
   constructor(params) {
     super(params);
+
+    this.name = stateList.chewToy;
   }
 
   execute(self, happiness) {

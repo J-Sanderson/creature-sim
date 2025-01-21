@@ -5,6 +5,8 @@ import { stateList } from '../../defaults';
 export default class StateMoveRandomly extends State {
   constructor(params) {
     super(params);
+
+    this.name = stateList.wander;
   }
 
   execute(self, pos) {

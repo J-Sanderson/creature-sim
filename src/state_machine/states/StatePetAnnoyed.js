@@ -4,6 +4,8 @@ import { stateList, motiveIconList } from '../../defaults';
 export default class StatePetAnnoyed extends State {
   constructor(params) {
     super(params);
+
+    this.name = stateList.petAnnoyed;
   }
 
   execute(self) {

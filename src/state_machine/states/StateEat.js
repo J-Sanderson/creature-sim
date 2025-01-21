@@ -4,6 +4,7 @@ import {
   motiveList,
   goalList,
   stateList,
+  emotionList,
   motiveIconList,
 } from '../../defaults';
 
@@ -37,6 +38,14 @@ export default class StateEat extends State {
             motiveList.hydration,
             motives[motiveList.hydration] - 1
           );
+        }
+        if (item.getFlavors().includes(self.getFavorites().flavor)) {
+          const emotions = self.getEmotions();
+          let happiness = emotions[emotionList.happy];
+          this.suppressEmotionDecay.push(emotionList.happy);
+          if (happiness < maxVal) {
+            self.setEmotion(emotionList.happy, happiness + 1);
+          }
         }
       } else {
         const world = worldManager.getWorld(self.world);

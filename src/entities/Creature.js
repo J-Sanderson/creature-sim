@@ -173,14 +173,6 @@ export default class Creature extends Entity {
     return this.outputs;
   }
 
-  getGoals() {
-    return this.goalManager.getGoals();
-  }
-
-  getCurrentGoal() {
-    return this.goalManager.getCurrentGoal();
-  }
-
   getPersonalityValues() {
     return this.personality.values;
   }
@@ -217,20 +209,30 @@ export default class Creature extends Entity {
     return this.metabolismManager.getDesireThreshold(desire);
   }
 
-  setState(state) {
-    this.status.state = new states[state]();
+  getGoals() {
+    return this.goalManager.getGoals();
   }
 
-  getState() {
-    return this.status.state;
+  getCurrentGoal() {
+    return this.goalManager.getCurrentGoal();
   }
 
   setPlan(plan) {
+    if (plan === this.getPlan()) return;
     this.status.plan = plan;
   }
 
   getPlan() {
     return this.status.plan;
+  }
+
+  setState(state) {
+    if (state === this.getState()?.name) return;
+    this.status.state = new states[state]();
+  }
+
+  getState() {
+    return this.status.state;
   }
 
   setOutputEl(type, el) {

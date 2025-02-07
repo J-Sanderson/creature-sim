@@ -218,7 +218,7 @@ export default class Creature extends Entity {
 
   setPlan(plan) {
     if (plan === this.getPlan()?.name) return;
-    this.status.plan = new plans[plan]();
+    this.status.plan = plan ? new plans[plan]() : null;
   }
 
   getPlan() {

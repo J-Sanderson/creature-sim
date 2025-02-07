@@ -65,18 +65,20 @@ export default class GoalSleep extends Goal {
 
     const energy = self.getMotive(motiveList.energy);
     if (self.getPlan() === planList.passOut) {
-      self.plans[planList.passOut](self);
+      self.status.plan.execute(self);
       return;
     }
 
     const target = goals[goalList.sleep].target;
     if (!target) {
       if (energy === 0) {
-        self.plans[planList.passOut](self);
+        self.setPlan(planList.passOut);
+        self.status.plan.execute(self);
         return;
       }
 
-      self.plans.planSeekItem(
+      self.setPlan(planList.seekItem);
+      self.status.plan.execute(
         self,
         adjectiveList.restful,
         motiveIconList.tired,
@@ -84,9 +86,11 @@ export default class GoalSleep extends Goal {
       );
     } else {
       if (self.queries.amIOnItem(self, target)) {
-        self.plans[planList.sleep](self);
+        self.setPlan(planList.sleep);
+        self.status.plan.execute(self);
       } else {
-        self.plans[planList.moveToItem](self, target, goalList.sleep);
+        self.setPlan(planList.moveToItem);
+        self.status.plan.execute(self, target, goalList.sleep);
       }
     }
   }

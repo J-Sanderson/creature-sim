@@ -1,7 +1,16 @@
+import Plan from './Plan';
 import { planList, stateList } from '../../defaults';
 
-export const planPetAnnoyed = function (self) {
-  self.setPlan(planList.petAnnoyed);
-  self.setState(stateList.petAnnoyed);
-  self.status.state.execute(self);
-};
+export default class PlanPetAnnoyed extends Plan {
+  constructor(params) {
+    super(params);
+
+    this.name = planList.petAnnoyed;
+  }
+
+  execute(self) {
+    self.setPlan(planList.petAnnoyed);
+    self.setState(stateList.petAnnoyed);
+    self.status.state.execute(self);
+  }
+}

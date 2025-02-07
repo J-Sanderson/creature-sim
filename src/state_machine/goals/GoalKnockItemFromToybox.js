@@ -4,6 +4,7 @@ import {
   personalityValueList,
   goalList,
   goalTypeList,
+  planList,
 } from '../../defaults';
 
 export default class GoalKnockItemFromToybox extends Goal {
@@ -114,9 +115,10 @@ export default class GoalKnockItemFromToybox extends Goal {
     const position = self.getPosition();
     const bounds = self.getBounds();
     if (position.y + 1 >= bounds.y) {
-      self.plans.planPushItemFromToybox(self);
+      self.setPlan(planList.pushItemFromToybox);
     } else {
-      self.plans.planMoveToToybox(self);
+      self.setPlan(planList.moveToToybox);
     }
+    self.status.plan.execute(self);
   }
 }

@@ -1,5 +1,5 @@
 import Goal from './Goal';
-import { personalityValueList, goalList } from '../../defaults';
+import { personalityValueList, goalList, planList } from '../../defaults';
 
 export default class GoalWander extends Goal {
   constructor(params) {
@@ -70,6 +70,7 @@ export default class GoalWander extends Goal {
       self.goalManager.deleteGoal(goalList.wander);
     }
 
-    self.plans.planWander(self);
+    self.setPlan(planList.wander);
+    self.status.plan.execute(self);
   }
 }

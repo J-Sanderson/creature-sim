@@ -3,6 +3,7 @@ import {
   goalList,
   stateList,
   goalTypeList,
+  planList,
   personalityValueList,
 } from '../../defaults';
 
@@ -77,13 +78,15 @@ export default class GoalBePetted extends Goal {
         kindness >= maxMotive - maxMotive * motiveModifier ||
         patience >= maxMotive - maxMotive * motiveModifier
       ) {
-        self.plans.planPetHappy(self);
+        self.setPlan(planList.petHappy);
       } else {
-        self.plans.planPetAnnoyed(self);
+        self.setPlan(planList.petAnnoyed);
       }
+      self.status.plan.execute(self);
       self.goalManager.deleteGoal(goalList.pet);
     } else {
-      self.plans.planPetHappy(self);
+      self.setPlan(planList.petHappy);
+      self.status.plan.execute(self);
       if (
         self.queries.amIHungry(self) ||
         self.queries.amIThirsty(self) ||

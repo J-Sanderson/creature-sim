@@ -5,6 +5,7 @@ import {
   goalList,
   stateList,
   adjectiveList,
+  planList,
 } from '../../defaults';
 
 export default class GoalAddedItem extends Goal {
@@ -33,7 +34,8 @@ export default class GoalAddedItem extends Goal {
       return;
     }
 
-    self.plans.planAddedItem(self);
+    self.setPlan(planList.addedItem);
+    self.status.plan.execute(self);
 
     if (self.queries.amITired(self) || self.queries.amIThirsty(self)) {
       this.decrementTicks();

@@ -4,6 +4,7 @@ import {
   motiveList,
   personalityValueList,
   goalList,
+  planList,
 } from '../../defaults';
 
 export default class GoalSitAround extends Goal {
@@ -77,7 +78,8 @@ export default class GoalSitAround extends Goal {
     // am I on an item?
     let item = self.queries.getItemIAmOn(self);
     if (item && !item.getAdjectives().includes(adjectiveList.restful)) {
-      self.plans.planMoveFromItem(self);
+      self.setPlan(planList.moveFromItem);
+      self.status.plan.execute(self);
       return;
     }
 
@@ -85,6 +87,7 @@ export default class GoalSitAround extends Goal {
     if (this.getTicks() <= 0) {
       self.goalManager.deleteGoal(goalList.sitAround);
     }
-    self.plans.planSitAround(self);
+    self.setPlan(planList.sitAround);
+    self.status.plan.execute(self);
   }
 }

@@ -4,6 +4,7 @@ import {
   personalityValueList,
   goalList,
   goalTypeList,
+  planList,
 } from '../../defaults';
 
 export default class GoalBounceToy extends Goal {
@@ -109,10 +110,12 @@ export default class GoalBounceToy extends Goal {
 
     return priority;
   }
+
   execute(self) {
     let target = this.target;
     if (!target) {
-      self.plans.planSeekItem(
+      self.setPlan(planList.seekItem);
+      self.status.plan.execute(        
         self,
         adjectiveList.bounce,
         null,
@@ -124,9 +127,11 @@ export default class GoalBounceToy extends Goal {
         if (this.getTicks() <= 0) {
           self.goalManager.deleteGoal(goalList.bounceToy);
         }
-        self.plans.planBounceToy(self);
+        self.setPlan(planList.bounceToy);
+        self.status.plan.execute(self);
       } else {
-        self.plans.planMoveToItem(self, target, goalList.bounceToy);
+        self.setPlan(planList.moveToItem);
+        self.status.plan.execute(self, target, goalList.bounceToy);
       }
     }
   }

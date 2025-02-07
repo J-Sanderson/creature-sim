@@ -65,7 +65,8 @@ export default class GoalDrink extends Goal {
 
     let target = goals[goalList.drink].target;
     if (!target) {
-      self.plans.planSeekItem(
+      self.setPlan(planList.seekItem);
+      self.status.plan.execute(
         self,
         adjectiveList.wet,
         motiveIconList.thirst,
@@ -73,9 +74,11 @@ export default class GoalDrink extends Goal {
       );
     } else {
       if (self.queries.amIOnItem(self, target)) {
-        self.plans.planDrink(self);
+        self.setPlan(planList.drink);
+        self.status.plan.execute(self);
       } else {
-        self.plans.planMoveToItem(self, target, goalList.drink);
+        self.setPlan(planList.moveToItem);
+        self.status.plan.execute(self, target, goalList.drink);
       }
     }
   }

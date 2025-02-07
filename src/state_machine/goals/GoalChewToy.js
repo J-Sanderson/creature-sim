@@ -4,6 +4,7 @@ import {
   personalityValueList,
   goalList,
   goalTypeList,
+  planList
 } from '../../defaults';
 
 export default class GoalChewToy extends Goal {
@@ -119,16 +120,19 @@ export default class GoalChewToy extends Goal {
   execute(self) {
     let target = this.target;
     if (!target) {
-      self.plans.planSeekItem(self, adjectiveList.chew, null, goalList.chewToy);
+      self.setPlan(planList.seekItem);
+      self.status.plan.execute(self, adjectiveList.chew, null, goalList.chewToy);
     } else {
       if (self.queries.amIOnItem(self, target)) {
         this.decrementTicks();
         if (this.getTicks() <= 0) {
           self.goalManager.deleteGoal(goalList.chewToy);
         }
-        self.plans.planChewToy(self);
+        self.setPlan(planList.chewToy);
+        self.status.plan.execute(self);
       } else {
-        self.plans.planMoveToItem(self, target, goalList.chewToy);
+        self.setPlan(planList.moveToItem);
+        self.status.plan.execute(self, target, goalList.chewToy);
       }
     }
   }

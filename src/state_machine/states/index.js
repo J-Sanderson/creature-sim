@@ -16,6 +16,7 @@ import StateMissingItem from './StateMissingItem';
 import StateAddedItem from './StateAddedItem';
 import StateSnubItem from './StateSnubItem';
 import StatePassOut from './StatePassOut';
+import StateActHappy from './StateActHappy';
 
 export default {
   stateMoveRandomly: StateMoveRandomly,
@@ -36,4 +37,5 @@ export default {
   stateAddedItem: StateAddedItem,
   stateSnubItem: StateSnubItem,
   statePassOut: StatePassOut,
+  stateActHappy: StateActHappy,
 };

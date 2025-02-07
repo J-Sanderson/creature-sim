@@ -16,6 +16,6 @@ export default class PlanMoveToItem extends Plan {
     }
     const itemPos = item.getPosition();
     self.setState(stateList.moveToPosition);
-    self.status.state.execute(self, itemPos);
+    self.getState().execute(self, itemPos);
   }
 }

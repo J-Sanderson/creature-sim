@@ -15,8 +15,7 @@ export default class PlanCuddleToy extends Plan {
       return;
     }
   
-    self.setPlan(planList.cuddleToy);
     self.setState(stateList.cuddleToy);
-    self.status.state.execute(self, emotions[emotionList.happy]);
+    self.getState().execute(self, emotions[emotionList.happy]);
   }
 }

@@ -56,7 +56,7 @@ export class MetabolismManager {
     if (decayThresholds.hasOwnProperty(motiveList.fullness)) {
       if (state && !state.suppressMotiveDecay.includes(motiveList.fullness)) {
         if (
-          (self.status.state !== stateList.sleep || Math.random() < 0.25) &&
+          ((state && state.name !== stateList.sleep) || Math.random() < 0.25) &&
           self.status.motives[motiveList.fullness] > 0
         ) {
           if (Math.random() < decayThresholds[motiveList.fullness]) {
@@ -89,7 +89,7 @@ export class MetabolismManager {
     if (decayThresholds.hasOwnProperty(motiveList.hydration)) {
       if (state && !state.suppressMotiveDecay.includes(motiveList.hydration)) {
         if (
-          (self.status.state !== stateList.sleep || Math.random() < 0.25) &&
+          ((state && state.name !== stateList.sleep) || Math.random() < 0.25) &&
           self.status.motives[motiveList.hydration] > 0 &&
           Math.random() < decayThresholds[motiveList.hydration]
         ) {

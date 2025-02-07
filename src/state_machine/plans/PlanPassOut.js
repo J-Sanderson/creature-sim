@@ -18,8 +18,7 @@ export default class PlanPassOut extends Plan {
       return;
     }
   
-    self.setPlan(planList.passOut);
     self.setState(stateList.passOut);
-    self.status.state.execute(self, energy, maxVal);
+    self.getState().execute(self, energy, maxVal);
   }
 }

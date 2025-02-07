@@ -9,8 +9,7 @@ export default class PlanPetAnnoyed extends Plan {
   }
 
   execute(self) {
-    self.setPlan(planList.petAnnoyed);
     self.setState(stateList.petAnnoyed);
-    self.status.state.execute(self);
+    self.getState().execute(self);
   }
 }

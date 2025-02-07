@@ -9,8 +9,7 @@ export default class PlanMoveToToybox extends Plan {
   }
 
   execute(self) {
-    self.setPlan(planList.moveToToybox);
     self.setState(stateList.moveToToybox);
-    self.status.state.execute(self);
+    self.getState().execute(self);
   }
 }

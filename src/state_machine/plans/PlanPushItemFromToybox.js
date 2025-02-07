@@ -11,8 +11,6 @@ export default class PlanPushItemFromToybox extends Plan {
   }
 
   execute(self) {
-    self.setPlan(planList.pushItemFromToybox);
-
     let goals = self.getGoals();
     if (!goals[goalList.knockItemFromToybox]) {
       console.error(
@@ -81,7 +79,7 @@ export default class PlanPushItemFromToybox extends Plan {
             interestingButtons = preferredButtons;
           }
           self.setState(stateList.pushItemFromToybox);
-          self.status.state.execute(self);
+          self.getState().execute(self);
           const button =
             interestingButtons[utilities.rand(interestingButtons.length - 1)];
           button.click();
@@ -96,7 +94,7 @@ export default class PlanPushItemFromToybox extends Plan {
       });
       if (interestingButtons.length) {
         self.setState(stateList.pushItemFromToybox);
-        self.status.state.execute(self);
+        self.getState().execute(self);
         const button =
           interestingButtons[utilities.rand(interestingButtons.length - 1)];
         button.click();

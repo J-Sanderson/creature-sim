@@ -79,7 +79,7 @@ export default class GoalSitAround extends Goal {
     let item = self.queries.getItemIAmOn(self);
     if (item && !item.getAdjectives().includes(adjectiveList.restful)) {
       self.setPlan(planList.moveFromItem);
-      self.status.plan.execute(self);
+      self.getPlan().execute(self);
       return;
     }
 
@@ -88,6 +88,6 @@ export default class GoalSitAround extends Goal {
       self.goalManager.deleteGoal(goalList.sitAround);
     }
     self.setPlan(planList.sitAround);
-    self.status.plan.execute(self);
+    self.getPlan().execute(self);
   }
 }

@@ -15,8 +15,7 @@ export default class PlanBounceToy extends Plan {
       return;
     }
 
-    self.setPlan(planList.bounceToy);
     self.setState(stateList.bounceToy);
-    self.status.state.execute(self);
+    self.getState().execute(self);
   }
 }

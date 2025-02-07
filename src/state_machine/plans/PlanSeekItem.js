@@ -62,6 +62,6 @@ export default class PlanSeekItem extends Plan {
   
     const itemPos = closestItem === null ? null : closestItem.getPosition();
     self.setState(stateList.seekItem);
-    self.status.state.execute(self, motive, itemPos);
+    self.getState().execute(self, motive, itemPos);
   }
 }

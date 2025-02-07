@@ -16,7 +16,6 @@ export default class PlanSleep extends Plan {
       console.error(`Error: no ${motiveList.energy} motive found`);
       return;
     }
-    self.setPlan(planList.sleep);
     if (motives[motiveList.hydration] < maxMotive * motiveModifier) {
       self.goalManager.addGoal(self, goalList.drink, {
         priority: 1,
@@ -44,6 +43,6 @@ export default class PlanSleep extends Plan {
       return;
     }
     self.setState(stateList.sleep);
-    self.status.state.execute(self, motives[motiveList.energy], maxVal);
+    self.getState().execute(self, motives[motiveList.energy], maxVal);
   }
 }

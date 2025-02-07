@@ -9,8 +9,7 @@ export default class PlanSnubItem extends Plan {
   }
 
   execute(self) {
-    self.setPlan(planList.snubItem);
     self.setState(stateList.snubItem);
-    self.status.state.execute(self);
+    self.getState().execute(self);
   }
 }

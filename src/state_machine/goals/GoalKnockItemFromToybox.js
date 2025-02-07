@@ -119,6 +119,6 @@ export default class GoalKnockItemFromToybox extends Goal {
     } else {
       self.setPlan(planList.moveToToybox);
     }
-    self.status.plan.execute(self);
+    self.getPlan().execute(self);
   }
 }

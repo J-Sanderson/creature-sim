@@ -9,7 +9,6 @@ export default class PlanWander extends Plan {
   }
 
   execute(self) {
-    self.setPlan(planList.wander);
     const validDirections = self.queries.getValidDirections(self);
   
     if (validDirections.length > 0) {
@@ -21,7 +20,7 @@ export default class PlanWander extends Plan {
       const newY = position.y + dy;
   
       self.setState(stateList.wander);
-      self.status.state.execute(self, { x: newX, y: newY });
+      self.getState().execute(self, { x: newX, y: newY });
     } else {
       console.error('No valid movement direction available');
     }

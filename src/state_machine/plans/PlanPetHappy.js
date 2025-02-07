@@ -15,8 +15,7 @@ export default class PlanPetHappy extends Plan {
       return;
     }
   
-    self.setPlan(planList.petHappy);
     self.setState(stateList.petHappy);
-    self.status.state.execute(self, emotions[emotionList.happy]);
+    self.getState().execute(self, emotions[emotionList.happy]);
   }
 }

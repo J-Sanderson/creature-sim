@@ -9,7 +9,6 @@ export default class PlanDrink extends Plan {
   }
 
   execute(self) {
-    self.setPlan(planList.drink);
     const hydration = self.getMotive(motiveList.hydration);
     const maxVal = self.getMaxMotive();
     if (hydration >= maxVal) {
@@ -17,6 +16,6 @@ export default class PlanDrink extends Plan {
     }
   
     self.setState(stateList.drink);
-    self.status.state.execute(self, hydration, maxVal);
+    self.getState().execute(self, hydration, maxVal);
   }
 }

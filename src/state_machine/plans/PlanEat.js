@@ -14,7 +14,6 @@ export default class PlanEat extends Plan {
       console.error(`Error: no ${motiveList.fullness} motive found`);
       return;
     }
-    self.setPlan(planList.eat);
     if (motives[motiveList.hydration] < 10) {
       self.goalManager.addGoal(self, goalList.drink, {
         priority: 1,
@@ -32,6 +31,6 @@ export default class PlanEat extends Plan {
     }
   
     self.setState(stateList.eat);
-    self.status.state.execute(self, motives, maxVal);
+    self.getState().execute(self, motives, maxVal);
   }
 }

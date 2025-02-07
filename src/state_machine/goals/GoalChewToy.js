@@ -121,7 +121,7 @@ export default class GoalChewToy extends Goal {
     let target = this.target;
     if (!target) {
       self.setPlan(planList.seekItem);
-      self.status.plan.execute(self, adjectiveList.chew, null, goalList.chewToy);
+      self.getPlan().execute(self, adjectiveList.chew, null, goalList.chewToy);
     } else {
       if (self.queries.amIOnItem(self, target)) {
         this.decrementTicks();
@@ -129,10 +129,10 @@ export default class GoalChewToy extends Goal {
           self.goalManager.deleteGoal(goalList.chewToy);
         }
         self.setPlan(planList.chewToy);
-        self.status.plan.execute(self);
+        self.getPlan().execute(self);
       } else {
         self.setPlan(planList.moveToItem);
-        self.status.plan.execute(self, target, goalList.chewToy);
+        self.getPlan().execute(self, target, goalList.chewToy);
       }
     }
   }

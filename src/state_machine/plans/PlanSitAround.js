@@ -9,8 +9,7 @@ export default class PlanSitAround extends Plan {
   }
 
   execute(self) {
-    self.setPlan(planList.sitAround);
     self.setState(stateList.sitAround);
-    self.status.state.execute(self);
+    self.getState().execute(self);
   }
 }

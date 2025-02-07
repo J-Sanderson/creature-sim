@@ -9,8 +9,7 @@ export default class PlanMissingItem extends Plan {
   }
 
   execute(self) {
-    self.setPlan(planList.missingItem);
     self.setState(stateList.missingItem);
-    self.status.state.execute(self);
+    self.getState().execute(self);
   }
 }

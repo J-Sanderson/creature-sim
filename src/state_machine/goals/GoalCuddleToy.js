@@ -127,7 +127,7 @@ export default class GoalCuddleToy extends Goal {
     let target = this.target;
     if (!target) {
       self.setPlan(planList.seekItem);
-      self.status.plan.execute(
+      self.getPlan().execute(
         self,
         adjectiveList.soft,
         null,
@@ -140,10 +140,10 @@ export default class GoalCuddleToy extends Goal {
           self.goalManager.deleteGoal(goalList.cuddleToy);
         }
         self.setPlan(planList.cuddleToy);
-        self.status.plan.execute(self);
+        self.getPlan().execute(self);
       } else {
         self.setPlan(planList.moveToItem);
-        self.status.plan.execute(self, target, goalList.cuddleToy);
+        self.getPlan().execute(self, target, goalList.cuddleToy);
       }
     }
   }

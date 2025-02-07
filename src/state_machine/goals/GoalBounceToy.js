@@ -115,7 +115,7 @@ export default class GoalBounceToy extends Goal {
     let target = this.target;
     if (!target) {
       self.setPlan(planList.seekItem);
-      self.status.plan.execute(        
+      self.getPlan().execute(        
         self,
         adjectiveList.bounce,
         null,
@@ -128,10 +128,10 @@ export default class GoalBounceToy extends Goal {
           self.goalManager.deleteGoal(goalList.bounceToy);
         }
         self.setPlan(planList.bounceToy);
-        self.status.plan.execute(self);
+        self.getPlan().execute(self);
       } else {
         self.setPlan(planList.moveToItem);
-        self.status.plan.execute(self, target, goalList.bounceToy);
+        self.getPlan().execute(self, target, goalList.bounceToy);
       }
     }
   }

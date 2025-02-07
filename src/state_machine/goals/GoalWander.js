@@ -71,6 +71,6 @@ export default class GoalWander extends Goal {
     }
 
     self.setPlan(planList.wander);
-    self.status.plan.execute(self);
+    self.getPlan().execute(self);
   }
 }

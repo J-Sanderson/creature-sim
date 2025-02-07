@@ -35,7 +35,7 @@ export default class GoalMissingItem extends Goal {
 
     self.goalManager.suspendGoal(targetingGoal);
     self.setPlan(planList.missingItem);
-    self.status.plan.execute(self);
+    self.getPlan().execute(self);
     this.decrementTicks();
     if (this.getTicks() <= 0) {
       self.goalManager.deleteGoal(goalList.missingItem);

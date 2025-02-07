@@ -9,8 +9,7 @@ export default class PlanAddedItem extends Plan {
   }
 
   execute(self) {
-    self.setPlan(planList.addedItem);
     self.setState(stateList.addedItem);
-    self.status.state.execute(self);
+    self.getState().execute(self);
   }
 }

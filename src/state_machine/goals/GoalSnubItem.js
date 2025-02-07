@@ -15,7 +15,7 @@ export default class GoalSnubItem extends Goal {
     const target = this.getTarget();
     if (self.queries.amIOnItem(self, target)) {
       self.setPlan(planList.snubItem);
-      self.status.plan.execute(self);
+      self.getPlan().execute(self);
 
       this.decrementTicks();
       if (this.getTicks() <= 0) {
@@ -23,7 +23,7 @@ export default class GoalSnubItem extends Goal {
       }
     } else {
       self.setPlan(planList.moveToItem);
-      self.status.plan.execute(self, target, goalList.snubItem);
+      self.getPlan().execute(self, target, goalList.snubItem);
     }
   }
 }

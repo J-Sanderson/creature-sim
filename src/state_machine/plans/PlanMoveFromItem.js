@@ -9,7 +9,6 @@ export default class PlanMoveFromItem extends Plan {
   }
 
   execute(self) {
-    self.setPlan(planList.moveFromItem);
     const validDirections = self.queries.getValidDirections(self);
   
     // todo should try to move to an empty square if possible
@@ -20,7 +19,7 @@ export default class PlanMoveFromItem extends Plan {
       const newX = position.x + dx;
       const newY = position.y + dy;
       self.setState(stateList.moveToPosition);
-      self.status.state.execute(self, { x: newX, y: newY });
+      self.getState().execute(self, { x: newX, y: newY });
     } else {
       console.error('No valid movement direction available');
     }

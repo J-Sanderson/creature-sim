@@ -12,6 +12,7 @@ import GoalMissingItem from './GoalMissingItem';
 import GoalAddedItem from './GoalAddedItem';
 import GoalSnubItem from './GoalSnubItem';
 import GoalActHappy from './GoalActHappy';
+import GoalActSad from './GoalActSad';
 
 export default {
   goalWander: GoalWander,
@@ -28,4 +29,5 @@ export default {
   goalAddedItem: GoalAddedItem,
   goalSnubItem: GoalSnubItem,
   goalActHappy: GoalActHappy,
+  goalActSad: GoalActSad
 };

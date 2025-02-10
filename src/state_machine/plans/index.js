@@ -18,6 +18,7 @@ import PlanAddedItem from './PlanAddedItem';
 import PlanSnubItem from './PlanSnubItem';
 import PlanPassOut from './PlanPassOut';
 import PlanActHappy from './PlanActHappy';
+import PlanActSad from './PlanActSad';
 
 export default {
   planWander: PlanWander,
@@ -40,4 +41,5 @@ export default {
   planSnubItem: PlanSnubItem,
   planPassOut: PlanPassOut,
   planActHappy: PlanActHappy,
+  planActSad: PlanActSad,
 };

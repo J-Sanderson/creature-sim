@@ -18,6 +18,7 @@ import StateSnubItem from './StateSnubItem';
 import StatePassOut from './StatePassOut';
 import StateActHappy from './StateActHappy';
 import StateActSad from './StateActSad';
+import StateActAngry from './StateActAngry';
 
 export default {
   stateMoveRandomly: StateMoveRandomly,
@@ -40,4 +41,5 @@ export default {
   statePassOut: StatePassOut,
   stateActHappy: StateActHappy,
   stateActSad: StateActSad,
+  stateActAngry: StateActAngry,
 };

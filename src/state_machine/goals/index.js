@@ -13,6 +13,7 @@ import GoalAddedItem from './GoalAddedItem';
 import GoalSnubItem from './GoalSnubItem';
 import GoalActHappy from './GoalActHappy';
 import GoalActSad from './GoalActSad';
+import GoalActAngry from './GoalActAngry';
 
 export default {
   goalWander: GoalWander,
@@ -30,4 +31,5 @@ export default {
   goalSnubItem: GoalSnubItem,
   goalActHappy: GoalActHappy,
   goalActSad: GoalActSad,
+  goalActAngry: GoalActAngry,
 };

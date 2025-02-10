@@ -71,6 +71,7 @@ export const goalList = {
   snubItem: 'goalSnubItem',
   actHappy: 'goalActHappy',
   actSad: 'goalActSad',
+  actAngry: 'goalActAngry',
 };
 
 export const planList = {
@@ -95,6 +96,7 @@ export const planList = {
   passOut: 'planPassOut',
   actHappy: 'planActHappy',
   actSad: 'planActSad',
+  actAngry: 'planActAngry',
 };
 
 export const stateList = {
@@ -118,6 +120,7 @@ export const stateList = {
   passOut: 'statePassOut',
   actHappy: 'stateActHappy',
   actSad: 'stateActSad',
+  actAngry: 'stateActAngry',
 };
 
 export const motiveIconList = {
@@ -141,6 +144,7 @@ export const motiveIconList = {
   passOut: '&#x1F635;',
   happy: '&#x1F603;',
   sad: '&#x1F622;',
+  angry: '&#x1F620;',
 };
 
 export const goalTypeList = {

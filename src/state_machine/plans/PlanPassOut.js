@@ -23,7 +23,7 @@ export default class PlanPassOut extends Plan {
       console.error(`Error: no ${emotionList.sad} motive found`);
       return;
     }
-  
+
     self.setState(stateList.passOut);
     self.getState().execute(self, energy, emotions[emotionList.sad], maxVal);
   }

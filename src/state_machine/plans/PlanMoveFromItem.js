@@ -10,10 +10,12 @@ export default class PlanMoveFromItem extends Plan {
 
   execute(self) {
     const validDirections = self.queries.getValidDirections(self);
-  
+
     // todo should try to move to an empty square if possible
     if (validDirections.length > 0) {
-      const randomDirection = Math.floor(Math.random() * validDirections.length);
+      const randomDirection = Math.floor(
+        Math.random() * validDirections.length
+      );
       const { dx, dy } = validDirections[randomDirection];
       const position = self.getPosition();
       const newX = position.x + dx;

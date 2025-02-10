@@ -18,10 +18,10 @@ export default class GoalAddedItem extends Goal {
 
     const state = self.getState();
     if (
-      state && 
+      state &&
       (state.name === stateList.drink ||
-      state.name === stateList.eat ||
-      state.name === stateList.sleep)
+        state.name === stateList.eat ||
+        state.name === stateList.sleep)
     ) {
       return -1;
     }

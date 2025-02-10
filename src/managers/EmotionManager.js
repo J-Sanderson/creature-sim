@@ -5,7 +5,7 @@ export class EmotionManager {
     const emotions = self.getEmotions();
     const state = self.getState();
 
-    for(const emotion in emotions) {
+    for (const emotion in emotions) {
       if (state && !state.suppressEmotionDecay.includes(emotionList[emotion])) {
         this.setEmotion(self, emotionList[emotion], emotions[emotion] - 1);
       }

@@ -115,12 +115,9 @@ export default class GoalBounceToy extends Goal {
     let target = this.target;
     if (!target) {
       self.setPlan(planList.seekItem);
-      self.getPlan().execute(        
-        self,
-        adjectiveList.bounce,
-        null,
-        goalList.bounceToy
-      );
+      self
+        .getPlan()
+        .execute(self, adjectiveList.bounce, null, goalList.bounceToy);
     } else {
       if (self.queries.amIOnItem(self, target)) {
         this.decrementTicks();

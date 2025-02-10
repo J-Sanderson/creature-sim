@@ -68,11 +68,11 @@ export default class GoalBePetted extends Goal {
 
     const state = self.getState();
     if (
-      state && 
+      state &&
       (state.name === stateList.drink ||
-      state.name === stateList.eat ||
-      state.name === stateList.sleep ||
-      state.name === stateList.petAnnoyed)
+        state.name === stateList.eat ||
+        state.name === stateList.sleep ||
+        state.name === stateList.petAnnoyed)
     ) {
       const kindness = personalityValues[personalityValueList.kindness];
       const patience = personalityValues[personalityValueList.patience];

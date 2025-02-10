@@ -1,5 +1,5 @@
-import State from "./State";
-import { stateList, motiveIconList, emotionList } from "../../defaults";
+import State from './State';
+import { stateList, motiveIconList, emotionList } from '../../defaults';
 
 export default class StateActSad extends State {
   constructor(params) {

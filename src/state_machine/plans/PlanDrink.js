@@ -14,7 +14,7 @@ export default class PlanDrink extends Plan {
     if (hydration >= maxVal) {
       return;
     }
-  
+
     self.setState(stateList.drink);
     self.getState().execute(self, hydration, maxVal);
   }

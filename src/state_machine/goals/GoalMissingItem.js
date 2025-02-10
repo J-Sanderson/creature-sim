@@ -1,5 +1,10 @@
 import Goal from './Goal';
-import { personalityValueList, goalList, goalTypeList, planList } from '../../defaults';
+import {
+  personalityValueList,
+  goalList,
+  goalTypeList,
+  planList,
+} from '../../defaults';
 
 export default class GoalMissingItem extends Goal {
   constructor(params) {

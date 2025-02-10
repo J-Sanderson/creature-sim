@@ -50,7 +50,7 @@ export class GoalManager {
       console.error(`Error: no goal object found for ${name}`);
       return;
     }
-    const goal = new self.goals[name];
+    const goal = new self.goals[name]();
     return goal.filter(self, true);
   }
 

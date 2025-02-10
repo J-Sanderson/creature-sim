@@ -1,5 +1,11 @@
 import Plan from './Plan';
-import { adjectiveList, goalList, planList, stateList, emotionList } from '../../defaults';
+import {
+  adjectiveList,
+  goalList,
+  planList,
+  stateList,
+  emotionList,
+} from '../../defaults';
 
 export default class PlanSeekItem extends Plan {
   constructor(params) {
@@ -11,7 +17,7 @@ export default class PlanSeekItem extends Plan {
   execute(self, adj, motive, goal) {
     let interestingItems = self.queries.getItemsByAdjective(self, adj);
     const position = self.getPosition();
-  
+
     if (adj === adjectiveList.tasty && self.queries.amIFinicky(self)) {
       const pref = self.getFavorites().flavor;
       const preferredItems = interestingItems.filter((item) => {
@@ -19,7 +25,7 @@ export default class PlanSeekItem extends Plan {
       });
       interestingItems = preferredItems;
     }
-  
+
     if (adj === adjectiveList.bounce || adj === adjectiveList.chew) {
       const pref = self.getFavorites().color;
       const preferredItems = interestingItems.filter((item) => {
@@ -29,7 +35,7 @@ export default class PlanSeekItem extends Plan {
         interestingItems = preferredItems;
       }
     }
-  
+
     // get the closest of these
     let minDistance = Infinity;
     let closestItem = null;
@@ -43,14 +49,17 @@ export default class PlanSeekItem extends Plan {
         closestItem = item;
       }
     });
-  
+
     if (closestItem) {
       let goals = self.getGoals();
       if (goals.hasOwnProperty(goal)) {
         goals[goal].setTarget(closestItem.guid);
       }
     } else {
-      const knockItemPriority = self.goalManager.getPriorityForGoal(self, goalList.knockItemFromToybox);
+      const knockItemPriority = self.goalManager.getPriorityForGoal(
+        self,
+        goalList.knockItemFromToybox
+      );
       if (knockItemPriority >= 0) {
         self.goalManager.suspendGoal(goal);
         self.goalManager.addGoal(self, goalList.knockItemFromToybox, {
@@ -63,10 +72,12 @@ export default class PlanSeekItem extends Plan {
       } else {
         const validDirections = self.queries.getValidDirections(self);
         if (validDirections.length > 0) {
-          const randomDirection = Math.floor(Math.random() * validDirections.length);
+          const randomDirection = Math.floor(
+            Math.random() * validDirections.length
+          );
           const { dx, dy } = validDirections[randomDirection];
           const position = self.getPosition();
-      
+
           const newX = position.x + dx;
           const newY = position.y + dy;
 

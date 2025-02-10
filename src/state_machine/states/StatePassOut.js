@@ -1,5 +1,10 @@
 import State from './State';
-import { stateList, motiveList, motiveIconList, emotionList } from '../../defaults';
+import {
+  stateList,
+  motiveList,
+  motiveIconList,
+  emotionList,
+} from '../../defaults';
 
 export default class StatePassOut extends State {
   constructor(params) {

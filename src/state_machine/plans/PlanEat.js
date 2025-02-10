@@ -29,7 +29,7 @@ export default class PlanEat extends Plan {
     if (motives[motiveList.fullness] >= maxVal) {
       return;
     }
-  
+
     self.setState(stateList.eat);
     self.getState().execute(self, motives, maxVal);
   }

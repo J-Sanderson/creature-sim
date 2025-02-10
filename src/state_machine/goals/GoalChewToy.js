@@ -4,7 +4,7 @@ import {
   personalityValueList,
   goalList,
   goalTypeList,
-  planList
+  planList,
 } from '../../defaults';
 
 export default class GoalChewToy extends Goal {

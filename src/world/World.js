@@ -291,7 +291,11 @@ export class World {
       creature.setOutputEl(`slider-${emotion}`, slider);
 
       slider.addEventListener('change', (e) => {
-        creature.emotionManager.setEmotion(creature, emotion, parseInt(e.target.value));
+        creature.emotionManager.setEmotion(
+          creature,
+          emotion,
+          parseInt(e.target.value)
+        );
       });
     }
 

@@ -79,12 +79,14 @@ export default class GoalSleep extends Goal {
       }
 
       self.setPlan(planList.seekItem);
-      self.getPlan().execute(
-        self,
-        adjectiveList.restful,
-        motiveIconList.tired,
-        goalList.sleep
-      );
+      self
+        .getPlan()
+        .execute(
+          self,
+          adjectiveList.restful,
+          motiveIconList.tired,
+          goalList.sleep
+        );
     } else {
       if (self.queries.amIOnItem(self, target)) {
         self.setPlan(planList.sleep);

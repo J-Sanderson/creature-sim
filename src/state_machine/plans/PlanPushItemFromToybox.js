@@ -2,7 +2,6 @@ import Plan from './Plan';
 import { utilities } from '../../utils/Utilities';
 import { adjectiveList, goalList, planList, stateList } from '../../defaults';
 
-
 export default class PlanPushItemFromToybox extends Plan {
   constructor(params) {
     super(params);
@@ -17,7 +16,7 @@ export default class PlanPushItemFromToybox extends Plan {
         `Error: no relevant goal found for ${goalList.knockItemFromToybox}`
       );
     }
-  
+
     let adj = '';
     let calledBy = goals[goalList.knockItemFromToybox].getCalledBy();
     switch (calledBy) {
@@ -38,7 +37,7 @@ export default class PlanPushItemFromToybox extends Plan {
         break;
       default:
     }
-  
+
     let toybox = document.querySelector(`[data-world="${self.world}"]`);
     let buttons = Array.from(toybox.querySelectorAll('button'));
     if (adj) {

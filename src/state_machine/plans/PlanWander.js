@@ -10,15 +10,17 @@ export default class PlanWander extends Plan {
 
   execute(self) {
     const validDirections = self.queries.getValidDirections(self);
-  
+
     if (validDirections.length > 0) {
-      const randomDirection = Math.floor(Math.random() * validDirections.length);
+      const randomDirection = Math.floor(
+        Math.random() * validDirections.length
+      );
       const { dx, dy } = validDirections[randomDirection];
       const position = self.getPosition();
-  
+
       const newX = position.x + dx;
       const newY = position.y + dy;
-  
+
       self.setState(stateList.wander);
       self.getState().execute(self, { x: newX, y: newY });
     } else {

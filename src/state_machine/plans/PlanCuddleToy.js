@@ -14,7 +14,7 @@ export default class PlanCuddleToy extends Plan {
       console.error(`Error: no ${emotionList.happy} motive found`);
       return;
     }
-  
+
     self.setState(stateList.cuddleToy);
     self.getState().execute(self, emotions[emotionList.happy]);
   }

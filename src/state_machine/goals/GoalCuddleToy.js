@@ -4,7 +4,7 @@ import {
   personalityValueList,
   goalList,
   goalTypeList,
-  planList
+  planList,
 } from '../../defaults';
 
 export default class GoalCuddleToy extends Goal {
@@ -127,12 +127,9 @@ export default class GoalCuddleToy extends Goal {
     let target = this.target;
     if (!target) {
       self.setPlan(planList.seekItem);
-      self.getPlan().execute(
-        self,
-        adjectiveList.soft,
-        null,
-        goalList.cuddleToy
-      );
+      self
+        .getPlan()
+        .execute(self, adjectiveList.soft, null, goalList.cuddleToy);
     } else {
       if (self.queries.amIOnItem(self, target)) {
         this.decrementTicks();

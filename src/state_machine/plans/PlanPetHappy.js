@@ -14,7 +14,7 @@ export default class PlanPetHappy extends Plan {
       console.error(`Error: no ${emotionList.happy} motive found`);
       return;
     }
-  
+
     self.setState(stateList.petHappy);
     self.getState().execute(self, emotions[emotionList.happy]);
   }

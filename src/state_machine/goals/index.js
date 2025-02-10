@@ -29,5 +29,5 @@ export default {
   goalAddedItem: GoalAddedItem,
   goalSnubItem: GoalSnubItem,
   goalActHappy: GoalActHappy,
-  goalActSad: GoalActSad
+  goalActSad: GoalActSad,
 };

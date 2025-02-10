@@ -16,6 +16,6 @@ export default class PlanChewToy extends Plan {
     }
 
     self.setState(stateList.chewToy);
-    self.getState().execute(self);
+    self.getState().execute(self, emotions[emotionList.happy]);
   }
 }

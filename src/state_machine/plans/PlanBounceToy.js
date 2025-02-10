@@ -16,6 +16,6 @@ export default class PlanBounceToy extends Plan {
     }
 
     self.setState(stateList.bounceToy);
-    self.getState().execute(self);
+    self.getState().execute(self, emotions[emotionList.happy]);
   }
 }

@@ -45,6 +45,15 @@ export class GoalManager {
     }
   }
 
+  getPriorityForGoal(self, name) {
+    if (!self.goals.hasOwnProperty(name)) {
+      console.error(`Error: no goal object found for ${name}`);
+      return;
+    }
+    const goal = new self.goals[name];
+    return goal.filter(self, true);
+  }
+
   getTopPriorityGoal(excludeSuspended = false) {
     let highestPriority = Infinity;
     let highestPriorityGoal = null;

@@ -50,21 +50,20 @@ export default class PlanSeekItem extends Plan {
         goals[goal].setTarget(closestItem.guid);
       }
     } else {
-      const emotions = self.getEmotions();
-      self.emotionManager.setEmotion(self, emotionList.happy, emotions[emotionList.happy] - 1);
-      self.emotionManager.setEmotion(self, emotionList.sad, emotions[emotionList.sad] + 1);
-      self.goalManager.suspendGoal(goal);
-      self.goalManager.addGoal(self, goalList.knockItemFromToybox, {
-        calledBy: goal,
-        tickModifiers: {
-          personality: self.getPersonalityValues(),
-          maxMotive: self.getMaxMotive(),
-        },
-      });
+      const knockItemPriority = self.goalManager.getPriorityForGoal(self, goalList.knockItemFromToybox);
+      if (knockItemPriority >= 0) {
+        self.goalManager.suspendGoal(goal);
+        self.goalManager.addGoal(self, goalList.knockItemFromToybox, {
+          calledBy: goal,
+          tickModifiers: {
+            personality: self.getPersonalityValues(),
+            maxMotive: self.getMaxMotive(),
+          },
+        });
+      } else {
+        self.setState(stateList.seekItem);
+        self.getState().execute(self, motive);
+      }
     }
-  
-    const itemPos = closestItem === null ? null : closestItem.getPosition();
-    self.setState(stateList.seekItem);
-    self.getState().execute(self, motive, itemPos);
   }
 }

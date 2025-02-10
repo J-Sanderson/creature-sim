@@ -10,6 +10,10 @@ export default class StateSeekItem extends State {
   }
 
   execute(self, motive) {
+    const emotions = self.getEmotions();
+    self.emotionManager.setEmotion(self, emotionList.happy, emotions[emotionList.happy] - 1);
+    self.emotionManager.setEmotion(self, emotionList.sad, emotions[emotionList.sad] + 1);
+
     if (motive) {
       self.showMotive(motive);
     }

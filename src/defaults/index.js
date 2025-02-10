@@ -41,6 +41,7 @@ export const motiveList = {
 export const emotionList = {
   happy: 'happy',
   sad: 'sad',
+  angry: 'angry',
 };
 
 export const personalityValueList = {

@@ -5,7 +5,7 @@ export default class PlanActHappy extends Plan {
   constructor(params) {
     super(params);
 
-    this.name = planList.addedItem;
+    this.name = planList.actHappy;
   }
 
   execute(self) {

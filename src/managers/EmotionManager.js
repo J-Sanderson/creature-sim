@@ -19,7 +19,8 @@ export class EmotionManager {
       console.error('Invalid emotion');
       return;
     }
-    if (self.status.emotions[emotion] <= 0) return;
-    self.status.emotions[emotion] = value;
+    if (value < 0) return;
+    const maxMotive = self.getMaxMotive();
+    self.status.emotions[emotion] = value > maxMotive ? maxMotive : value;
   }
 }

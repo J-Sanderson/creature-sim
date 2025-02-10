@@ -1,5 +1,5 @@
 import Plan from './Plan';
-import { planList, stateList } from '../../defaults';
+import { planList, stateList, emotionList } from '../../defaults';
 
 export default class PlanMissingItem extends Plan {
   constructor(params) {
@@ -9,7 +9,13 @@ export default class PlanMissingItem extends Plan {
   }
 
   execute(self) {
+    const emotions = self.getEmotions();
+    if (!emotions.hasOwnProperty(emotionList.sad)) {
+      console.error(`Error: no ${emotionList.sad} motive found`);
+      return;
+    }
+
     self.setState(stateList.missingItem);
-    self.getState().execute(self);
+    self.getState().execute(self, emotions[emotionList.sad]);
   }
 }

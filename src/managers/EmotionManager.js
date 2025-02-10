@@ -5,12 +5,10 @@ export class EmotionManager {
     const emotions = self.getEmotions();
     const state = self.getState();
 
-    // happiness decay
-    if (
-      !state.suppressEmotionDecay.includes(emotionList.happy) &&
-      emotions[emotionList.happy] > 0
-    ) {
-      this.setEmotion(self, emotionList.happy, emotions[emotionList.happy] - 1);
+    for(const emotion in emotions) {
+      if (!state.suppressEmotionDecay.includes(emotionList[emotion])) {
+        this.setEmotion(self, emotionList[emotion], emotions[emotion] - 1);
+      }
     }
   }
 

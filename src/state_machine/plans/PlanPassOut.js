@@ -1,5 +1,5 @@
 import Plan from './Plan';
-import { planList, stateList, motiveList } from '../../defaults';
+import { planList, stateList, motiveList, emotionList } from '../../defaults';
 
 export default class PlanPassOut extends Plan {
   constructor(params) {
@@ -17,8 +17,14 @@ export default class PlanPassOut extends Plan {
       self.setPlan('');
       return;
     }
+
+    const emotions = self.getEmotions();
+    if (!emotions.hasOwnProperty(emotionList.sad)) {
+      console.error(`Error: no ${emotionList.sad} motive found`);
+      return;
+    }
   
     self.setState(stateList.passOut);
-    self.getState().execute(self, energy, maxVal);
+    self.getState().execute(self, energy, emotions[emotionList.sad], maxVal);
   }
 }

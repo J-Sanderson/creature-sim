@@ -13,7 +13,7 @@ export default class StatePetHappy extends State {
     self.showMotive(motiveIconList.petHappy);
     const maxMotive = self.getMaxMotive();
     if (happiness < maxMotive) {
-      self.setEmotion(emotionList.happy, happiness + 1);
+      self.emotionManager.setEmotion(self, emotionList.happy, happiness + 1);
     }
   }
 }

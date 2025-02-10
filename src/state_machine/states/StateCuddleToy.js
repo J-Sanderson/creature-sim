@@ -13,7 +13,7 @@ export default class StateCuddleToy extends State {
     self.showMotive(motiveIconList.cuddleToy);
     const maxMotive = self.getMaxMotive();
     if (happiness < maxMotive) {
-      self.setEmotion(emotionList.happy, happiness + 1);
+      self.emotionManager.setEmotion(self, emotionList.happy, happiness + 1);
     }
   }
 }

@@ -51,7 +51,7 @@ export default class PlanSeekItem extends Plan {
       }
     } else {
       const emotions = self.getEmotions();
-      self.setEmotion(emotionList.happy, emotions[emotionList.happy] - 1);
+      self.emotionManager.setEmotion(self, emotionList.happy, emotions[emotionList.happy] - 1);
       self.goalManager.suspendGoal(goal);
       self.goalManager.addGoal(self, goalList.knockItemFromToybox, {
         calledBy: goal,

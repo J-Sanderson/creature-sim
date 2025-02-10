@@ -10,7 +10,16 @@ export class EmotionManager {
       !state.suppressEmotionDecay.includes(emotionList.happy) &&
       emotions[emotionList.happy] > 0
     ) {
-      self.setEmotion(emotionList.happy, emotions[emotionList.happy] - 1);
+      this.setEmotion(self, emotionList.happy, emotions[emotionList.happy] - 1);
     }
+  }
+
+  setEmotion(self, emotion, value) {
+    if (!self.status.emotions.hasOwnProperty(emotion)) {
+      console.error('Invalid emotion');
+      return;
+    }
+    if (self.status.emotions[emotion] <= 0) return;
+    self.status.emotions[emotion] = value;
   }
 }

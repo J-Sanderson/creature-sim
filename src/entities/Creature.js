@@ -188,15 +188,6 @@ export default class Creature extends Entity {
     return this.status.emotions;
   }
 
-  setEmotion(emotion, value) {
-    if (!this.status.emotions.hasOwnProperty(emotion)) {
-      console.error('Invalid emotion');
-      return;
-    }
-    if (this.status.emotions <= 0) return;
-    this.status.emotions[emotion] = value;
-  }
-
   getFavorites() {
     return this.personality.favorites;
   }

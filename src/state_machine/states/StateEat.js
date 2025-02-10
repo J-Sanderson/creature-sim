@@ -44,7 +44,7 @@ export default class StateEat extends State {
           let happiness = emotions[emotionList.happy];
           this.suppressEmotionDecay.push(emotionList.happy);
           if (happiness < maxVal) {
-            self.setEmotion(emotionList.happy, happiness + 1);
+            self.emotionManager.setEmotion(self, emotionList.happy, happiness + 1);
           }
         }
       } else {

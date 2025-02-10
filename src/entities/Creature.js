@@ -193,6 +193,7 @@ export default class Creature extends Entity {
       console.error('Invalid emotion');
       return;
     }
+    if (this.status.emotions <= 0) return;
     this.status.emotions[emotion] = value;
   }
 

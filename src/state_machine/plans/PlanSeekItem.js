@@ -1,5 +1,5 @@
 import Plan from './Plan';
-import { adjectiveList, goalList, planList, stateList } from '../../defaults';
+import { adjectiveList, goalList, planList, stateList, emotionList } from '../../defaults';
 
 export default class PlanSeekItem extends Plan {
   constructor(params) {
@@ -50,6 +50,8 @@ export default class PlanSeekItem extends Plan {
         goals[goal].setTarget(closestItem.guid);
       }
     } else {
+      const emotions = self.getEmotions();
+      self.setEmotion(emotionList.happy, emotions[emotionList.happy] - 1);
       self.goalManager.suspendGoal(goal);
       self.goalManager.addGoal(self, goalList.knockItemFromToybox, {
         calledBy: goal,

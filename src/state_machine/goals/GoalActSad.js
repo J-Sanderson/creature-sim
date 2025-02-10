@@ -41,7 +41,7 @@ export default class GoalActSad extends Goal {
         }
 
         const emotions = self.getEmotions();
-        if (emotions[emotionList.sad] && emotions[emotionList.sad] <= maxMotive / 2) {
+        if (emotions[emotionList.sad] !== undefined && emotions[emotionList.sad] <= maxMotive / 2) {
             return -1;
         }
 

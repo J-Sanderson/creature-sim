@@ -50,7 +50,7 @@ export default class GoalActHappy extends Goal {
         }
 
         const emotions = self.getEmotions();
-        if (emotions[emotionList.happy] && emotions[emotionList.happy] <= maxMotive / 2) {
+        if (emotions[emotionList.happy] !== undefined && emotions[emotionList.happy] <= maxMotive / 2) {
             return -1;
         }
 

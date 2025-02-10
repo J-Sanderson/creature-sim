@@ -61,8 +61,20 @@ export default class PlanSeekItem extends Plan {
           },
         });
       } else {
-        self.setState(stateList.seekItem);
-        self.getState().execute(self, motive);
+        const validDirections = self.queries.getValidDirections(self);
+        if (validDirections.length > 0) {
+          const randomDirection = Math.floor(Math.random() * validDirections.length);
+          const { dx, dy } = validDirections[randomDirection];
+          const position = self.getPosition();
+      
+          const newX = position.x + dx;
+          const newY = position.y + dy;
+
+          self.setState(stateList.seekItem);
+          self.getState().execute(self, motive, { x: newX, y: newY });
+        } else {
+          console.error('No valid movement direction available');
+        }
       }
     }
   }

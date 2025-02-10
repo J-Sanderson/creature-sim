@@ -106,6 +106,7 @@ export class GoalManager {
       tickModifiers: {
         personality: self.getPersonalityValues(),
         maxMotive: self.getMaxMotive(),
+        emotions: self.getEmotions(),
       },
     });
   }

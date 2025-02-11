@@ -17,7 +17,7 @@ export default class StateSeekItem extends State {
       emotionList.happy,
       emotions[emotionList.happy] - 1
     );
-    self.emotionManager.setEmotion(self, emotion, emotions[emotion] + 2);
+    self.emotionManager.setEmotion(self, emotion, emotions[emotion] + 10);
 
     self.showMotive(motive ? motive : '');
 

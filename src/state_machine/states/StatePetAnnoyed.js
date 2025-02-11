@@ -11,9 +11,9 @@ export default class StatePetAnnoyed extends State {
 
   execute(self, anger) {
     self.showMotive(motiveIconList.petAnnoyed);
-      const maxMotive = self.getMaxMotive();
-      if (anger < maxMotive) {
-        self.emotionManager.setEmotion(self, emotionList.angry, anger + 5);
-      }
+    const maxMotive = self.getMaxMotive();
+    if (anger < maxMotive) {
+      self.emotionManager.setEmotion(self, emotionList.angry, anger + 5);
+    }
   }
 }

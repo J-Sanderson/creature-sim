@@ -36,7 +36,11 @@ export default class Creature extends Entity {
     ],
   };
 
-  static validEmotions = [emotionList.happy, emotionList.sad, emotionList.angry];
+  static validEmotions = [
+    emotionList.happy,
+    emotionList.sad,
+    emotionList.angry,
+  ];
 
   static adjectives = [adjectiveList.animate];
 

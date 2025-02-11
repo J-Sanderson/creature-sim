@@ -18,7 +18,7 @@ export default class StateDrink extends State {
   execute(self, hydration, maxVal) {
     const item = self.queries.getItemFromWorld(
       self,
-      self.getGoals()[goalList.drink].target
+      self.getGoals()[goalList.drink].getTarget()
     );
     if (item) {
       const amount = item.getMotive(motiveList.amount);

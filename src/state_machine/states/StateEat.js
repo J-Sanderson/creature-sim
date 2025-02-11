@@ -19,7 +19,7 @@ export default class StateEat extends State {
   execute(self, motives, maxVal) {
     const item = self.queries.getItemFromWorld(
       self,
-      self.getGoals()[goalList.eat].target
+      self.getGoals()[goalList.eat].getTarget()
     );
 
     if (item) {

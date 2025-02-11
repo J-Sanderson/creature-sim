@@ -2,76 +2,82 @@ import { goalTypeList } from '../../defaults';
 
 export default class Goal {
   static defaults = {
-    priority: 1,
-    suspended: false,
-    ticks: -1,
-    decayThreshold: 1,
-    target: null,
-    calledBy: null,
-    type: goalTypeList.idle,
+    goalToken: {
+      priority: 1,
+      suspended: false,
+      ticks: -1,
+      decayThreshold: 1,
+      target: null,
+      calledBy: null,
+      type: goalTypeList.idle,
+    },
   };
 
   constructor(params = {}) {
-    for (let param in Goal.defaults) {
-      this[param] = params.hasOwnProperty(param)
+    this.goalToken = {};
+    for (let param in Goal.defaults.goalToken) {
+      this.goalToken[param] = params.hasOwnProperty(param)
         ? params[param]
-        : Goal.defaults[param];
+        : Goal.defaults.goalToken[param];
     }
   }
 
   suspend() {
-    this.suspended = true;
+    this.goalToken.suspended = true;
   }
 
   unsuspend() {
-    this.suspended = false;
+    this.goalToken.suspended = false;
   }
 
   getIsSuspended() {
-    return this.suspended;
+    return this.goalToken.suspended;
   }
 
   setPriority(priority) {
-    this.priority = priority;
+    this.goalToken.priority = priority;
   }
 
   getPriority() {
-    return this.priority;
+    return this.goalToken.priority;
   }
 
   decrementTicks() {
-    const threshold = this.decayThreshold;
-    if (this.ticks > 0 && (threshold === 1 || Math.random() <= threshold)) {
-      this.ticks--;
+    const threshold = this.goalToken.decayThreshold;
+    if (
+      this.goalToken.ticks > 0 &&
+      (threshold === 1 || Math.random() <= threshold)
+    ) {
+      this.goalToken.ticks--;
     }
   }
 
   getTicks() {
-    return this.ticks;
+    return this.goalToken.ticks;
   }
 
   setTicks(val) {
-    this.ticks = val;
+    this.goalToken.ticks = val;
   }
 
   getDecayThreshold() {
-    return this.decayThreshold;
+    return this.goalToken.decayThreshold;
   }
 
   setDecayThreshold(val) {
-    this.decayThreshold = val;
+    this.goalToken.decayThreshold = val;
   }
 
   setTarget(target) {
-    this.target = target;
+    this.goalToken.target = target;
   }
 
   getTarget() {
-    return this.target;
+    return this.goalToken.target;
   }
 
   getCalledBy() {
-    return this.calledBy;
+    return this.goalToken.calledBy;
   }
 
   calculatePersonalityModifier(self, personalityType, positive = true) {

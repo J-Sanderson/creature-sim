@@ -124,7 +124,7 @@ export default class GoalCuddleToy extends Goal {
     return priority;
   }
   execute(self) {
-    let target = this.target;
+    let target = this.getTarget();
     if (!target) {
       this.decrementTicks();
       if (this.getTicks() <= 0) {

@@ -70,7 +70,7 @@ export default class GoalSleep extends Goal {
       return;
     }
 
-    const target = goals[goalList.sleep].target;
+    const target = goals[goalList.sleep].getTarget();
     if (!target) {
       if (energy === 0) {
         self.setPlan(planList.passOut);

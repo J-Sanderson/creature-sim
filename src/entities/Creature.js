@@ -254,7 +254,7 @@ export default class Creature extends Entity {
         ['priority', 'suspended', 'ticks', 'target', 'calledBy'].forEach(
           (item) => {
             let td = document.createElement('td');
-            td.innerHTML = val[goal][item];
+            td.innerHTML = val[goal].goalToken[item];
             tr.appendChild(td);
           }
         );

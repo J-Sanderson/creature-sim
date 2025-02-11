@@ -85,7 +85,8 @@ export default class PlanSeekItem extends Plan {
           const personalityValues = self.getPersonalityValues();
           const maxMotive = self.getMaxMotive();
           if (
-            typeof personalityValues[personalityValueList.patience] !== 'number' ||
+            typeof personalityValues[personalityValueList.patience] !==
+              'number' ||
             typeof personalityValues[personalityValueList.kindness] !== 'number'
           ) {
             console.error(
@@ -93,10 +94,11 @@ export default class PlanSeekItem extends Plan {
             );
             return;
           }
-      
+
           const roll = Math.random();
           const amISad =
-            personalityValues[personalityValueList.patience] / maxMotive > roll &&
+            personalityValues[personalityValueList.patience] / maxMotive >
+              roll &&
             personalityValues[personalityValueList.kindness] / maxMotive > roll;
           const emotion = amISad ? emotionList.sad : emotionList.angry;
 

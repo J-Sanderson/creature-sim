@@ -1,5 +1,10 @@
 import Plan from './Plan';
-import { planList, stateList, emotionList, personalityValueList } from '../../defaults';
+import {
+  planList,
+  stateList,
+  emotionList,
+  personalityValueList,
+} from '../../defaults';
 
 export default class PlanMissingItem extends Plan {
   constructor(params) {

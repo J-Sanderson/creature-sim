@@ -112,7 +112,7 @@ export default class GoalBounceToy extends Goal {
   }
 
   execute(self) {
-    let target = this.target;
+    let target = this.getTarget();
     if (!target) {
       this.decrementTicks();
       if (this.getTicks() <= 0) {

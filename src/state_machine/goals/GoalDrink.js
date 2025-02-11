@@ -63,7 +63,7 @@ export default class GoalDrink extends Goal {
       return;
     }
 
-    let target = goals[goalList.drink].target;
+    let target = goals[goalList.drink].getTarget();
     if (!target) {
       self.setPlan(planList.seekItem);
       self

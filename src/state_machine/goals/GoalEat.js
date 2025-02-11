@@ -70,7 +70,7 @@ export default class GoalEat extends Goal {
       return;
     }
 
-    let target = goals[goalList.eat].target;
+    let target = goals[goalList.eat].getTarget();
     if (!target) {
       self.setPlan(planList.seekItem);
       self

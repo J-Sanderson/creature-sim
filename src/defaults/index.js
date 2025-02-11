@@ -38,6 +38,12 @@ export const motiveList = {
   amount: 'amount',
 };
 
+export const emotionList = {
+  happy: 'happy',
+  sad: 'sad',
+  angry: 'angry',
+};
+
 export const personalityValueList = {
   liveliness: 'liveliness',
   patience: 'patience',
@@ -63,6 +69,9 @@ export const goalList = {
   missingItem: 'goalMissingItem',
   addedItem: 'goalAddedItem',
   snubItem: 'goalSnubItem',
+  actHappy: 'goalActHappy',
+  actSad: 'goalActSad',
+  actAngry: 'goalActAngry',
 };
 
 export const planList = {
@@ -85,6 +94,9 @@ export const planList = {
   addedItem: 'planAddedItem',
   snubItem: 'planSnubItem',
   passOut: 'planPassOut',
+  actHappy: 'planActHappy',
+  actSad: 'planActSad',
+  actAngry: 'planActAngry',
 };
 
 export const stateList = {
@@ -106,6 +118,9 @@ export const stateList = {
   addedItem: 'stateAddedItem',
   snubItem: 'stateSnubItem',
   passOut: 'statePassOut',
+  actHappy: 'stateActHappy',
+  actSad: 'stateActSad',
+  actAngry: 'stateActAngry',
 };
 
 export const motiveIconList = {
@@ -127,6 +142,9 @@ export const motiveIconList = {
   addedItem: '&#x2753;',
   snubItem: '&#x274C;',
   passOut: '&#x1F635;',
+  happy: '&#x1F603;',
+  sad: '&#x1F622;',
+  angry: '&#x1F620;',
 };
 
 export const goalTypeList = {

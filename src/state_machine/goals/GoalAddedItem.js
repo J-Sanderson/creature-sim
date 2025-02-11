@@ -5,6 +5,7 @@ import {
   goalList,
   stateList,
   adjectiveList,
+  planList,
 } from '../../defaults';
 
 export default class GoalAddedItem extends Goal {
@@ -15,10 +16,12 @@ export default class GoalAddedItem extends Goal {
   filter(self, nonReactive = false) {
     if (nonReactive) return -1;
 
+    const state = self.getState();
     if (
-      self.status.state === stateList.drink ||
-      self.status.state === stateList.eat ||
-      self.status.state === stateList.sleep
+      state &&
+      (state.name === stateList.drink ||
+        state.name === stateList.eat ||
+        state.name === stateList.sleep)
     ) {
       return -1;
     }
@@ -33,7 +36,8 @@ export default class GoalAddedItem extends Goal {
       return;
     }
 
-    self.plans.planAddedItem(self);
+    self.setPlan(planList.addedItem);
+    self.getPlan().execute(self);
 
     if (self.queries.amITired(self) || self.queries.amIThirsty(self)) {
       this.decrementTicks();
@@ -77,7 +81,10 @@ export default class GoalAddedItem extends Goal {
     if (colors.includes(favorites.color)) {
       curiosityThreshold = 0.6;
     } else {
-      if (!self.queries.amIFinicky(self) && Math.random() < curiosityThreshold) {
+      if (
+        !self.queries.amIFinicky(self) &&
+        Math.random() < curiosityThreshold
+      ) {
         self.goalManager.deleteGoal(goalList.addedItem);
         self.goalManager.addGoal(self, goalList.snubItem, {
           target: target.getGUID(),

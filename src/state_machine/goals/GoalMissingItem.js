@@ -1,5 +1,10 @@
 import Goal from './Goal';
-import { personalityValueList, goalList, goalTypeList } from '../../defaults';
+import {
+  personalityValueList,
+  goalList,
+  goalTypeList,
+  planList,
+} from '../../defaults';
 
 export default class GoalMissingItem extends Goal {
   constructor(params) {
@@ -34,7 +39,8 @@ export default class GoalMissingItem extends Goal {
     }
 
     self.goalManager.suspendGoal(targetingGoal);
-    self.plans.planMissingItem(self);
+    self.setPlan(planList.missingItem);
+    self.getPlan().execute(self);
     this.decrementTicks();
     if (this.getTicks() <= 0) {
       self.goalManager.deleteGoal(goalList.missingItem);

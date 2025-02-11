@@ -3,6 +3,7 @@ import {
   goalList,
   stateList,
   goalTypeList,
+  planList,
   personalityValueList,
 } from '../../defaults';
 
@@ -65,11 +66,13 @@ export default class GoalBePetted extends Goal {
     const motiveModifier = 0.1;
     const personalityValues = self.getPersonalityValues();
 
+    const state = self.getState();
     if (
-      self.status.state === stateList.drink ||
-      self.status.state === stateList.eat ||
-      self.status.state === stateList.sleep ||
-      self.status.state === stateList.petAnnoyed
+      state &&
+      (state.name === stateList.drink ||
+        state.name === stateList.eat ||
+        state.name === stateList.sleep ||
+        state.name === stateList.petAnnoyed)
     ) {
       const kindness = personalityValues[personalityValueList.kindness];
       const patience = personalityValues[personalityValueList.patience];
@@ -77,13 +80,15 @@ export default class GoalBePetted extends Goal {
         kindness >= maxMotive - maxMotive * motiveModifier ||
         patience >= maxMotive - maxMotive * motiveModifier
       ) {
-        self.plans.planPetHappy(self);
+        self.setPlan(planList.petHappy);
       } else {
-        self.plans.planPetAnnoyed(self);
+        self.setPlan(planList.petAnnoyed);
       }
+      self.getPlan().execute(self);
       self.goalManager.deleteGoal(goalList.pet);
     } else {
-      self.plans.planPetHappy(self);
+      self.setPlan(planList.petHappy);
+      self.getPlan().execute(self);
       if (
         self.queries.amIHungry(self) ||
         self.queries.amIThirsty(self) ||

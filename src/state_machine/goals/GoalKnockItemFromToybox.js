@@ -4,6 +4,7 @@ import {
   personalityValueList,
   goalList,
   goalTypeList,
+  planList,
 } from '../../defaults';
 
 export default class GoalKnockItemFromToybox extends Goal {
@@ -17,9 +18,12 @@ export default class GoalKnockItemFromToybox extends Goal {
     let motiveModifier = 0.1;
 
     if (
-      personalityValues[personalityValueList.naughtiness] < maxMotive - (maxMotive * motiveModifier) &&
-      personalityValues[personalityValueList.independence] < maxMotive - (maxMotive * motiveModifier) &&
-      personalityValues[personalityValueList.patience] > maxMotive * motiveModifier
+      personalityValues[personalityValueList.naughtiness] <
+        maxMotive - maxMotive * motiveModifier &&
+      personalityValues[personalityValueList.independence] <
+        maxMotive - maxMotive * motiveModifier &&
+      personalityValues[personalityValueList.patience] >
+        maxMotive * motiveModifier
     ) {
       return -1;
     }
@@ -52,7 +56,10 @@ export default class GoalKnockItemFromToybox extends Goal {
         return -1;
       }
     } else {
-      if (personalityValues[personalityValueList.naughtiness] < maxMotive - (maxMotive * motiveModifier)) {
+      if (
+        personalityValues[personalityValueList.naughtiness] <
+        maxMotive - maxMotive * motiveModifier
+      ) {
         return -1;
       }
       let toybox = document.querySelector(`[data-world="${self.world}"]`);
@@ -67,9 +74,12 @@ export default class GoalKnockItemFromToybox extends Goal {
       calledBy !== goalList.sleep &&
       calledBy !== goalList.eat &&
       calledBy !== goalList.drink &&
-      personalityValues[personalityValueList.naughtiness] < maxMotive - (maxMotive * motiveModifier) &&
-      personalityValues[personalityValueList.independence] < maxMotive - (maxMotive * motiveModifier) &&
-      personalityValues[personalityValueList.patience] > maxMotive * motiveModifier
+      personalityValues[personalityValueList.naughtiness] <
+        maxMotive - maxMotive * motiveModifier &&
+      personalityValues[personalityValueList.independence] <
+        maxMotive - maxMotive * motiveModifier &&
+      personalityValues[personalityValueList.patience] >
+        maxMotive * motiveModifier
     ) {
       return -1;
     }
@@ -105,9 +115,10 @@ export default class GoalKnockItemFromToybox extends Goal {
     const position = self.getPosition();
     const bounds = self.getBounds();
     if (position.y + 1 >= bounds.y) {
-      self.plans.planPushItemFromToybox(self);
+      self.setPlan(planList.pushItemFromToybox);
     } else {
-      self.plans.planMoveToToybox(self);
+      self.setPlan(planList.moveToToybox);
     }
+    self.getPlan().execute(self);
   }
 }

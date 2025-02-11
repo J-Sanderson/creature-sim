@@ -1,6 +1,14 @@
+import State from './State';
 import { stateList, motiveIconList } from '../../defaults';
 
-export const stateSitAround = function (self) {
-  self.setState(stateList.sitAround);
-  self.showMotive(motiveIconList.sitAround);
-};
+export default class StateSitAround extends State {
+  constructor(params) {
+    super(params);
+
+    this.name = stateList.sitAround;
+  }
+
+  execute(self) {
+    self.showMotive(motiveIconList.sitAround);
+  }
+}

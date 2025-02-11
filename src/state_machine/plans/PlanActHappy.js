@@ -1,15 +1,15 @@
 import Plan from './Plan';
 import { planList, stateList } from '../../defaults';
 
-export default class PlanSitAround extends Plan {
+export default class PlanActHappy extends Plan {
   constructor(params) {
     super(params);
 
-    this.name = planList.sitAround;
+    this.name = planList.actHappy;
   }
 
   execute(self) {
-    self.setState(stateList.sitAround);
+    self.setState(stateList.actHappy);
     self.getState().execute(self);
   }
 }

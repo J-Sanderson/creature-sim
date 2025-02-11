@@ -1,6 +1,14 @@
+import State from './State';
 import { stateList, motiveIconList } from '../../defaults';
 
-export const statePushItemFromToybox = function (self) {
-  self.setState(stateList.pushItemFromToybox);
-  self.showMotive(motiveIconList.pushItemFromToybox);
-};
+export default class StatePushItemFromToybox extends State {
+  constructor(params) {
+    super(params);
+
+    this.name = stateList.pushItemFromToybox;
+  }
+
+  execute(self) {
+    self.showMotive(motiveIconList.pushItemFromToybox);
+  }
+}

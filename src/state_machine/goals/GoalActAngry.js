@@ -1,36 +1,34 @@
 import Goal from './Goal';
-import { personalityValueList, goalList, planList } from '../../defaults';
+import { emotionList, goalList, planList } from '../../defaults';
 
-export default class GoalWander extends Goal {
+export default class GoalActAngry extends Goal {
   constructor(params) {
     super(params);
-
     if (params && params.hasOwnProperty('tickModifiers')) {
       const modifiers = params.tickModifiers;
       if (
         modifiers.hasOwnProperty('maxMotive') &&
-        modifiers.hasOwnProperty('personality')
+        modifiers.hasOwnProperty('emotions')
       ) {
         let ticks = this.getTicks();
-        const adjustedTicks = this.calculateModifiedTicks(
-          modifiers.personality[personalityValueList.liveliness],
+        let adjustedTicks = this.calculateModifiedTicks(
+          modifiers.emotions[emotionList.angry],
           modifiers.maxMotive,
-          ticks,
-          true
+          ticks
         );
         this.setTicks(adjustedTicks);
 
         let threshold = this.getDecayThreshold();
-        const adjustedThreshold = this.calculateModifiedDecayThreshold(
-          modifiers.personality[personalityValueList.liveliness],
+        let adjustedThreshold = this.calculateModifiedDecayThreshold(
+          modifiers.emotions[emotionList.angry],
           modifiers.maxMotive,
-          threshold,
-          true
+          threshold
         );
         this.setDecayThreshold(adjustedThreshold);
       }
     }
   }
+
   filter(self, nonReactive = false) {
     const motives = self.getMotives();
     const motiveModifier = 0.1;
@@ -42,35 +40,33 @@ export default class GoalWander extends Goal {
       }
     }
 
-    const goals = self.getGoals();
+    const emotions = self.getEmotions();
     if (
-      goals.hasOwnProperty(goalList.eat) ||
-      goals.hasOwnProperty(goalList.drink) ||
-      goals.hasOwnProperty(goalList.sleep)
+      emotions[emotionList.angry] !== undefined &&
+      emotions[emotionList.angry] <= maxMotive / 2
     ) {
       return -1;
     }
 
     let priority = 7;
-
-    const livelinessModifier = this.calculatePersonalityModifier(
+    const angerModifier = this.calculateEmotionModifier(
       self,
-      personalityValueList.liveliness,
-      true
+      emotionList.angry
     );
-    priority -= livelinessModifier;
 
+    priority -= angerModifier;
     priority = Math.max(1, priority);
 
     return priority;
   }
+
   execute(self) {
+    self.setPlan(planList.actAngry);
+    self.getPlan().execute(self);
+
     this.decrementTicks();
     if (this.getTicks() <= 0) {
-      self.goalManager.deleteGoal(goalList.wander);
+      self.goalManager.deleteGoal(goalList.actAngry);
     }
-
-    self.setPlan(planList.wander);
-    self.getPlan().execute(self);
   }
 }

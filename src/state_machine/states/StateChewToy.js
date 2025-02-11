@@ -1,6 +1,19 @@
-import { stateList, motiveIconList } from '../../defaults';
+import State from './State';
+import { emotionList, motiveIconList, stateList } from '../../defaults';
 
-export const stateChewToy = function (self) {
-  self.setState(stateList.chewToy);
-  self.showMotive(motiveIconList.chewToy);
-};
+export default class StateChewToy extends State {
+  constructor(params) {
+    super(params);
+
+    this.name = stateList.chewToy;
+    this.suppressEmotionDecay.push(emotionList.happy);
+  }
+
+  execute(self, happiness) {
+    self.showMotive(motiveIconList.chewToy);
+    const maxMotive = self.getMaxMotive();
+    if (happiness < maxMotive) {
+      self.emotionManager.setEmotion(self, emotionList.happy, happiness + 1);
+    }
+  }
+}

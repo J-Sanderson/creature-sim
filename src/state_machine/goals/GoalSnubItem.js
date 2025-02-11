@@ -14,13 +14,16 @@ export default class GoalSnubItem extends Goal {
   execute(self) {
     const target = this.getTarget();
     if (self.queries.amIOnItem(self, target)) {
-      self.plans[planList.snubItem](self);
+      self.setPlan(planList.snubItem);
+      self.getPlan().execute(self);
+
       this.decrementTicks();
       if (this.getTicks() <= 0) {
         self.goalManager.deleteGoal(goalList.snubItem);
       }
     } else {
-      self.plans[planList.moveToItem](self, target, goalList.snubItem);
+      self.setPlan(planList.moveToItem);
+      self.getPlan().execute(self, target, goalList.snubItem);
     }
   }
 }

@@ -1,6 +1,16 @@
+import State from './State';
 import { stateList, motiveIconList } from '../../defaults';
 
-export const stateMissingItem = function (self) {
-  self.setState(stateList.missingItem);
-  self.showMotive(motiveIconList.missingItem);
-};
+export default class StateMissingItem extends State {
+  constructor(params) {
+    super(params);
+
+    this.name = stateList.missingItem;
+  }
+
+  execute(self, emotion) {
+    self.showMotive(motiveIconList.missingItem);
+    const emotions = self.getEmotions();
+    self.emotionManager.setEmotion(self, emotion, emotions[emotion] + 5);
+  }
+}

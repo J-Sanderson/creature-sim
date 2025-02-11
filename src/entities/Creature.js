@@ -1,6 +1,7 @@
 import Entity from './Entity';
 import { GoalManager } from '../managers/GoalManager';
 import { MetabolismManager } from '../managers/MetabolismManager';
+import { EmotionManager } from '../managers/EmotionManager';
 import { utilities } from '../utils/Utilities';
 import { queries } from '../utils/Queries';
 import {
@@ -9,6 +10,7 @@ import {
   colorList,
   adjectiveList,
   personalityValueList,
+  emotionList,
   goalList,
 } from '../defaults';
 import states from '../state_machine/states';
@@ -34,6 +36,12 @@ export default class Creature extends Entity {
     ],
   };
 
+  static validEmotions = [
+    emotionList.happy,
+    emotionList.sad,
+    emotionList.angry,
+  ];
+
   static adjectives = [adjectiveList.animate];
 
   constructor(world, params = {}) {
@@ -52,6 +60,11 @@ export default class Creature extends Entity {
 
     Creature.validMotives.forEach((motive) => {
       this.status.motives[motive] = utilities.rand(this.maxMotive);
+    });
+
+    this.status.emotions = {};
+    Creature.validEmotions.forEach((emotion) => {
+      this.status.emotions[emotion] = 0;
     });
 
     this.personality = {
@@ -97,6 +110,7 @@ export default class Creature extends Entity {
       personalityValues,
       maxMotive: this.maxMotive,
     });
+    this.emotionManager = new EmotionManager();
   }
 
   setEventHandlers() {
@@ -115,10 +129,7 @@ export default class Creature extends Entity {
         },
       });
     };
-    icon.addEventListener(
-      'mousedown',
-      this.eventHandlers.petStart
-    );
+    icon.addEventListener('mousedown', this.eventHandlers.petStart);
 
     this.eventHandlers.petStop = () => {
       this.goalManager.deleteGoal(goalList.pet);
@@ -143,15 +154,13 @@ export default class Creature extends Entity {
         target: e.detail,
       });
     };
-    icon.addEventListener(
-      'deleteItem',
-      this.eventHandlers.itemDeleted
-    );
+    icon.addEventListener('deleteItem', this.eventHandlers.itemDeleted);
   }
 
   update() {
     this.metabolismManager.update(this);
     this.goalManager.update(this);
+    this.emotionManager.update(this);
   }
 
   showMotive(motive) {
@@ -167,14 +176,6 @@ export default class Creature extends Entity {
     return this.outputs;
   }
 
-  getGoals() {
-    return this.goalManager.getGoals();
-  }
-
-  getCurrentGoal() {
-    return this.goalManager.getCurrentGoal();
-  }
-
   getPersonalityValues() {
     return this.personality.values;
   }
@@ -185,6 +186,10 @@ export default class Creature extends Entity {
       return;
     }
     return this.personality.values[value];
+  }
+
+  getEmotions() {
+    return this.status.emotions;
   }
 
   getFavorites() {
@@ -199,16 +204,30 @@ export default class Creature extends Entity {
     return this.metabolismManager.getDesireThreshold(desire);
   }
 
-  setState(state) {
-    this.status.state = state;
+  getGoals() {
+    return this.goalManager.getGoals();
+  }
+
+  getCurrentGoal() {
+    return this.goalManager.getCurrentGoal();
   }
 
   setPlan(plan) {
-    this.status.plan = plan;
+    if (plan === this.getPlan()?.name) return;
+    this.status.plan = plan ? new plans[plan]() : null;
   }
 
   getPlan() {
     return this.status.plan;
+  }
+
+  setState(state) {
+    if (state === this.getState()?.name) return;
+    this.status.state = new states[state]();
+  }
+
+  getState() {
+    return this.status.state;
   }
 
   setOutputEl(type, el) {

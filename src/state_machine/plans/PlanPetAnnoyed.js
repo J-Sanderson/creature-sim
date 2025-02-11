@@ -1,6 +1,21 @@
-import { planList } from '../../defaults';
+import Plan from './Plan';
+import { planList, stateList, emotionList } from '../../defaults';
 
-export const planPetAnnoyed = function (self) {
-  self.setPlan(planList.petAnnoyed);
-  self.states.statePetAnnoyed(self);
-};
+export default class PlanPetAnnoyed extends Plan {
+  constructor(params) {
+    super(params);
+
+    this.name = planList.petAnnoyed;
+  }
+
+  execute(self) {
+    const emotions = self.getEmotions();
+    if (!emotions.hasOwnProperty(emotionList.angry)) {
+      console.error(`Error: no ${emotionList.angry} motive found`);
+      return;
+    }
+
+    self.setState(stateList.petAnnoyed);
+    self.getState().execute(self, emotions[emotionList.angry]);
+  }
+}

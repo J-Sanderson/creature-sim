@@ -45,6 +45,15 @@ export class GoalManager {
     }
   }
 
+  getPriorityForGoal(self, name) {
+    if (!self.goals.hasOwnProperty(name)) {
+      console.error(`Error: no goal object found for ${name}`);
+      return;
+    }
+    const goal = new self.goals[name]();
+    return goal.filter(self, true);
+  }
+
   getTopPriorityGoal(excludeSuspended = false) {
     let highestPriority = Infinity;
     let highestPriorityGoal = null;
@@ -106,6 +115,7 @@ export class GoalManager {
       tickModifiers: {
         personality: self.getPersonalityValues(),
         maxMotive: self.getMaxMotive(),
+        emotions: self.getEmotions(),
       },
     });
   }
@@ -114,22 +124,22 @@ export class GoalManager {
     let candidateGoals = [];
     const adjectives = target.getAdjectives();
     if (adjectives.includes(adjectiveList.chew)) {
-      candidateGoals.push({name: goalList.chewToy});
+      candidateGoals.push({ name: goalList.chewToy });
     }
     if (adjectives.includes(adjectiveList.bounce)) {
-      candidateGoals.push({name: goalList.bounceToy});
+      candidateGoals.push({ name: goalList.bounceToy });
     }
     if (adjectives.includes(adjectiveList.soft)) {
-      candidateGoals.push({name: goalList.cuddleToy});
+      candidateGoals.push({ name: goalList.cuddleToy });
     }
     if (!candidateGoals.length) return;
 
-    candidateGoals.forEach(goal => {
+    candidateGoals.forEach((goal) => {
       const tempInstance = new self.goals[goal.name]();
       const priority = tempInstance.filter(self, true);
       goal.priority = priority;
     });
-    candidateGoals = candidateGoals.filter(goal => goal.priority > 0);
+    candidateGoals = candidateGoals.filter((goal) => goal.priority > 0);
     candidateGoals.sort((a, b) => {
       if (a.priority < b.priority) return -1;
       if (a.priority > b.priority) return 1;

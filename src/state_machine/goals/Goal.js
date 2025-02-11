@@ -93,6 +93,25 @@ export default class Goal {
     return modifier;
   }
 
+  calculateEmotionModifier(self, emotionType, positive = true) {
+    const emotions = self.getEmotions();
+    const emotion = emotions[emotionType];
+    if (typeof emotion !== 'number') {
+      console.error(`Error: no personality value found for ${emotionType}`);
+      return 0;
+    }
+    const maxMotive = self.getMaxMotive();
+    const scaler = 3;
+
+    let factor = Math.min(1, emotion / maxMotive);
+    if (!positive) {
+      factor = 1 - factor;
+    }
+
+    const modifier = Math.floor(scaler * factor);
+    return modifier;
+  }
+
   calculateModifiedTicks(personalityVal, maxMotive, ticks, positive = true) {
     if (typeof personalityVal !== 'number' || !maxMotive) {
       console.error(

@@ -50,12 +50,13 @@ export class MetabolismManager {
 
   update(self) {
     const decayThresholds = this.getDecayThresholds();
+    const state = self.getState();
 
     // fullness decay
     if (decayThresholds.hasOwnProperty(motiveList.fullness)) {
-      if (self.status.state !== stateList.eat) {
+      if (state && !state.suppressMotiveDecay.includes(motiveList.fullness)) {
         if (
-          (self.status.state !== stateList.sleep || Math.random() < 0.25) &&
+          ((state && state.name !== stateList.sleep) || Math.random() < 0.25) &&
           self.status.motives[motiveList.fullness] > 0
         ) {
           if (Math.random() < decayThresholds[motiveList.fullness]) {
@@ -86,9 +87,9 @@ export class MetabolismManager {
 
     // hydration decay
     if (decayThresholds.hasOwnProperty(motiveList.hydration)) {
-      if (self.status.state !== stateList.drink) {
+      if (state && !state.suppressMotiveDecay.includes(motiveList.hydration)) {
         if (
-          (self.status.state !== stateList.sleep || Math.random() < 0.25) &&
+          ((state && state.name !== stateList.sleep) || Math.random() < 0.25) &&
           self.status.motives[motiveList.hydration] > 0 &&
           Math.random() < decayThresholds[motiveList.hydration]
         ) {
@@ -116,8 +117,8 @@ export class MetabolismManager {
     // energy decay
     if (decayThresholds.hasOwnProperty(motiveList.energy)) {
       if (
-        self.status.state !== stateList.sleep &&
-        self.status.state !== stateList.passOut &&
+        state &&
+        !state.suppressMotiveDecay.includes(motiveList.energy) &&
         self.status.motives[motiveList.energy] > 0
       ) {
         if (Math.random() < decayThresholds[motiveList.energy]) {

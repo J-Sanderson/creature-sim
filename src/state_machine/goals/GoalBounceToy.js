@@ -4,6 +4,7 @@ import {
   personalityValueList,
   goalList,
   goalTypeList,
+  planList,
 } from '../../defaults';
 
 export default class GoalBounceToy extends Goal {
@@ -77,12 +78,14 @@ export default class GoalBounceToy extends Goal {
       adjectiveList.bounce
     );
 
-
     if (
       !nearbyToys.length &&
-      personalityValues[personalityValueList.naughtiness] < maxMotive - (maxMotive * motiveModifier) &&
-      personalityValues[personalityValueList.independence] < maxMotive - (maxMotive * motiveModifier) &&
-      personalityValues[personalityValueList.patience] > maxMotive * motiveModifier
+      personalityValues[personalityValueList.naughtiness] <
+        maxMotive - maxMotive * motiveModifier &&
+      personalityValues[personalityValueList.independence] <
+        maxMotive - maxMotive * motiveModifier &&
+      personalityValues[personalityValueList.patience] >
+        maxMotive * motiveModifier
     ) {
       return -1;
     }
@@ -107,24 +110,29 @@ export default class GoalBounceToy extends Goal {
 
     return priority;
   }
+
   execute(self) {
     let target = this.target;
     if (!target) {
-      self.plans.planSeekItem(
-        self,
-        adjectiveList.bounce,
-        null,
-        goalList.bounceToy
-      );
+      this.decrementTicks();
+      if (this.getTicks() <= 0) {
+        self.goalManager.deleteGoal(goalList.bounceToy);
+      }
+      self.setPlan(planList.seekItem);
+      self
+        .getPlan()
+        .execute(self, adjectiveList.bounce, null, goalList.bounceToy);
     } else {
       if (self.queries.amIOnItem(self, target)) {
         this.decrementTicks();
         if (this.getTicks() <= 0) {
           self.goalManager.deleteGoal(goalList.bounceToy);
         }
-        self.plans.planBounceToy(self);
+        self.setPlan(planList.bounceToy);
+        self.getPlan().execute(self);
       } else {
-        self.plans.planMoveToItem(self, target, goalList.bounceToy);
+        self.setPlan(planList.moveToItem);
+        self.getPlan().execute(self, target, goalList.bounceToy);
       }
     }
   }

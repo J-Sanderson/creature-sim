@@ -29,7 +29,7 @@ export default class GoalSleep extends Goal {
     let priority = 6;
 
     if (
-      plan === planList.sleep ||
+      (plan && plan.name === planList.sleep) ||
       motives[motiveList.energy] <= maxMotive * motiveModifier
     ) {
       priority = 1;
@@ -64,29 +64,36 @@ export default class GoalSleep extends Goal {
     }
 
     const energy = self.getMotive(motiveList.energy);
-    if (self.getPlan() === planList.passOut) {
-      self.plans[planList.passOut](self);
+    const plan = self.getPlan();
+    if (plan && plan.name === planList.passOut) {
+      plan.execute(self);
       return;
     }
 
     const target = goals[goalList.sleep].target;
     if (!target) {
       if (energy === 0) {
-        self.plans[planList.passOut](self);
+        self.setPlan(planList.passOut);
+        self.getPlan().execute(self);
         return;
       }
 
-      self.plans.planSeekItem(
-        self,
-        adjectiveList.restful,
-        motiveIconList.tired,
-        goalList.sleep
-      );
+      self.setPlan(planList.seekItem);
+      self
+        .getPlan()
+        .execute(
+          self,
+          adjectiveList.restful,
+          motiveIconList.tired,
+          goalList.sleep
+        );
     } else {
       if (self.queries.amIOnItem(self, target)) {
-        self.plans[planList.sleep](self);
+        self.setPlan(planList.sleep);
+        self.getPlan().execute(self);
       } else {
-        self.plans[planList.moveToItem](self, target, goalList.sleep);
+        self.setPlan(planList.moveToItem);
+        self.getPlan().execute(self, target, goalList.sleep);
       }
     }
   }

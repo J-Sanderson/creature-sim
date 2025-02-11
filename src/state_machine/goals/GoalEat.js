@@ -29,7 +29,7 @@ export default class GoalEat extends Goal {
     let priority = 6;
 
     if (
-      plan === planList.eat ||
+      (plan && plan.name === planList.eat) ||
       motives[motiveList.fullness] <= maxMotive * motiveModifier
     ) {
       priority = 1;
@@ -72,17 +72,22 @@ export default class GoalEat extends Goal {
 
     let target = goals[goalList.eat].target;
     if (!target) {
-      self.plans.planSeekItem(
-        self,
-        adjectiveList.tasty,
-        motiveIconList.hunger,
-        goalList.eat
-      );
+      self.setPlan(planList.seekItem);
+      self
+        .getPlan()
+        .execute(
+          self,
+          adjectiveList.tasty,
+          motiveIconList.hunger,
+          goalList.eat
+        );
     } else {
       if (self.queries.amIOnItem(self, target)) {
-        self.plans.planEat(self);
+        self.setPlan(planList.eat);
+        self.getPlan().execute(self);
       } else {
-        self.plans.planMoveToItem(self, target, goalList.eat);
+        self.setPlan(planList.moveToItem);
+        self.getPlan().execute(self, target, goalList.eat);
       }
     }
   }

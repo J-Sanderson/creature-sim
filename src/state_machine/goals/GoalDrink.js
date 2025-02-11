@@ -29,7 +29,7 @@ export default class GoalDrink extends Goal {
     let priority = 6;
 
     if (
-      plan === planList.drink ||
+      (plan && plan.name === planList.drink) ||
       motives[motiveList.hydration] <= maxMotive * motiveModifier
     ) {
       priority = 1;
@@ -65,17 +65,22 @@ export default class GoalDrink extends Goal {
 
     let target = goals[goalList.drink].target;
     if (!target) {
-      self.plans.planSeekItem(
-        self,
-        adjectiveList.wet,
-        motiveIconList.thirst,
-        goalList.drink
-      );
+      self.setPlan(planList.seekItem);
+      self
+        .getPlan()
+        .execute(
+          self,
+          adjectiveList.wet,
+          motiveIconList.thirst,
+          goalList.drink
+        );
     } else {
       if (self.queries.amIOnItem(self, target)) {
-        self.plans.planDrink(self);
+        self.setPlan(planList.drink);
+        self.getPlan().execute(self);
       } else {
-        self.plans.planMoveToItem(self, target, goalList.drink);
+        self.setPlan(planList.moveToItem);
+        self.getPlan().execute(self, target, goalList.drink);
       }
     }
   }

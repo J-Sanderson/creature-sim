@@ -4,6 +4,7 @@ import {
   personalityValueList,
   goalList,
   goalTypeList,
+  planList,
 } from '../../defaults';
 
 export default class GoalCuddleToy extends Goal {
@@ -85,9 +86,12 @@ export default class GoalCuddleToy extends Goal {
 
     if (
       !nearbyToys.length &&
-      personalityValues[personalityValueList.naughtiness] < maxMotive - (maxMotive * motiveModifier) &&
-      personalityValues[personalityValueList.independence] < maxMotive - (maxMotive * motiveModifier) &&
-      personalityValues[personalityValueList.patience] > maxMotive * motiveModifier
+      personalityValues[personalityValueList.naughtiness] <
+        maxMotive - maxMotive * motiveModifier &&
+      personalityValues[personalityValueList.independence] <
+        maxMotive - maxMotive * motiveModifier &&
+      personalityValues[personalityValueList.patience] >
+        maxMotive * motiveModifier
     ) {
       return -1;
     }
@@ -122,21 +126,25 @@ export default class GoalCuddleToy extends Goal {
   execute(self) {
     let target = this.target;
     if (!target) {
-      self.plans.planSeekItem(
-        self,
-        adjectiveList.soft,
-        null,
-        goalList.cuddleToy
-      );
+      this.decrementTicks();
+      if (this.getTicks() <= 0) {
+        self.goalManager.deleteGoal(goalList.cuddleToy);
+      }
+      self.setPlan(planList.seekItem);
+      self
+        .getPlan()
+        .execute(self, adjectiveList.soft, null, goalList.cuddleToy);
     } else {
       if (self.queries.amIOnItem(self, target)) {
         this.decrementTicks();
         if (this.getTicks() <= 0) {
           self.goalManager.deleteGoal(goalList.cuddleToy);
         }
-        self.plans.planCuddleToy(self);
+        self.setPlan(planList.cuddleToy);
+        self.getPlan().execute(self);
       } else {
-        self.plans.planMoveToItem(self, target, goalList.cuddleToy);
+        self.setPlan(planList.moveToItem);
+        self.getPlan().execute(self, target, goalList.cuddleToy);
       }
     }
   }

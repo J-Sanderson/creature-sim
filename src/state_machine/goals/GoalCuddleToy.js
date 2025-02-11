@@ -126,6 +126,10 @@ export default class GoalCuddleToy extends Goal {
   execute(self) {
     let target = this.target;
     if (!target) {
+      this.decrementTicks();
+      if (this.getTicks() <= 0) {
+        self.goalManager.deleteGoal(goalList.cuddleToy);
+      }
       self.setPlan(planList.seekItem);
       self
         .getPlan()

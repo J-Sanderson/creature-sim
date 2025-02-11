@@ -120,6 +120,10 @@ export default class GoalChewToy extends Goal {
   execute(self) {
     let target = this.target;
     if (!target) {
+      this.decrementTicks();
+      if (this.getTicks() <= 0) {
+        self.goalManager.deleteGoal(goalList.chewToy);
+      }
       self.setPlan(planList.seekItem);
       self.getPlan().execute(self, adjectiveList.chew, null, goalList.chewToy);
     } else {

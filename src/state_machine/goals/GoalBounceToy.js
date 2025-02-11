@@ -114,6 +114,10 @@ export default class GoalBounceToy extends Goal {
   execute(self) {
     let target = this.target;
     if (!target) {
+      this.decrementTicks();
+      if (this.getTicks() <= 0) {
+        self.goalManager.deleteGoal(goalList.bounceToy);
+      }
       self.setPlan(planList.seekItem);
       self
         .getPlan()

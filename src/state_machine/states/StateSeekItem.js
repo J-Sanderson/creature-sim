@@ -29,18 +29,14 @@ export default class StateSeekItem extends State {
       );
       return;
     }
-
     const roll = Math.random();
     const amISad =
       personalityValues[personalityValueList.patience] / maxMotive > roll &&
       personalityValues[personalityValueList.kindness] / maxMotive > roll;
     const emotion = amISad ? emotionList.sad : emotionList.angry;
-
     self.emotionManager.setEmotion(self, emotion, emotions[emotion] + 2);
 
-    if (motive) {
-      self.showMotive(motive);
-    }
+    self.showMotive(motive ? motive : '');
 
     self.setXPosition(pos.x);
     self.setYPosition(pos.y);

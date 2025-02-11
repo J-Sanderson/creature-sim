@@ -7,10 +7,12 @@ export default class Goal {
       suspended: false,
       ticks: -1,
       decayThreshold: 1,
-      target: null,
       calledBy: null,
       type: goalTypeList.idle,
     },
+    worldToken: {
+      target: null,
+    }
   };
 
   constructor(params = {}) {
@@ -19,6 +21,13 @@ export default class Goal {
       this.goalToken[param] = params.hasOwnProperty(param)
         ? params[param]
         : Goal.defaults.goalToken[param];
+    }
+
+    this.worldToken = {};
+    for (let param in Goal.defaults.worldToken) {
+      this.worldToken[param] = params.hasOwnProperty(param)
+        ? params[param]
+        : Goal.defaults.worldToken[param];
     }
   }
 
@@ -68,16 +77,16 @@ export default class Goal {
     this.goalToken.decayThreshold = val;
   }
 
+  getCalledBy() {
+    return this.goalToken.calledBy;
+  }
+
   setTarget(target) {
-    this.goalToken.target = target;
+    this.worldToken.target = target;
   }
 
   getTarget() {
-    return this.goalToken.target;
-  }
-
-  getCalledBy() {
-    return this.goalToken.calledBy;
+    return this.worldToken.target;
   }
 
   calculatePersonalityModifier(self, personalityType, positive = true) {

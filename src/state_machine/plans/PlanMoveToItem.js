@@ -15,7 +15,12 @@ export default class PlanMoveToItem extends Plan {
       return;
     }
     const itemPos = item.getPosition();
+    const goalObj = self.goalManager.getGoals()[goal];
+    if (goalObj) {
+      goalObj.setDirection(itemPos.x, itemPos.y);
+    }
+
     self.setState(stateList.moveToPosition);
-    self.getState().execute(self, itemPos);
+    self.getState().execute(self);
   }
 }

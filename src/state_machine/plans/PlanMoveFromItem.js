@@ -20,8 +20,13 @@ export default class PlanMoveFromItem extends Plan {
       const position = self.getPosition();
       const newX = position.x + dx;
       const newY = position.y + dy;
+      const goal = self.goalManager.getGoals()[self.goalManager.getCurrentGoal()];
+      if (goal) {
+        goal.setDirection(newX, newY);
+      }
+
       self.setState(stateList.moveToPosition);
-      self.getState().execute(self, { x: newX, y: newY });
+      self.getState().execute(self);
     } else {
       console.error('No valid movement direction available');
     }

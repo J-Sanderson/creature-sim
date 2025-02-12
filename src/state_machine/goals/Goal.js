@@ -12,6 +12,10 @@ export default class Goal {
     },
     worldToken: {
       target: null,
+      direction: {
+        x: 0,
+        y: 0,
+      },
     }
   };
 
@@ -87,6 +91,17 @@ export default class Goal {
 
   getTarget() {
     return this.worldToken.target;
+  }
+
+  setDirection(x, y) {
+    this.worldToken.direction = {
+      x: x ? x : 0,
+      y: y ? y : 0,
+    };
+  }
+
+  getDirection() {
+    return this.worldToken.direction;
   }
 
   calculatePersonalityModifier(self, personalityType, positive = true) {

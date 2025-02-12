@@ -9,12 +9,16 @@ export default class StateMoveRandomly extends State {
     this.name = stateList.wander;
   }
 
-  execute(self, pos) {
-    self.showMotive('');
-    self.setXPosition(pos.x);
-    self.setYPosition(pos.y);
-
-    const world = worldManager.getWorld(self.world);
-    world.moveEntity(self.outputs.icon, self.getPosition());
+  execute(self) {
+    const goal = self.goalManager.getGoals()[self.goalManager.getCurrentGoal()];
+    if (goal) {
+      const pos = goal.getDirection();
+      self.showMotive('');
+      self.setXPosition(pos.x);
+      self.setYPosition(pos.y);
+  
+      const world = worldManager.getWorld(self.world);
+      world.moveEntity(self.outputs.icon, self.getPosition());
+    }
   }
 }

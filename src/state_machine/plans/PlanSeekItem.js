@@ -81,6 +81,10 @@ export default class PlanSeekItem extends Plan {
 
           const newX = position.x + dx;
           const newY = position.y + dy;
+          const goal = self.goalManager.getGoals()[self.goalManager.getCurrentGoal()];
+          if (goal) {
+            goal.setDirection(newX, newY);
+          }
 
           const personalityValues = self.getPersonalityValues();
           const maxMotive = self.getMaxMotive();
@@ -103,7 +107,7 @@ export default class PlanSeekItem extends Plan {
           const emotion = amISad ? emotionList.sad : emotionList.angry;
 
           self.setState(stateList.seekItem);
-          self.getState().execute(self, motive, emotion, { x: newX, y: newY });
+          self.getState().execute(self, motive, emotion);
         } else {
           console.error('No valid movement direction available');
         }

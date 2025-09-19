@@ -1,5 +1,5 @@
 import Plan from './Plan';
-import { motiveList, goalList, planList, stateList } from '../../defaults';
+import { motiveList, goalList, planList, stateList, emotionList } from '../../defaults';
 
 export default class PlanEat extends Plan {
   constructor(params) {
@@ -25,12 +25,40 @@ export default class PlanEat extends Plan {
       });
       self.goalManager.suspendGoal(goalList.eat);
     }
-    const maxVal = self.getMaxMotive();
-    if (motives[motiveList.fullness] >= maxVal) {
+    const maxMotive = self.getMaxMotive();
+    if (motives[motiveList.fullness] >= maxMotive) {
       return;
     }
 
+    const item = self.queries.getItemFromWorld(
+      self,
+      self.getGoals()[goalList.eat].getTarget()
+    );
+    if (!item) {
+      self.goalManager.deleteGoal(goalList.eat);
+    }
+    if (item.getFlavors().includes(self.getFavorites().flavor)) {
+      const emotions = self.getEmotions();
+      if (!emotions.hasOwnProperty(emotionList.happy)) {
+        console.error(`Error: no ${emotionList.happy} motive found`);
+        return;
+      }
+
+      const goal = self.goalManager.getGoals()[self.goalManager.getCurrentGoal()];
+      if (!goal) {
+        console.error(`Error: no valid goal found for ${this.name}`);
+        return;
+      }
+
+      const increment = 1;
+      const updatedEmotion = emotions[emotionList.happy] + increment;
+      goal.setEmotion({
+        name: emotionList.happy,
+        value: updatedEmotion < maxMotive ? updatedEmotion : maxMotive,
+      });
+    }
+
     self.setState(stateList.eat);
-    self.getState().execute(self, motives, maxVal);
+    self.getState().execute(self, motives, maxMotive);
   }
 }

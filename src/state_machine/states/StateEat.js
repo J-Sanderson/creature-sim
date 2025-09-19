@@ -39,17 +39,16 @@ export default class StateEat extends State {
             motives[motiveList.hydration] - 1
           );
         }
-        if (item.getFlavors().includes(self.getFavorites().flavor)) {
-          const emotions = self.getEmotions();
-          let happiness = emotions[emotionList.happy];
-          this.suppressEmotionDecay.push(emotionList.happy);
-          if (happiness < maxVal) {
-            self.emotionManager.setEmotion(
-              self,
-              emotionList.happy,
-              happiness + 1
-            );
-          }
+
+        const goal = self.goalManager.getGoals()[self.goalManager.getCurrentGoal()];
+        if (!goal) {
+          console.error(`Error: no valid goal found for ${this.name}`);
+          return;
+        }
+
+        const emotion = goal.getEmotion();
+        if (emotion && emotion.name && emotion.value) {
+          self.emotionManager.setEmotion(self, emotion.name, emotion.value);
         }
       } else {
         const world = worldManager.getWorld(self.world);

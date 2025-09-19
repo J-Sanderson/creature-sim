@@ -9,6 +9,12 @@ export default class Goal {
       decayThreshold: 1,
       calledBy: null,
       type: goalTypeList.idle,
+      // todo probably need a motive object as well
+      emotion: {
+        // todo allow for array of emotions
+        name: null,
+        value: null,
+      },
     },
     worldToken: {
       target: null,
@@ -102,6 +108,18 @@ export default class Goal {
 
   getDirection() {
     return this.worldToken.direction;
+  }
+
+  setEmotion(params = {}) {
+    Object.keys(this.goalToken.emotion).forEach(key => {
+      if (params.hasOwnProperty(key)) {
+        this.goalToken.emotion[key] = params[key];
+      }
+    });
+  }
+
+  getEmotion() {
+    return this.goalToken.emotion;
   }
 
   calculatePersonalityModifier(self, personalityType, positive = true) {

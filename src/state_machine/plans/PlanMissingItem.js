@@ -20,6 +20,12 @@ export default class PlanMissingItem extends Plan {
       return;
     }
 
+    const goal = self.goalManager.getGoals()[self.goalManager.getCurrentGoal()];
+    if (!goal) {
+      console.error(`Error: no valid goal found for ${this.name}`);
+      return;
+    }
+
     const personalityValues = self.getPersonalityValues();
     const maxMotive = self.getMaxMotive();
     if (
@@ -38,7 +44,14 @@ export default class PlanMissingItem extends Plan {
       personalityValues[personalityValueList.kindness] / maxMotive > roll;
     const emotion = amISad ? emotionList.sad : emotionList.angry;
 
+    const increment = 5;
+    const updatedEmotion = emotions[emotion] + increment;
+    goal.setEmotion({
+      name: emotion,
+      value: updatedEmotion < maxMotive ? updatedEmotion : maxMotive,
+    });
+
     self.setState(stateList.missingItem);
-    self.getState().execute(self, emotion);
+    self.getState().execute(self);
   }
 }

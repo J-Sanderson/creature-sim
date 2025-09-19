@@ -13,11 +13,12 @@ export class EmotionManager {
   }
 
   setEmotion(self, emotion, value) {
+    if (!emotion || !value || value < 0) return;
+
     if (!self.status.emotions.hasOwnProperty(emotion)) {
       console.error('Invalid emotion');
       return;
     }
-    if (value < 0) return;
     const maxMotive = self.getMaxMotive();
     self.status.emotions[emotion] = value > maxMotive ? maxMotive : value;
   }

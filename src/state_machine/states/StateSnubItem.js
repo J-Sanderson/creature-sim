@@ -8,11 +8,20 @@ export default class StateSnubItem extends State {
     this.name = stateList.snubItem;
   }
 
-  execute(self, anger) {
-    self.showMotive(motiveIconList.snubItem);
-    const maxMotive = self.getMaxMotive();
-    if (anger < maxMotive) {
-      self.emotionManager.setEmotion(self, emotionList.angry, anger + 5);
+  execute(self) {
+    const goal = self.goalManager.getGoals()[self.goalManager.getCurrentGoal()];
+    if (!goal) {
+      console.error(`Error: no valid goal found for ${this.name}`);
+      return;
     }
+
+    const emotion = goal.getEmotion();
+    if (!emotion) {
+      console.error(`Error: no valid emotion found for ${this.name}`);
+      return;
+    }
+
+    self.showMotive(motiveIconList.snubItem);
+    self.emotionManager.setEmotion(self, emotion.name, emotion.value);
   }
 }

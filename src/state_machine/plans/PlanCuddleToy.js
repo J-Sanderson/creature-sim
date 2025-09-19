@@ -15,7 +15,21 @@ export default class PlanCuddleToy extends Plan {
       return;
     }
 
+    const goal = self.goalManager.getGoals()[self.goalManager.getCurrentGoal()];
+    if (!goal) {
+      console.error(`Error: no valid goal found for ${this.name}`);
+      return;
+    }
+
+    const maxMotive = self.getMaxMotive();
+    const increment = 1;
+    const updatedEmotion = emotions[emotionList.happy] + increment;
+    goal.setEmotion({
+      name: emotionList.happy,
+      value: updatedEmotion < maxMotive ? updatedEmotion : maxMotive,
+    });
+
     self.setState(stateList.cuddleToy);
-    self.getState().execute(self, emotions[emotionList.happy]);
+    self.getState().execute(self);
   }
 }

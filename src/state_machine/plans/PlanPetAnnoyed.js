@@ -15,7 +15,21 @@ export default class PlanPetAnnoyed extends Plan {
       return;
     }
 
+    const goal = self.goalManager.getGoals()[self.goalManager.getCurrentGoal()];
+    if (!goal) {
+      console.error(`Error: no valid goal found for ${this.name}`);
+      return;
+    }
+
+    const maxMotive = self.getMaxMotive();
+    const increment = 5;
+    const updatedEmotion = emotions[emotionList.angry] + increment;
+    goal.setEmotion({
+      name: emotionList.angry,
+      value: updatedEmotion < maxMotive ? updatedEmotion : maxMotive,
+    });
+
     self.setState(stateList.petAnnoyed);
-    self.getState().execute(self, emotions[emotionList.angry]);
+    self.getState().execute(self);
   }
 }

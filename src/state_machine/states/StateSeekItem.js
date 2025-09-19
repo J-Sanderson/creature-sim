@@ -14,6 +14,7 @@ export default class StateSeekItem extends State {
   execute(self, motive, emotion) {
     const goal = self.goalManager.getGoals()[self.goalManager.getCurrentGoal()];
     if (goal) {
+      // todo - this requires multiple emotions on one token, will need to be an array
       const emotions = self.getEmotions();
       self.emotionManager.setEmotion(
         self,

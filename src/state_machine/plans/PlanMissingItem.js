@@ -45,10 +45,10 @@ export default class PlanMissingItem extends Plan {
     const emotion = amISad ? emotionList.sad : emotionList.angry;
 
     const increment = 5;
-    const updatedEmotion = emotions[emotion] + increment;
-    goal.setEmotion({
+    const value = emotions[emotion] + increment;
+    goal.setEmotion(self, {
       name: emotion,
-      value: updatedEmotion < maxMotive ? updatedEmotion : maxMotive,
+      value,
     });
 
     self.setState(stateList.missingItem);

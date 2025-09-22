@@ -113,17 +113,17 @@ export default class PlanSeekItem extends Plan {
           }
 
           let increment = 10;
-          let updatedEmotion = emotions[emotion] + increment;
-          goal.setEmotion({
+          let value = emotions[emotion] + increment;
+          goal.setEmotion(self, {
             name: emotion,
-            value: updatedEmotion < maxMotive ? updatedEmotion : maxMotive,
+            value,
           });
 
           increment = -1;
-          updatedEmotion = emotions[emotionList.happy] + increment;
-          goal.setEmotion({
+          value = emotions[emotionList.happy] + increment;
+          goal.setEmotion(self, {
             name: emotionList.happy,
-            value: updatedEmotion < maxMotive ? updatedEmotion : maxMotive,
+            value,
           });
 
           self.setState(stateList.seekItem);

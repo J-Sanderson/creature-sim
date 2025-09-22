@@ -21,12 +21,11 @@ export default class PlanSnubItem extends Plan {
       return;
     }
 
-    const maxMotive = self.getMaxMotive();
     const increment = 5;
-    const updatedEmotion = emotions[emotionList.angry] + increment;
-    goal.setEmotion({
+    const value = emotions[emotionList.angry] + increment;
+    goal.setEmotion(self, {
       name: emotionList.angry,
-      value: updatedEmotion < maxMotive ? updatedEmotion : maxMotive,
+      value,
     });
 
     self.setState(stateList.snubItem);

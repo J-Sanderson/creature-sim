@@ -1,5 +1,4 @@
-import { goalTypeList, emotionList } from '../../defaults';
-
+import { goalTypeList, emotionList, motiveList } from '../../defaults';
 export default class Goal {
   static defaults = {
     goalToken: {
@@ -9,7 +8,6 @@ export default class Goal {
       decayThreshold: 1,
       calledBy: null,
       type: goalTypeList.idle,
-      // todo probably need a motive object as well
       emotions: {},
     },
     worldToken: {
@@ -110,7 +108,7 @@ export default class Goal {
     return this.worldToken.direction;
   }
 
-  setEmotion(params) {
+  setEmotion(self, params) {
     if (!params.hasOwnProperty('name') || !params.hasOwnProperty('value')) {
       console.error('Error: no valid emotion object');
       return;
@@ -119,7 +117,9 @@ export default class Goal {
       console.error(`Error: ${params.name} is not a valid emotion`);
       return;
     }
-    this.goalToken.emotions[params.name] = params.value;
+    const maxMotive = self.getMaxMotive();
+    const val = params.value > maxMotive ? maxMotive : params.value < 0 ? 0 : params.value;
+    this.goalToken.emotions[params.name] = val;
   }
 
   getEmotions() {

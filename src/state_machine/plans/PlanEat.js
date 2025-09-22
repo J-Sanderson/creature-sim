@@ -51,10 +51,10 @@ export default class PlanEat extends Plan {
       }
 
       const increment = 1;
-      const updatedEmotion = emotions[emotionList.happy] + increment;
-      goal.setEmotion({
+      const value = emotions[emotionList.happy] + increment;
+      goal.setEmotion(self, {
         name: emotionList.happy,
-        value: updatedEmotion < maxMotive ? updatedEmotion : maxMotive,
+        value,
       });
     }
 

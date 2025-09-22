@@ -16,13 +16,17 @@ export default class StatePetHappy extends State {
       return;
     }
 
-    const emotion = goal.getEmotion();
-    if (!emotion) {
-      console.error(`Error: no valid emotion found for ${this.name}`);
+    const emotions = goal.getEmotions();
+    if (!emotions) {
+      console.error(`Error: no valid emotions found for ${this.name}`);
       return;
     }
 
     self.showMotive(motiveIconList.petHappy);
-    self.emotionManager.setEmotion(self, emotion.name, emotion.value);
+    for (let emotion in emotions) {
+      if (emotions[emotion] !== null) {
+        self.emotionManager.setEmotion(self, emotion, emotions[emotion]);
+      }
+    }
   }
 }

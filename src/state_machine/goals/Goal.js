@@ -1,4 +1,4 @@
-import { goalTypeList } from '../../defaults';
+import { goalTypeList, emotionList } from '../../defaults';
 
 export default class Goal {
   static defaults = {
@@ -10,11 +10,7 @@ export default class Goal {
       calledBy: null,
       type: goalTypeList.idle,
       // todo probably need a motive object as well
-      emotion: {
-        // todo allow for array of emotions
-        name: null,
-        value: null,
-      },
+      emotions: {},
     },
     worldToken: {
       target: null,
@@ -31,6 +27,10 @@ export default class Goal {
       this.goalToken[param] = params.hasOwnProperty(param)
         ? params[param]
         : Goal.defaults.goalToken[param];
+    }
+
+    for (let emotion in emotionList) {
+      this.goalToken.emotions[emotion] = null;
     }
 
     this.worldToken = {};
@@ -110,16 +110,20 @@ export default class Goal {
     return this.worldToken.direction;
   }
 
-  setEmotion(params = {}) {
-    Object.keys(this.goalToken.emotion).forEach(key => {
-      if (params.hasOwnProperty(key)) {
-        this.goalToken.emotion[key] = params[key];
-      }
-    });
+  setEmotion(params) {
+    if (!params.hasOwnProperty('name') || !params.hasOwnProperty('value')) {
+      console.error('Error: no valid emotion object');
+      return;
+    }
+    if (!this.goalToken.emotions.hasOwnProperty(params.name)) {
+      console.error(`Error: ${params.name} is not a valid emotion`);
+      return;
+    }
+    this.goalToken.emotions[params.name] = params.value;
   }
 
-  getEmotion() {
-    return this.goalToken.emotion;
+  getEmotions() {
+    return this.goalToken.emotions;
   }
 
   calculatePersonalityModifier(self, personalityType, positive = true) {

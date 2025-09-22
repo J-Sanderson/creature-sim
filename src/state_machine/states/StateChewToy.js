@@ -9,6 +9,7 @@ export default class StateChewToy extends State {
     this.suppressEmotionDecay.push(emotionList.happy);
   }
 
+  
   execute(self) {
     const goal = self.goalManager.getGoals()[self.goalManager.getCurrentGoal()];
     if (!goal) {
@@ -16,13 +17,17 @@ export default class StateChewToy extends State {
       return;
     }
 
-    const emotion = goal.getEmotion();
-    if (!emotion) {
-      console.error(`Error: no valid emotion found for ${this.name}`);
+    const emotions = goal.getEmotions();
+    if (!emotions) {
+      console.error(`Error: no valid emotions found for ${this.name}`);
       return;
     }
 
     self.showMotive(motiveIconList.chewToy);
-    self.emotionManager.setEmotion(self, emotion.name, emotion.value);
+    for (let emotion in emotions) {
+      if (emotions[emotion] !== null) {
+        self.emotionManager.setEmotion(self, emotion, emotions[emotion]);
+      }
+    }
   }
 }

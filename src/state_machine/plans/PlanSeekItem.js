@@ -106,8 +106,28 @@ export default class PlanSeekItem extends Plan {
             personalityValues[personalityValueList.kindness] / maxMotive > roll;
           const emotion = amISad ? emotionList.sad : emotionList.angry;
 
+          const emotions = self.getEmotions();
+          if (!emotions.hasOwnProperty(emotionList.sad)) {
+            console.error(`Error: no ${emotionList.sad} motive found`);
+            return;
+          }
+
+          let increment = 10;
+          let updatedEmotion = emotions[emotion] + increment;
+          goal.setEmotion({
+            name: emotion,
+            value: updatedEmotion < maxMotive ? updatedEmotion : maxMotive,
+          });
+
+          increment = -1;
+          updatedEmotion = emotions[emotionList.happy] + increment;
+          goal.setEmotion({
+            name: emotionList.happy,
+            value: updatedEmotion < maxMotive ? updatedEmotion : maxMotive,
+          });
+
           self.setState(stateList.seekItem);
-          self.getState().execute(self, motive, emotion);
+          self.getState().execute(self, motive);
         } else {
           console.error('No valid movement direction available');
         }

@@ -4,7 +4,6 @@ import {
   motiveList,
   goalList,
   stateList,
-  emotionList,
   motiveIconList,
 } from '../../defaults';
 
@@ -46,9 +45,13 @@ export default class StateEat extends State {
           return;
         }
 
-        const emotion = goal.getEmotion();
-        if (emotion && emotion.name && emotion.value) {
-          self.emotionManager.setEmotion(self, emotion.name, emotion.value);
+        const emotions = goal.getEmotions();
+        if (emotions) {
+          for (let emotion in emotions) {
+            if (emotions[emotion] !== null) {
+              self.emotionManager.setEmotion(self, emotion, emotions[emotion]);
+            }
+          }
         }
       } else {
         const world = worldManager.getWorld(self.world);

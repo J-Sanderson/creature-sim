@@ -1,5 +1,5 @@
 import State from './State';
-import { stateList, motiveIconList, emotionList } from '../../defaults';
+import { stateList, motiveIconList } from '../../defaults';
 
 export default class StateSnubItem extends State {
   constructor(params) {
@@ -15,13 +15,17 @@ export default class StateSnubItem extends State {
       return;
     }
 
-    const emotion = goal.getEmotion();
-    if (!emotion) {
-      console.error(`Error: no valid emotion found for ${this.name}`);
+    const emotions = goal.getEmotions();
+    if (!emotions) {
+      console.error(`Error: no valid emotions found for ${this.name}`);
       return;
     }
 
     self.showMotive(motiveIconList.snubItem);
-    self.emotionManager.setEmotion(self, emotion.name, emotion.value);
+    for (let emotion in emotions) {
+      if (emotions[emotion] !== null) {
+        self.emotionManager.setEmotion(self, emotion, emotions[emotion]);
+      }
+    }
   }
 }

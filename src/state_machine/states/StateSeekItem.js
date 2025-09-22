@@ -13,23 +13,34 @@ export default class StateSeekItem extends State {
 
   execute(self, motive, emotion) {
     const goal = self.goalManager.getGoals()[self.goalManager.getCurrentGoal()];
-    if (goal) {
-      // todo - this requires multiple emotions on one token, will need to be an array
-      const emotions = self.getEmotions();
-      self.emotionManager.setEmotion(
-        self,
-        emotionList.happy,
-        emotions[emotionList.happy] - 1
-      );
-      self.emotionManager.setEmotion(self, emotion, emotions[emotion] + 10);
-  
-      self.showMotive(motive ? motive : '');
-  
-      const pos = goal.getDirection();
-      self.setXPosition(pos.x);
-      self.setYPosition(pos.y);
-      const world = worldManager.getWorld(self.world);
-      world.moveEntity(self.outputs.icon, self.getPosition());
+    if (!goal) {
+      console.error(`Error: no valid goal found for ${this.name}`);
+      return;
     }
+
+    const emotions = goal.getEmotions();
+    if (!emotions) {
+      console.error(`Error: no valid emotions found for ${this.name}`);
+      return;
+    }
+
+    const pos = goal.getDirection();
+    if (!pos) {
+      console.error(`Error: no valid position found for ${this.name}`);
+      return;
+    }
+
+    self.showMotive(motive ? motive : '');
+
+    for (let emotion in emotions) {
+      if (emotions[emotion] !== null) {
+        self.emotionManager.setEmotion(self, emotion, emotions[emotion]);
+      }
+    }
+
+    self.setXPosition(pos.x);
+    self.setYPosition(pos.y);
+    const world = worldManager.getWorld(self.world);
+    world.moveEntity(self.outputs.icon, self.getPosition());
   }
 }

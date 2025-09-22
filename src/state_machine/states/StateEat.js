@@ -24,26 +24,28 @@ export default class StateEat extends State {
     if (item) {
       const amount = item.getMotive(motiveList.amount);
       if (amount > 0) {
-        self.showMotive(motiveIconList.eat);
-        const transfer = 10;
-        let newVal = (motives[motiveList.fullness] += transfer);
-        if (newVal > maxVal) {
-          newVal = maxVal;
-        }
-        self.setMotive(motiveList.fullness, newVal);
-        item.setMotive(motiveList.amount, amount - transfer);
-        if (motives[motiveList.hydration] > 0) {
-          self.setMotive(
-            motiveList.hydration,
-            motives[motiveList.hydration] - 1
-          );
-        }
-
-        const goal = self.goalManager.getGoals()[self.goalManager.getCurrentGoal()];
+        const goal =
+          self.goalManager.getGoals()[self.goalManager.getCurrentGoal()];
         if (!goal) {
           console.error(`Error: no valid goal found for ${this.name}`);
           return;
         }
+
+        const motives = goal.getMotives();
+        if (!motives) {
+          console.error(`Error: no valid motives found for ${this.name}`);
+          return;
+        }
+
+        self.showMotive(motiveIconList.eat);
+        for (let motive in motives) {
+          if (motives[motive] !== null) {
+            self.setMotive(motive, motives[motive]);
+          }
+        }
+
+        const transfer = 10;
+        item.setMotive(motiveList.amount, amount - transfer);
 
         const emotions = goal.getEmotions();
         if (emotions) {

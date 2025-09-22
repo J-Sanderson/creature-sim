@@ -16,7 +16,7 @@ export default class StateMoveRandomly extends State {
       self.showMotive('');
       self.setXPosition(pos.x);
       self.setYPosition(pos.y);
-  
+
       const world = worldManager.getWorld(self.world);
       world.moveEntity(self.outputs.icon, self.getPosition());
     }

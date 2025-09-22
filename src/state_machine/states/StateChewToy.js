@@ -9,7 +9,6 @@ export default class StateChewToy extends State {
     this.suppressEmotionDecay.push(emotionList.happy);
   }
 
-  
   execute(self) {
     const goal = self.goalManager.getGoals()[self.goalManager.getCurrentGoal()];
     if (!goal) {

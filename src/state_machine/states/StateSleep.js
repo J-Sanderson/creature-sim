@@ -9,12 +9,24 @@ export default class StateSleep extends State {
     this.suppressMotiveDecay.push(motiveList.energy);
   }
 
-  execute(self, energy, maxVal) {
-    self.showMotive(motiveIconList.sleep);
-    let newVal = (energy += 1);
-    if (newVal > maxVal) {
-      newVal = maxVal;
+  execute(self) {
+    const goal = self.goalManager.getGoals()[self.goalManager.getCurrentGoal()];
+    if (!goal) {
+      console.error(`Error: no valid goal found for ${this.name}`);
+      return;
     }
-    self.setMotive(motiveList.energy, newVal);
+
+    const motives = goal.getMotives();
+    if (!motives) {
+      console.error(`Error: no valid motives found for ${this.name}`);
+      return;
+    }
+
+    self.showMotive(motiveIconList.sleep);
+    for (let motive in motives) {
+      if (motives[motive] !== null) {
+        self.setMotive(motive, motives[motive]);
+      }
+    }
   }
 }

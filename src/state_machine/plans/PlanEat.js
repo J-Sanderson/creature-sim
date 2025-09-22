@@ -1,5 +1,11 @@
 import Plan from './Plan';
-import { motiveList, goalList, planList, stateList, emotionList } from '../../defaults';
+import {
+  motiveList,
+  goalList,
+  planList,
+  stateList,
+  emotionList,
+} from '../../defaults';
 
 export default class PlanEat extends Plan {
   constructor(params) {
@@ -37,16 +43,15 @@ export default class PlanEat extends Plan {
     if (!item) {
       self.goalManager.deleteGoal(goalList.eat);
     }
+    const goal = self.goalManager.getGoals()[self.goalManager.getCurrentGoal()];
+    if (!goal) {
+      console.error(`Error: no valid goal found for ${this.name}`);
+      return;
+    }
     if (item.getFlavors().includes(self.getFavorites().flavor)) {
       const emotions = self.getEmotions();
       if (!emotions.hasOwnProperty(emotionList.happy)) {
         console.error(`Error: no ${emotionList.happy} motive found`);
-        return;
-      }
-
-      const goal = self.goalManager.getGoals()[self.goalManager.getCurrentGoal()];
-      if (!goal) {
-        console.error(`Error: no valid goal found for ${this.name}`);
         return;
       }
 
@@ -58,7 +63,21 @@ export default class PlanEat extends Plan {
       });
     }
 
+    let increment = 10;
+    let value = motives[motiveList.fullness] + increment;
+    goal.setMotive(self, {
+      name: motiveList.fullness,
+      value,
+    });
+
+    increment = -1;
+    value = motives[motiveList.hydration] + increment;
+    goal.setMotive(self, {
+      name: motiveList.hydration,
+      value,
+    });
+
     self.setState(stateList.eat);
-    self.getState().execute(self, motives, maxMotive);
+    self.getState().execute(self);
   }
 }

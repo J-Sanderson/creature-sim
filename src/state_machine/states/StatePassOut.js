@@ -15,15 +15,36 @@ export default class StatePassOut extends State {
     this.suppressEmotionDecay.push(emotionList.sad);
   }
 
-  execute(self, energy, sadness, maxVal) {
-    self.showMotive(motiveIconList.passOut);
-    let newVal = (energy += 1);
-    if (newVal > maxVal) {
-      newVal = maxVal;
+  execute(self) {
+    const goal = self.goalManager.getGoals()[self.goalManager.getCurrentGoal()];
+    if (!goal) {
+      console.error(`Error: no valid goal found for ${this.name}`);
+      return;
     }
-    self.setMotive(motiveList.energy, newVal);
-    if (sadness < maxVal) {
-      self.emotionManager.setEmotion(self, emotionList.sad, sadness + 1);
+
+    const motives = goal.getMotives();
+    if (!motives) {
+      console.error(`Error: no valid motives found for ${this.name}`);
+      return;
+    }
+
+    const emotions = goal.getEmotions();
+    if (!emotions) {
+      console.error(`Error: no valid emotions found for ${this.name}`);
+      return;
+    }
+
+    self.showMotive(motiveIconList.passOut);
+    for (let motive in motives) {
+      if (motives[motive] !== null) {
+        self.setMotive(motive, motives[motive]);
+      }
+    }
+
+    for (let emotion in emotions) {
+      if (emotions[emotion] !== null) {
+        self.emotionManager.setEmotion(self, emotion, emotions[emotion]);
+      }
     }
   }
 }

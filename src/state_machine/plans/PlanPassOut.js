@@ -18,13 +18,39 @@ export default class PlanPassOut extends Plan {
       return;
     }
 
+    const goal = self.goalManager.getGoals()[self.goalManager.getCurrentGoal()];
+    if (!goal) {
+      console.error(`Error: no valid goal found for ${this.name}`);
+      return;
+    }
+
     const emotions = self.getEmotions();
     if (!emotions.hasOwnProperty(emotionList.sad)) {
       console.error(`Error: no ${emotionList.sad} motive found`);
       return;
     }
 
+    const motives = goal.getMotives();
+    if (!motives) {
+      console.error(`Error: no valid motives found for ${this.name}`);
+      return;
+    }
+
+    let increment = 1;
+    let value = motives[motiveList.energy] + increment;
+    goal.setMotive(self, {
+      name: motiveList.energy,
+      value,
+    });
+
+    increment = 2;
+    value = emotions[emotionList.sad] + increment;
+    goal.setEmotion(self, {
+      name: emotionList.sad,
+      value,
+    });
+
     self.setState(stateList.passOut);
-    self.getState().execute(self, energy, emotions[emotionList.sad], maxVal);
+    self.getState().execute(self);
   }
 }

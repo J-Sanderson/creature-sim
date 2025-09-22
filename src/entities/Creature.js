@@ -251,13 +251,11 @@ export default class Creature extends Entity {
         let td = document.createElement('td');
         td.innerHTML = goal;
         tr.appendChild(td);
-        ['priority', 'suspended', 'ticks', 'calledBy'].forEach(
-          (item) => {
-            let td = document.createElement('td');
-            td.innerHTML = val[goal].goalToken[item];
-            tr.appendChild(td);
-          }
-        );
+        ['priority', 'suspended', 'ticks', 'calledBy'].forEach((item) => {
+          let td = document.createElement('td');
+          td.innerHTML = val[goal].goalToken[item];
+          tr.appendChild(td);
+        });
         td = document.createElement('td');
         td.innerHTML = val[goal].worldToken.target;
         tr.appendChild(td);

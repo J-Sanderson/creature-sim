@@ -8,6 +8,7 @@ export default class Goal {
       decayThreshold: 1,
       calledBy: null,
       type: goalTypeList.idle,
+      motives: {},
       emotions: {},
     },
     worldToken: {
@@ -16,15 +17,20 @@ export default class Goal {
         x: 0,
         y: 0,
       },
-    }
+    },
   };
 
   constructor(params = {}) {
+    // todo - do we need to do all of this if just spawning goals for filtering purposes?
     this.goalToken = {};
     for (let param in Goal.defaults.goalToken) {
       this.goalToken[param] = params.hasOwnProperty(param)
         ? params[param]
         : Goal.defaults.goalToken[param];
+    }
+
+    for (let motive in motiveList) {
+      this.goalToken.motives[motive] = null;
     }
 
     for (let emotion in emotionList) {
@@ -118,12 +124,40 @@ export default class Goal {
       return;
     }
     const maxMotive = self.getMaxMotive();
-    const val = params.value > maxMotive ? maxMotive : params.value < 0 ? 0 : params.value;
+    const val =
+      params.value > maxMotive
+        ? maxMotive
+        : params.value < 0
+          ? 0
+          : params.value;
     this.goalToken.emotions[params.name] = val;
   }
 
   getEmotions() {
     return this.goalToken.emotions;
+  }
+
+  setMotive(self, params) {
+    if (!params.hasOwnProperty('name') || !params.hasOwnProperty('value')) {
+      console.error('Error: no valid motive object');
+      return;
+    }
+    if (!this.goalToken.motives.hasOwnProperty(params.name)) {
+      console.error(`Error: ${params.name} is not a valid motive`);
+      return;
+    }
+    const maxMotive = self.getMaxMotive();
+    const val =
+      params.value > maxMotive
+        ? maxMotive
+        : params.value < 0
+          ? 0
+          : params.value;
+    this.goalToken.motives[params.name] = val;
+  }
+
+  getMotives() {
+    return this.goalToken.motives;
   }
 
   calculatePersonalityModifier(self, personalityType, positive = true) {

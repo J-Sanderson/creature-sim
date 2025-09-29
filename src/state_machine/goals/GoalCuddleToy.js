@@ -10,6 +10,7 @@ import {
 export default class GoalCuddleToy extends Goal {
   constructor(params) {
     super(params);
+    this.name = goalList.cuddleToy;
     this.type = goalTypeList.narrative;
 
     if (params && params.hasOwnProperty('tickModifiers')) {

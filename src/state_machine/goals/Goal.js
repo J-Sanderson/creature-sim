@@ -54,6 +54,10 @@ export default class Goal {
     this.goalToken.suspended = false;
   }
 
+  getName() {
+    return this.name;
+  }
+
   getIsSuspended() {
     return this.goalToken.suspended;
   }

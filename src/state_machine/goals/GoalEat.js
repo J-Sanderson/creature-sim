@@ -12,6 +12,7 @@ import {
 export default class GoalEat extends Goal {
   constructor(params) {
     super(params);
+    this.name = goalList.eat;
     this.type = goalTypeList.motive;
   }
   filter(self, nonReactive = false) {

@@ -12,6 +12,7 @@ import {
 export default class GoalSleep extends Goal {
   constructor(params) {
     super(params);
+    this.name = goalList.sleep;
     this.type = goalTypeList.motive;
   }
   filter(self, nonReactive = false) {

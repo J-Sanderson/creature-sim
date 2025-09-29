@@ -10,6 +10,7 @@ import {
 export default class GoalChewToy extends Goal {
   constructor(params) {
     super(params);
+    this.name = goalList.chewToy;
     this.type = goalTypeList.narrative;
 
     if (params && params.hasOwnProperty('tickModifiers')) {

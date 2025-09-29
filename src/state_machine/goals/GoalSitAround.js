@@ -10,6 +10,7 @@ import {
 export default class GoalSitAround extends Goal {
   constructor(params) {
     super(params);
+    this.name = goalList.sitAround;
 
     if (params && params.hasOwnProperty('tickModifiers')) {
       const modifiers = params.tickModifiers;

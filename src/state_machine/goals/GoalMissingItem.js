@@ -9,6 +9,7 @@ import {
 export default class GoalMissingItem extends Goal {
   constructor(params) {
     super(params);
+    this.name = goalList.missingItem;
     this.type = goalTypeList.narrative;
   }
   filter(self, nonReactive = false) {

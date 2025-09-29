@@ -10,6 +10,7 @@ import {
 export default class GoalBounceToy extends Goal {
   constructor(params) {
     super(params);
+    this.name = goalList.bounceToy;
     this.type = goalTypeList.narrative;
 
     if (params && params.hasOwnProperty('tickModifiers')) {

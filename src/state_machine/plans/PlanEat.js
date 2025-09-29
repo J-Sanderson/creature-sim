@@ -43,7 +43,7 @@ export default class PlanEat extends Plan {
     if (!item) {
       self.goalManager.deleteGoal(goalList.eat);
     }
-    const goal = self.goalManager.getGoals()[self.goalManager.getCurrentGoal()];
+    const goal = self.goalManager.getGoals()[self.goalManager.getCurrentGoalName()];
     if (!goal) {
       console.error(`Error: no valid goal found for ${this.name}`);
       return;

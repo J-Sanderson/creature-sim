@@ -208,8 +208,8 @@ export default class Creature extends Entity {
     return this.goalManager.getGoals();
   }
 
-  getCurrentGoal() {
-    return this.goalManager.getCurrentGoal();
+  getCurrentGoalName() {
+    return this.goalManager.getCurrentGoalName();
   }
 
   setPlan(plan) {

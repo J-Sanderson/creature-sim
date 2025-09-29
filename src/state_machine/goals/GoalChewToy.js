@@ -53,11 +53,11 @@ export default class GoalChewToy extends Goal {
     }
   }
   filter(self, nonReactive = false) {
-    const currentGoal = self.getCurrentGoal();
+    const currentGoalName = self.getCurrentGoalName();
     if (
       this.getIsSuspended() &&
-      currentGoal !== goalList.knockItemFromToybox &&
-      currentGoal !== goalList.chewToy
+      currentGoalName !== goalList.knockItemFromToybox &&
+      currentGoalName !== goalList.chewToy
     ) {
       return -1;
     }

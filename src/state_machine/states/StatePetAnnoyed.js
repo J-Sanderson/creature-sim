@@ -10,7 +10,7 @@ export default class StatePetAnnoyed extends State {
   }
 
   execute(self) {
-    const goal = self.goalManager.getGoals()[self.goalManager.getCurrentGoal()];
+    const goal = self.goalManager.getGoals()[self.goalManager.getCurrentGoalName()];
     if (!goal) {
       console.error(`Error: no valid goal found for ${this.name}`);
       return;

@@ -18,7 +18,7 @@ export default class PlanPassOut extends Plan {
       return;
     }
 
-    const goal = self.goalManager.getGoals()[self.goalManager.getCurrentGoal()];
+    const goal = self.goalManager.getGoals()[self.goalManager.getCurrentGoalName()];
     if (!goal) {
       console.error(`Error: no valid goal found for ${this.name}`);
       return;

@@ -16,9 +16,9 @@ export default class PlanSeekItem extends Plan {
   }
 
   execute(self, adj) {
-    // todo store adjective on goal token
-    const goal = self.goalManager.getCurrentGoal();
-    if (!goal) {
+    // todo: store adjective on goal token
+    const goalName = self.goalManager.getCurrentGoalName();
+    if (!goalName) {
       console.error(`Error: no valid goal name found for ${this.name}`);
       return;
     }
@@ -60,8 +60,8 @@ export default class PlanSeekItem extends Plan {
 
     if (closestItem) {
       let goals = self.getGoals();
-      if (goals.hasOwnProperty(goal)) {
-        goals[goal].setTarget(closestItem.guid);
+      if (goals.hasOwnProperty(goalName)) {
+        goals[goalName].setTarget(closestItem.guid);
       }
     } else {
       const knockItemPriority = self.goalManager.getPriorityForGoal(
@@ -69,9 +69,9 @@ export default class PlanSeekItem extends Plan {
         goalList.knockItemFromToybox
       );
       if (knockItemPriority >= 0) {
-        self.goalManager.suspendGoal(goal);
+        self.goalManager.suspendGoal(goalName);
         self.goalManager.addGoal(self, goalList.knockItemFromToybox, {
-          calledBy: goal,
+          calledBy: goalName,
           tickModifiers: {
             personality: self.getPersonalityValues(),
             maxMotive: self.getMaxMotive(),
@@ -89,7 +89,7 @@ export default class PlanSeekItem extends Plan {
           const newX = position.x + dx;
           const newY = position.y + dy;
           const goal =
-            self.goalManager.getGoals()[self.goalManager.getCurrentGoal()];
+            self.goalManager.getGoals()[goalName];
           if (goal) {
             goal.setDirection(newX, newY);
           }

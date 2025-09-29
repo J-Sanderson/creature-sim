@@ -17,7 +17,7 @@ export class World {
   };
 
   static statusOutputs = ['plan', 'state'];
-  static goalOutputs = ['goals', 'currentGoal'];
+  static goalOutputs = ['goals', 'currentGoalName'];
 
   constructor(el, params = {}) {
     if (!(el instanceof HTMLElement)) {
@@ -342,8 +342,8 @@ export class World {
       }
     }
 
-    const goal = creature.getCurrentGoal();
-    creature.setOutput('currentGoal', goal);
+    const goal = creature.getCurrentGoalName();
+    creature.setOutput('currentGoalName', goal);
 
     const plan = creature.getPlan();
     if (plan && plan.name) {

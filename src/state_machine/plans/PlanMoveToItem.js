@@ -9,20 +9,20 @@ export default class PlanMoveToItem extends Plan {
   }
 
   execute(self, id) {
-    // todo the item should be taken from the target object on the worldToken
-    const goal = self.goalManager.getCurrentGoal();
-    if (!goal) {
+    // todo: the item should be taken from the target object on the worldToken
+    const goalName = self.goalManager.getCurrentGoalName();
+    if (!goalName) {
       console.error(`Error: no valid goal name found for ${this.name}`);
       return;
     }
 
     const item = self.queries.getItemFromWorld(self, id);
     if (!item) {
-      self.goalManager.deleteGoal(goal);
+      self.goalManager.deleteGoal(goalName);
       return;
     }
     const itemPos = item.getPosition();
-    const goalObj = self.goalManager.getGoals()[goal];
+    const goalObj = self.goalManager.getGoals()[goalName];
     if (goalObj) {
       goalObj.setDirection(itemPos.x, itemPos.y);
     }

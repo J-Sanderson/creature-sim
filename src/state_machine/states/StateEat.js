@@ -4,7 +4,6 @@ import {
   motiveList,
   goalList,
   stateList,
-  emotionList,
   motiveIconList,
 } from '../../defaults';
 
@@ -16,39 +15,43 @@ export default class StateEat extends State {
     this.suppressMotiveDecay.push(motiveList.fullness);
   }
 
-  execute(self, motives, maxVal) {
+  execute(self) {
     const item = self.queries.getItemFromWorld(
       self,
-      self.getGoals()[goalList.eat].target
+      self.getGoals()[goalList.eat].getTarget()
     );
 
     if (item) {
       const amount = item.getMotive(motiveList.amount);
       if (amount > 0) {
+        const goal = self.goalManager.getCurrentGoal();
+        if (!goal) {
+          console.error(`Error: no valid goal found for ${this.name}`);
+          return;
+        }
+
+        const motives = goal.getMotives();
+        if (!motives) {
+          console.error(`Error: no valid motives found for ${this.name}`);
+          return;
+        }
+
         self.showMotive(motiveIconList.eat);
+        for (let motive in motives) {
+          if (motives[motive] !== null) {
+            self.setMotive(motive, motives[motive]);
+          }
+        }
+
         const transfer = 10;
-        let newVal = (motives[motiveList.fullness] += transfer);
-        if (newVal > maxVal) {
-          newVal = maxVal;
-        }
-        self.setMotive(motiveList.fullness, newVal);
         item.setMotive(motiveList.amount, amount - transfer);
-        if (motives[motiveList.hydration] > 0) {
-          self.setMotive(
-            motiveList.hydration,
-            motives[motiveList.hydration] - 1
-          );
-        }
-        if (item.getFlavors().includes(self.getFavorites().flavor)) {
-          const emotions = self.getEmotions();
-          let happiness = emotions[emotionList.happy];
-          this.suppressEmotionDecay.push(emotionList.happy);
-          if (happiness < maxVal) {
-            self.emotionManager.setEmotion(
-              self,
-              emotionList.happy,
-              happiness + 1
-            );
+
+        const emotions = goal.getEmotions();
+        if (emotions) {
+          for (let emotion in emotions) {
+            if (emotions[emotion] !== null) {
+              self.emotionManager.setEmotion(self, emotion, emotions[emotion]);
+            }
           }
         }
       } else {

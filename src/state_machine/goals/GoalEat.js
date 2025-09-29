@@ -12,6 +12,7 @@ import {
 export default class GoalEat extends Goal {
   constructor(params) {
     super(params);
+    this.name = goalList.eat;
     this.type = goalTypeList.motive;
   }
   filter(self, nonReactive = false) {
@@ -70,24 +71,19 @@ export default class GoalEat extends Goal {
       return;
     }
 
-    let target = goals[goalList.eat].target;
+    let target = goals[goalList.eat].getTarget();
+    this.setMotiveIcon(motiveIconList.hunger);
     if (!target) {
+      this.setAdjective(adjectiveList.tasty);
       self.setPlan(planList.seekItem);
-      self
-        .getPlan()
-        .execute(
-          self,
-          adjectiveList.tasty,
-          motiveIconList.hunger,
-          goalList.eat
-        );
+      self.getPlan().execute(self);
     } else {
       if (self.queries.amIOnItem(self, target)) {
         self.setPlan(planList.eat);
         self.getPlan().execute(self);
       } else {
         self.setPlan(planList.moveToItem);
-        self.getPlan().execute(self, target, goalList.eat);
+        self.getPlan().execute(self);
       }
     }
   }

@@ -15,7 +15,26 @@ export default class PlanDrink extends Plan {
       return;
     }
 
+    const goal = self.goalManager.getCurrentGoal();
+    if (!goal) {
+      console.error(`Error: no valid goal found for ${this.name}`);
+      return;
+    }
+
+    const motives = goal.getMotives();
+    if (!motives) {
+      console.error(`Error: no valid motives found for ${this.name}`);
+      return;
+    }
+
+    const increment = 20;
+    const value = motives[motiveList.hydration] + increment;
+    goal.setMotive(self, {
+      name: motiveList.hydration,
+      value,
+    });
+
     self.setState(stateList.drink);
-    self.getState().execute(self, hydration, maxVal);
+    self.getState().execute(self);
   }
 }

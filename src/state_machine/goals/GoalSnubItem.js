@@ -4,6 +4,7 @@ import { goalTypeList, goalList, planList } from '../../defaults';
 export default class GoalSnubItem extends Goal {
   constructor(params) {
     super(params);
+    this.name = goalList.snubItem;
     this.type = goalTypeList.narrative;
   }
   filter(self, nonReactive = false) {
@@ -23,7 +24,7 @@ export default class GoalSnubItem extends Goal {
       }
     } else {
       self.setPlan(planList.moveToItem);
-      self.getPlan().execute(self, target, goalList.snubItem);
+      self.getPlan().execute(self);
     }
   }
 }

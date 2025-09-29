@@ -4,6 +4,7 @@ import { personalityValueList, goalList, planList } from '../../defaults';
 export default class GoalWander extends Goal {
   constructor(params) {
     super(params);
+    this.name = goalList.wander;
 
     if (params && params.hasOwnProperty('tickModifiers')) {
       const modifiers = params.tickModifiers;

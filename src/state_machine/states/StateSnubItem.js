@@ -1,5 +1,5 @@
 import State from './State';
-import { stateList, motiveIconList, emotionList } from '../../defaults';
+import { stateList, motiveIconList } from '../../defaults';
 
 export default class StateSnubItem extends State {
   constructor(params) {
@@ -8,11 +8,24 @@ export default class StateSnubItem extends State {
     this.name = stateList.snubItem;
   }
 
-  execute(self, anger) {
+  execute(self) {
+    const goal = self.goalManager.getCurrentGoal();
+    if (!goal) {
+      console.error(`Error: no valid goal found for ${this.name}`);
+      return;
+    }
+
+    const emotions = goal.getEmotions();
+    if (!emotions) {
+      console.error(`Error: no valid emotions found for ${this.name}`);
+      return;
+    }
+
     self.showMotive(motiveIconList.snubItem);
-    const maxMotive = self.getMaxMotive();
-    if (anger < maxMotive) {
-      self.emotionManager.setEmotion(self, emotionList.angry, anger + 5);
+    for (let emotion in emotions) {
+      if (emotions[emotion] !== null) {
+        self.emotionManager.setEmotion(self, emotion, emotions[emotion]);
+      }
     }
   }
 }

@@ -10,6 +10,7 @@ import {
 export default class GoalBounceToy extends Goal {
   constructor(params) {
     super(params);
+    this.name = goalList.bounceToy;
     this.type = goalTypeList.narrative;
 
     if (params && params.hasOwnProperty('tickModifiers')) {
@@ -53,11 +54,11 @@ export default class GoalBounceToy extends Goal {
     }
   }
   filter(self, nonReactive = false) {
-    const currentGoal = self.getCurrentGoal();
+    const currentGoalName = self.getCurrentGoalName();
     if (
       this.getIsSuspended() &&
-      currentGoal !== goalList.knockItemFromToybox &&
-      currentGoal !== goalList.bounceToy
+      currentGoalName !== goalList.knockItemFromToybox &&
+      currentGoalName !== goalList.bounceToy
     ) {
       return -1;
     }
@@ -112,16 +113,15 @@ export default class GoalBounceToy extends Goal {
   }
 
   execute(self) {
-    let target = this.target;
+    let target = this.getTarget();
     if (!target) {
       this.decrementTicks();
       if (this.getTicks() <= 0) {
         self.goalManager.deleteGoal(goalList.bounceToy);
       }
+      this.setAdjective(adjectiveList.bounce);
       self.setPlan(planList.seekItem);
-      self
-        .getPlan()
-        .execute(self, adjectiveList.bounce, null, goalList.bounceToy);
+      self.getPlan().execute(self);
     } else {
       if (self.queries.amIOnItem(self, target)) {
         this.decrementTicks();
@@ -132,7 +132,7 @@ export default class GoalBounceToy extends Goal {
         self.getPlan().execute(self);
       } else {
         self.setPlan(planList.moveToItem);
-        self.getPlan().execute(self, target, goalList.bounceToy);
+        self.getPlan().execute(self);
       }
     }
   }

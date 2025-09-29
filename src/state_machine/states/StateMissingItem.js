@@ -8,9 +8,24 @@ export default class StateMissingItem extends State {
     this.name = stateList.missingItem;
   }
 
-  execute(self, emotion) {
+  execute(self) {
+    const goal = self.goalManager.getCurrentGoal();
+    if (!goal) {
+      console.error(`Error: no valid goal found for ${this.name}`);
+      return;
+    }
+
+    const emotions = goal.getEmotions();
+    if (!emotions) {
+      console.error(`Error: no valid emotions found for ${this.name}`);
+      return;
+    }
+
     self.showMotive(motiveIconList.missingItem);
-    const emotions = self.getEmotions();
-    self.emotionManager.setEmotion(self, emotion, emotions[emotion] + 5);
+    for (let emotion in emotions) {
+      if (emotions[emotion] !== null) {
+        self.emotionManager.setEmotion(self, emotion, emotions[emotion]);
+      }
+    }
   }
 }

@@ -9,11 +9,24 @@ export default class StatePetAnnoyed extends State {
     this.suppressEmotionDecay.push(emotionList.angry);
   }
 
-  execute(self, anger) {
+  execute(self) {
+    const goal = self.goalManager.getCurrentGoal();
+    if (!goal) {
+      console.error(`Error: no valid goal found for ${this.name}`);
+      return;
+    }
+
+    const emotions = goal.getEmotions();
+    if (!emotions) {
+      console.error(`Error: no valid emotions found for ${this.name}`);
+      return;
+    }
+
     self.showMotive(motiveIconList.petAnnoyed);
-    const maxMotive = self.getMaxMotive();
-    if (anger < maxMotive) {
-      self.emotionManager.setEmotion(self, emotionList.angry, anger + 5);
+    for (let emotion in emotions) {
+      if (emotions[emotion] !== null) {
+        self.emotionManager.setEmotion(self, emotion, emotions[emotion]);
+      }
     }
   }
 }

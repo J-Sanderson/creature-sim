@@ -42,7 +42,21 @@ export default class PlanSleep extends Plan {
     if (motives[motiveList.energy] >= maxVal) {
       return;
     }
+
+    const goal = self.goalManager.getCurrentGoal();
+    if (!goal) {
+      console.error(`Error: no valid goal found for ${this.name}`);
+      return;
+    }
+
+    const increment = 1;
+    const value = motives[motiveList.energy] + increment;
+    goal.setMotive(self, {
+      name: motiveList.energy,
+      value,
+    });
+
     self.setState(stateList.sleep);
-    self.getState().execute(self, motives[motiveList.energy], maxVal);
+    self.getState().execute(self);
   }
 }

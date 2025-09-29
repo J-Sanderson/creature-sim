@@ -4,6 +4,7 @@ import { emotionList, goalList, planList } from '../../defaults';
 export default class GoalActAngry extends Goal {
   constructor(params) {
     super(params);
+    this.name = goalList.actAngry;
     if (params && params.hasOwnProperty('tickModifiers')) {
       const modifiers = params.tickModifiers;
       if (

@@ -8,18 +8,36 @@ export default class StateSeekItem extends State {
 
     this.name = stateList.seekItem;
     this.suppressEmotionDecay.push(emotionList.sad);
+    this.suppressEmotionDecay.push(emotionList.angry);
   }
 
-  execute(self, motive, emotion, pos) {
-    const emotions = self.getEmotions();
-    self.emotionManager.setEmotion(
-      self,
-      emotionList.happy,
-      emotions[emotionList.happy] - 1
-    );
-    self.emotionManager.setEmotion(self, emotion, emotions[emotion] + 10);
+  execute(self) {
+    const goal = self.goalManager.getCurrentGoal();
+    if (!goal) {
+      console.error(`Error: no valid goal found for ${this.name}`);
+      return;
+    }
 
-    self.showMotive(motive ? motive : '');
+    const emotions = goal.getEmotions();
+    if (!emotions) {
+      console.error(`Error: no valid emotions found for ${this.name}`);
+      return;
+    }
+
+    const pos = goal.getDirection();
+    if (!pos) {
+      console.error(`Error: no valid position found for ${this.name}`);
+      return;
+    }
+
+    const motiveIcon = goal.getMotiveIcon();
+    self.showMotive(motiveIcon ? motiveIcon : '');
+
+    for (let emotion in emotions) {
+      if (emotions[emotion] !== null) {
+        self.emotionManager.setEmotion(self, emotion, emotions[emotion]);
+      }
+    }
 
     self.setXPosition(pos.x);
     self.setYPosition(pos.y);

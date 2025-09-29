@@ -4,12 +4,12 @@ import { goalList, adjectiveList } from '../defaults';
 export class GoalManager {
   constructor() {
     this.goals = {};
-    this.currentGoal = '';
+    this.currentGoalName = '';
   }
 
   update(self) {
     this.updateGoalPriorities(self);
-    let current = this.goals[this.currentGoal];
+    let current = this.goals[this.currentGoalName];
     if (!current || current.getIsSuspended()) {
       // do I have other goals?
       if (Object.keys(this.goals).length) {
@@ -23,13 +23,13 @@ export class GoalManager {
         if (this.goals[newGoal].getIsSuspended()) {
           this.unsuspendGoal(newGoal);
         }
-        this.currentGoal = newGoal;
+        this.currentGoalName = newGoal;
       } else {
         // no goals left, find something interesting to do
         this.findInterestingGoals(self);
       }
     }
-    this.goals[this.currentGoal].execute(self);
+    this.goals[this.currentGoalName].execute(self);
   }
 
   updateGoalPriorities(self) {
@@ -175,7 +175,7 @@ export class GoalManager {
       return;
     }
     if (isCurrent) {
-      this.currentGoal = name;
+      this.currentGoalName = name;
     }
     this.goals[name] = new self.goals[name](params);
   }
@@ -202,7 +202,11 @@ export class GoalManager {
     return this.goals;
   }
 
+  getCurrentGoalName() {
+    return this.currentGoalName;
+  }
+
   getCurrentGoal() {
-    return this.currentGoal;
+    return this.goals[this.currentGoalName];
   }
 }

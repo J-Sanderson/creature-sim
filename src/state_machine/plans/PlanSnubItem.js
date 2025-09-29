@@ -15,7 +15,20 @@ export default class PlanSnubItem extends Plan {
       return;
     }
 
+    const goal = self.goalManager.getCurrentGoal();
+    if (!goal) {
+      console.error(`Error: no valid goal found for ${this.name}`);
+      return;
+    }
+
+    const increment = 5;
+    const value = emotions[emotionList.angry] + increment;
+    goal.setEmotion(self, {
+      name: emotionList.angry,
+      value,
+    });
+
     self.setState(stateList.snubItem);
-    self.getState().execute(self, emotions[emotionList.angry]);
+    self.getState().execute(self);
   }
 }

@@ -15,21 +15,34 @@ export default class StateDrink extends State {
     this.suppressMotiveDecay.push(motiveList.drink);
   }
 
-  execute(self, hydration, maxVal) {
+  execute(self) {
     const item = self.queries.getItemFromWorld(
       self,
-      self.getGoals()[goalList.drink].target
+      self.getGoals()[goalList.drink].getTarget()
     );
     if (item) {
       const amount = item.getMotive(motiveList.amount);
       if (amount > 0) {
-        self.showMotive(motiveIconList.drink);
-        const transfer = 20;
-        let newVal = (hydration += transfer);
-        if (newVal > maxVal) {
-          newVal = maxVal;
+        const goal = self.goalManager.getCurrentGoal();
+        if (!goal) {
+          console.error(`Error: no valid goal found for ${this.name}`);
+          return;
         }
-        self.setMotive(motiveList.hydration, newVal);
+
+        const motives = goal.getMotives();
+        if (!motives) {
+          console.error(`Error: no valid motives found for ${this.name}`);
+          return;
+        }
+
+        self.showMotive(motiveIconList.drink);
+        for (let motive in motives) {
+          if (motives[motive] !== null) {
+            self.setMotive(motive, motives[motive]);
+          }
+        }
+
+        const transfer = 20;
         item.setMotive(motiveList.amount, amount - transfer);
       } else {
         const world = worldManager.getWorld(self.world);

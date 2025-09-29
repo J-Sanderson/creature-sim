@@ -12,6 +12,7 @@ import {
 export default class GoalSleep extends Goal {
   constructor(params) {
     super(params);
+    this.name = goalList.sleep;
     this.type = goalTypeList.motive;
   }
   filter(self, nonReactive = false) {
@@ -70,7 +71,8 @@ export default class GoalSleep extends Goal {
       return;
     }
 
-    const target = goals[goalList.sleep].target;
+    const target = goals[goalList.sleep].getTarget();
+    this.setMotiveIcon(motiveIconList.tired);
     if (!target) {
       if (energy === 0) {
         self.setPlan(planList.passOut);
@@ -78,22 +80,16 @@ export default class GoalSleep extends Goal {
         return;
       }
 
+      this.setAdjective(adjectiveList.restful);
       self.setPlan(planList.seekItem);
-      self
-        .getPlan()
-        .execute(
-          self,
-          adjectiveList.restful,
-          motiveIconList.tired,
-          goalList.sleep
-        );
+      self.getPlan().execute(self);
     } else {
       if (self.queries.amIOnItem(self, target)) {
         self.setPlan(planList.sleep);
         self.getPlan().execute(self);
       } else {
         self.setPlan(planList.moveToItem);
-        self.getPlan().execute(self, target, goalList.sleep);
+        self.getPlan().execute(self);
       }
     }
   }

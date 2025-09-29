@@ -9,11 +9,24 @@ export default class StatePetHappy extends State {
     this.suppressEmotionDecay.push(emotionList.happy);
   }
 
-  execute(self, happiness) {
+  execute(self) {
+    const goal = self.goalManager.getCurrentGoal();
+    if (!goal) {
+      console.error(`Error: no valid goal found for ${this.name}`);
+      return;
+    }
+
+    const emotions = goal.getEmotions();
+    if (!emotions) {
+      console.error(`Error: no valid emotions found for ${this.name}`);
+      return;
+    }
+
     self.showMotive(motiveIconList.petHappy);
-    const maxMotive = self.getMaxMotive();
-    if (happiness < maxMotive) {
-      self.emotionManager.setEmotion(self, emotionList.happy, happiness + 1);
+    for (let emotion in emotions) {
+      if (emotions[emotion] !== null) {
+        self.emotionManager.setEmotion(self, emotion, emotions[emotion]);
+      }
     }
   }
 }

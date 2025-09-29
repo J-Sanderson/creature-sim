@@ -11,6 +11,7 @@ import {
 export default class GoalAddedItem extends Goal {
   constructor(params) {
     super(params);
+    this.name = goalList.addedItem;
     this.type = goalTypeList.narrative;
   }
   filter(self, nonReactive = false) {

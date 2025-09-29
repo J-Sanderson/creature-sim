@@ -12,6 +12,7 @@ import {
 export default class GoalDrink extends Goal {
   constructor(params) {
     super(params);
+    this.name = goalList.drink;
     this.type = goalTypeList.motive;
   }
   filter(self, nonReactive = false) {
@@ -63,24 +64,19 @@ export default class GoalDrink extends Goal {
       return;
     }
 
-    let target = goals[goalList.drink].target;
+    let target = goals[goalList.drink].getTarget();
+    this.setMotiveIcon(motiveIconList.thirst);
     if (!target) {
+      this.setAdjective(adjectiveList.wet);
       self.setPlan(planList.seekItem);
-      self
-        .getPlan()
-        .execute(
-          self,
-          adjectiveList.wet,
-          motiveIconList.thirst,
-          goalList.drink
-        );
+      self.getPlan().execute(self);
     } else {
       if (self.queries.amIOnItem(self, target)) {
         self.setPlan(planList.drink);
         self.getPlan().execute(self);
       } else {
         self.setPlan(planList.moveToItem);
-        self.getPlan().execute(self, target, goalList.drink);
+        self.getPlan().execute(self);
       }
     }
   }

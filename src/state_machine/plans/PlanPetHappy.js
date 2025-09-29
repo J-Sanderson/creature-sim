@@ -15,7 +15,20 @@ export default class PlanPetHappy extends Plan {
       return;
     }
 
+    const goal = self.goalManager.getCurrentGoal();
+    if (!goal) {
+      console.error(`Error: no valid goal found for ${this.name}`);
+      return;
+    }
+
+    const increment = 1;
+    const value = emotions[emotionList.happy] + increment;
+    goal.setEmotion(self, {
+      name: emotionList.happy,
+      value,
+    });
+
     self.setState(stateList.petHappy);
-    self.getState().execute(self, emotions[emotionList.happy]);
+    self.getState().execute(self);
   }
 }

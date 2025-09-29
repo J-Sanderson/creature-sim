@@ -10,6 +10,7 @@ import {
 export default class GoalBePetted extends Goal {
   constructor(params) {
     super(params);
+    this.name = goalList.pet;
     this.type = goalTypeList.narrative;
 
     if (params && params.hasOwnProperty('tickModifiers')) {

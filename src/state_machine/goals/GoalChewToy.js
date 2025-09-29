@@ -10,6 +10,7 @@ import {
 export default class GoalChewToy extends Goal {
   constructor(params) {
     super(params);
+    this.name = goalList.chewToy;
     this.type = goalTypeList.narrative;
 
     if (params && params.hasOwnProperty('tickModifiers')) {
@@ -53,11 +54,11 @@ export default class GoalChewToy extends Goal {
     }
   }
   filter(self, nonReactive = false) {
-    const currentGoal = self.getCurrentGoal();
+    const currentGoalName = self.getCurrentGoalName();
     if (
       this.getIsSuspended() &&
-      currentGoal !== goalList.knockItemFromToybox &&
-      currentGoal !== goalList.chewToy
+      currentGoalName !== goalList.knockItemFromToybox &&
+      currentGoalName !== goalList.chewToy
     ) {
       return -1;
     }
@@ -118,14 +119,15 @@ export default class GoalChewToy extends Goal {
     return priority;
   }
   execute(self) {
-    let target = this.target;
+    let target = this.getTarget();
     if (!target) {
       this.decrementTicks();
       if (this.getTicks() <= 0) {
         self.goalManager.deleteGoal(goalList.chewToy);
       }
+      this.setAdjective(adjectiveList.chew);
       self.setPlan(planList.seekItem);
-      self.getPlan().execute(self, adjectiveList.chew, null, goalList.chewToy);
+      self.getPlan().execute(self);
     } else {
       if (self.queries.amIOnItem(self, target)) {
         this.decrementTicks();
@@ -136,7 +138,7 @@ export default class GoalChewToy extends Goal {
         self.getPlan().execute(self);
       } else {
         self.setPlan(planList.moveToItem);
-        self.getPlan().execute(self, target, goalList.chewToy);
+        self.getPlan().execute(self);
       }
     }
   }

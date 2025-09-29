@@ -1,5 +1,10 @@
 import Plan from './Plan';
-import { planList, stateList, emotionList, personalityValueList } from '../../defaults';
+import {
+  planList,
+  stateList,
+  emotionList,
+  personalityValueList,
+} from '../../defaults';
 
 export default class PlanMissingItem extends Plan {
   constructor(params) {
@@ -12,6 +17,12 @@ export default class PlanMissingItem extends Plan {
     const emotions = self.getEmotions();
     if (!emotions.hasOwnProperty(emotionList.sad)) {
       console.error(`Error: no ${emotionList.sad} motive found`);
+      return;
+    }
+
+    const goal = self.goalManager.getCurrentGoal();
+    if (!goal) {
+      console.error(`Error: no valid goal found for ${this.name}`);
       return;
     }
 
@@ -33,7 +44,14 @@ export default class PlanMissingItem extends Plan {
       personalityValues[personalityValueList.kindness] / maxMotive > roll;
     const emotion = amISad ? emotionList.sad : emotionList.angry;
 
+    const increment = 5;
+    const value = emotions[emotion] + increment;
+    goal.setEmotion(self, {
+      name: emotion,
+      value,
+    });
+
     self.setState(stateList.missingItem);
-    self.getState().execute(self, emotion);
+    self.getState().execute(self);
   }
 }

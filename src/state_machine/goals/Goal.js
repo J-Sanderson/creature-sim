@@ -1,77 +1,185 @@
-import { goalTypeList } from '../../defaults';
-
+import { goalTypeList, emotionList, motiveList } from '../../defaults';
 export default class Goal {
   static defaults = {
-    priority: 1,
-    suspended: false,
-    ticks: -1,
-    decayThreshold: 1,
-    target: null,
-    calledBy: null,
-    type: goalTypeList.idle,
+    goalToken: {
+      priority: 1,
+      suspended: false,
+      ticks: -1,
+      decayThreshold: 1,
+      calledBy: null,
+      type: goalTypeList.idle,
+      motiveIcon: null,
+      motives: {},
+      emotions: {},
+    },
+    worldToken: {
+      target: null,
+      adjective: null,
+      direction: {
+        x: 0,
+        y: 0,
+      },
+    },
   };
 
   constructor(params = {}) {
-    for (let param in Goal.defaults) {
-      this[param] = params.hasOwnProperty(param)
+    // todo - do we need to do all of this if just spawning goals for filtering purposes?
+    this.goalToken = {};
+    for (let param in Goal.defaults.goalToken) {
+      this.goalToken[param] = params.hasOwnProperty(param)
         ? params[param]
-        : Goal.defaults[param];
+        : Goal.defaults.goalToken[param];
+    }
+
+    for (let motive in motiveList) {
+      this.goalToken.motives[motive] = null;
+    }
+
+    for (let emotion in emotionList) {
+      this.goalToken.emotions[emotion] = null;
+    }
+
+    this.worldToken = {};
+    for (let param in Goal.defaults.worldToken) {
+      this.worldToken[param] = params.hasOwnProperty(param)
+        ? params[param]
+        : Goal.defaults.worldToken[param];
     }
   }
 
   suspend() {
-    this.suspended = true;
+    this.goalToken.suspended = true;
   }
 
   unsuspend() {
-    this.suspended = false;
+    this.goalToken.suspended = false;
+  }
+
+  getName() {
+    return this.name;
   }
 
   getIsSuspended() {
-    return this.suspended;
+    return this.goalToken.suspended;
   }
 
   setPriority(priority) {
-    this.priority = priority;
+    this.goalToken.priority = priority;
   }
 
   getPriority() {
-    return this.priority;
+    return this.goalToken.priority;
   }
 
   decrementTicks() {
-    const threshold = this.decayThreshold;
-    if (this.ticks > 0 && (threshold === 1 || Math.random() <= threshold)) {
-      this.ticks--;
+    const threshold = this.goalToken.decayThreshold;
+    if (
+      this.goalToken.ticks > 0 &&
+      (threshold === 1 || Math.random() <= threshold)
+    ) {
+      this.goalToken.ticks--;
     }
   }
 
   getTicks() {
-    return this.ticks;
+    return this.goalToken.ticks;
   }
 
   setTicks(val) {
-    this.ticks = val;
+    this.goalToken.ticks = val;
   }
 
   getDecayThreshold() {
-    return this.decayThreshold;
+    return this.goalToken.decayThreshold;
   }
 
   setDecayThreshold(val) {
-    this.decayThreshold = val;
-  }
-
-  setTarget(target) {
-    this.target = target;
-  }
-
-  getTarget() {
-    return this.target;
+    this.goalToken.decayThreshold = val;
   }
 
   getCalledBy() {
-    return this.calledBy;
+    return this.goalToken.calledBy;
+  }
+
+  setTarget(target) {
+    this.worldToken.target = target;
+  }
+
+  getTarget() {
+    return this.worldToken.target;
+  }
+
+  setDirection(x, y) {
+    this.worldToken.direction = {
+      x: x ? x : 0,
+      y: y ? y : 0,
+    };
+  }
+
+  getDirection() {
+    return this.worldToken.direction;
+  }
+
+  setEmotion(self, params) {
+    if (!params.hasOwnProperty('name') || !params.hasOwnProperty('value')) {
+      console.error('Error: no valid emotion object');
+      return;
+    }
+    if (!this.goalToken.emotions.hasOwnProperty(params.name)) {
+      console.error(`Error: ${params.name} is not a valid emotion`);
+      return;
+    }
+    const maxMotive = self.getMaxMotive();
+    const val =
+      params.value > maxMotive
+        ? maxMotive
+        : params.value < 0
+          ? 0
+          : params.value;
+    this.goalToken.emotions[params.name] = val;
+  }
+
+  getEmotions() {
+    return this.goalToken.emotions;
+  }
+
+  setMotive(self, params) {
+    if (!params.hasOwnProperty('name') || !params.hasOwnProperty('value')) {
+      console.error('Error: no valid motive object');
+      return;
+    }
+    if (!this.goalToken.motives.hasOwnProperty(params.name)) {
+      console.error(`Error: ${params.name} is not a valid motive`);
+      return;
+    }
+    const maxMotive = self.getMaxMotive();
+    const val =
+      params.value > maxMotive
+        ? maxMotive
+        : params.value < 0
+          ? 0
+          : params.value;
+    this.goalToken.motives[params.name] = val;
+  }
+
+  getMotives() {
+    return this.goalToken.motives;
+  }
+
+  setMotiveIcon(icon) {
+    this.goalToken.motiveIcon = icon;
+  }
+
+  getMotiveIcon() {
+    return this.goalToken.motiveIcon;
+  }
+
+  setAdjective(adjective) {
+    this.worldToken.adjective = adjective;
+  }
+
+  getAdjective() {
+    return this.worldToken.adjective;
   }
 
   calculatePersonalityModifier(self, personalityType, positive = true) {

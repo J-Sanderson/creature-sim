@@ -10,6 +10,7 @@ import {
 export default class GoalKnockItemFromToybox extends Goal {
   constructor(params) {
     super(params);
+    this.name = goalList.knockItemFromToybox;
     this.type = goalTypeList.narrative;
   }
   filter(self, nonReactive = false) {

@@ -23,8 +23,7 @@ export default class StateDrink extends State {
     if (item) {
       const amount = item.getMotive(motiveList.amount);
       if (amount > 0) {
-        const goal =
-          self.goalManager.getGoals()[self.goalManager.getCurrentGoalName()];
+        const goal = self.goalManager.getCurrentGoal();
         if (!goal) {
           console.error(`Error: no valid goal found for ${this.name}`);
           return;

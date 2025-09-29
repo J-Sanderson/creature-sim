@@ -10,7 +10,7 @@ export default class StateMoveRandomly extends State {
   }
 
   execute(self) {
-    const goal = self.goalManager.getGoals()[self.goalManager.getCurrentGoalName()];
+    const goal = self.goalManager.getCurrentGoal();
     if (goal) {
       const pos = goal.getDirection();
       self.showMotive('');

@@ -15,7 +15,7 @@ export default class PlanCuddleToy extends Plan {
       return;
     }
 
-    const goal = self.goalManager.getGoals()[self.goalManager.getCurrentGoalName()];
+    const goal = self.goalManager.getCurrentGoal();
     if (!goal) {
       console.error(`Error: no valid goal found for ${this.name}`);
       return;

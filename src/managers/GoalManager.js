@@ -206,5 +206,7 @@ export class GoalManager {
     return this.currentGoalName;
   }
 
-  // todo add getCurrentGoal to return goal object
+  getCurrentGoal () {
+    return this.goals[this.currentGoalName];
+  }
 }

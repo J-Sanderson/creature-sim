@@ -20,8 +20,7 @@ export default class PlanMoveFromItem extends Plan {
       const position = self.getPosition();
       const newX = position.x + dx;
       const newY = position.y + dy;
-      const goal =
-        self.goalManager.getGoals()[self.goalManager.getCurrentGoalName()];
+      const goal = self.goalManager.getCurrentGoal();
       if (goal) {
         goal.setDirection(newX, newY);
       }

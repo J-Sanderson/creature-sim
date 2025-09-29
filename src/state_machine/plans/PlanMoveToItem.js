@@ -10,6 +10,8 @@ export default class PlanMoveToItem extends Plan {
 
   execute(self, id) {
     // todo: the item should be taken from the target object on the worldToken
+    const goal = self.goalManager.getCurrentGoal();
+    console.log(goal);
     const goalName = self.goalManager.getCurrentGoalName();
     if (!goalName) {
       console.error(`Error: no valid goal name found for ${this.name}`);

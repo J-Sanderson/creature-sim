@@ -6,7 +6,7 @@ The Creature object has different motives that can be satisfied by moving toward
 
 Note that due to the use of emojis for graphics, the creature's preferred colour may or may not actually match up to the colour of the item that you see, depending on your system.
 
-[Demo](https://sand-sheer-mastodon.glitch.me/) (may not be fully up to date)
+[Demo](https://codepen.io/jsanderson/full/dyLeyEQ) (may not be fully up to date)
 
 References:
 

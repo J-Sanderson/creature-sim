@@ -74,8 +74,9 @@ export default class GoalEat extends Goal {
     let target = goals[goalList.eat].getTarget();
     this.setMotiveIcon(motiveIconList.hunger);
     if (!target) {
+      this.setAdjective(adjectiveList.tasty);
       self.setPlan(planList.seekItem);
-      self.getPlan().execute(self, adjectiveList.tasty, goalList.eat);
+      self.getPlan().execute(self);
     } else {
       if (self.queries.amIOnItem(self, target)) {
         self.setPlan(planList.eat);

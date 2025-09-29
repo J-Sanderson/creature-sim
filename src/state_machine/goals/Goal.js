@@ -14,6 +14,7 @@ export default class Goal {
     },
     worldToken: {
       target: null,
+      adjective: null,
       direction: {
         x: 0,
         y: 0,
@@ -171,6 +172,14 @@ export default class Goal {
 
   getMotiveIcon() {
     return this.goalToken.motiveIcon;
+  }
+
+  setAdjective(adjective) {
+    this.worldToken.adjective = adjective;
+  }
+
+  getAdjective() {
+    return this.worldToken.adjective;
   }
 
   calculatePersonalityModifier(self, personalityType, positive = true) {

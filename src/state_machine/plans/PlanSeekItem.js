@@ -15,7 +15,14 @@ export default class PlanSeekItem extends Plan {
     this.name = planList.seekItem;
   }
 
-  execute(self, adj, goal) {
+  execute(self, adj) {
+    // todo store adjective on goal token
+    const goal = self.goalManager.getCurrentGoal();
+    if (!goal) {
+      console.error(`Error: no valid goal name found for ${this.name}`);
+      return;
+    }
+
     let interestingItems = self.queries.getItemsByAdjective(self, adj);
     const position = self.getPosition();
 

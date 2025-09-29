@@ -4,7 +4,7 @@ import { goalList, adjectiveList } from '../defaults';
 export class GoalManager {
   constructor() {
     this.goals = {};
-    this.currentGoal = '';
+    this.currentGoal = ''; //todo rename currentGoalName
   }
 
   update(self) {
@@ -202,6 +202,7 @@ export class GoalManager {
     return this.goals;
   }
 
+  // todo rename to getCurrentGoalName and add another getter for the actual goal object
   getCurrentGoal() {
     return this.currentGoal;
   }

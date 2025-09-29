@@ -206,7 +206,7 @@ export class GoalManager {
     return this.currentGoalName;
   }
 
-  getCurrentGoal () {
+  getCurrentGoal() {
     return this.goals[this.currentGoalName];
   }
 }

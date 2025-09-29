@@ -22,7 +22,7 @@ export default class PlanSeekItem extends Plan {
       return;
     }
 
-    const adj = goal.getAdjective()
+    const adj = goal.getAdjective();
     let interestingItems = self.queries.getItemsByAdjective(self, adj);
     const position = self.getPosition();
 

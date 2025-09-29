@@ -24,7 +24,7 @@ export default class GoalSnubItem extends Goal {
       }
     } else {
       self.setPlan(planList.moveToItem);
-      self.getPlan().execute(self, target, goalList.snubItem);
+      self.getPlan().execute(self);
     }
   }
 }

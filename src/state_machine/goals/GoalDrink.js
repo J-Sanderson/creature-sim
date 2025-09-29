@@ -75,7 +75,7 @@ export default class GoalDrink extends Goal {
         self.getPlan().execute(self);
       } else {
         self.setPlan(planList.moveToItem);
-        self.getPlan().execute(self, target, goalList.drink);
+        self.getPlan().execute(self);
       }
     }
   }

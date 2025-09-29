@@ -143,7 +143,7 @@ export default class GoalCuddleToy extends Goal {
         self.getPlan().execute(self);
       } else {
         self.setPlan(planList.moveToItem);
-        self.getPlan().execute(self, target, goalList.cuddleToy);
+        self.getPlan().execute(self);
       }
     }
   }

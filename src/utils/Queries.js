@@ -51,6 +51,9 @@ export const queries = {
       personalityValueList.finickiness
     );
     const maxMotive = self.getMaxMotive();
+    if(!finickiness || !maxMotive) {
+      return false;
+    }
     const ratio = finickiness / maxMotive;
     return Math.random() <= ratio;
   },

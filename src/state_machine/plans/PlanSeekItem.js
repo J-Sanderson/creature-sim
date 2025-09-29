@@ -15,7 +15,7 @@ export default class PlanSeekItem extends Plan {
     this.name = planList.seekItem;
   }
 
-  execute(self, adj, motive, goal) {
+  execute(self, adj, goal) {
     let interestingItems = self.queries.getItemsByAdjective(self, adj);
     const position = self.getPosition();
 
@@ -128,7 +128,7 @@ export default class PlanSeekItem extends Plan {
           });
 
           self.setState(stateList.seekItem);
-          self.getState().execute(self, motive);
+          self.getState().execute(self);
         } else {
           console.error('No valid movement direction available');
         }

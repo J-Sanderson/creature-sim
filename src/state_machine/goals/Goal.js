@@ -8,6 +8,7 @@ export default class Goal {
       decayThreshold: 1,
       calledBy: null,
       type: goalTypeList.idle,
+      motiveIcon: null,
       motives: {},
       emotions: {},
     },
@@ -158,6 +159,14 @@ export default class Goal {
 
   getMotives() {
     return this.goalToken.motives;
+  }
+
+  setMotiveIcon(icon) {
+    this.goalToken.motiveIcon = icon;
+  }
+
+  getMotiveIcon() {
+    return this.goalToken.motiveIcon;
   }
 
   calculatePersonalityModifier(self, personalityType, positive = true) {

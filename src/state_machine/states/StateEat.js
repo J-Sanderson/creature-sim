@@ -15,7 +15,7 @@ export default class StateEat extends State {
     this.suppressMotiveDecay.push(motiveList.fullness);
   }
 
-  execute(self, motives, maxVal) {
+  execute(self) {
     const item = self.queries.getItemFromWorld(
       self,
       self.getGoals()[goalList.eat].getTarget()

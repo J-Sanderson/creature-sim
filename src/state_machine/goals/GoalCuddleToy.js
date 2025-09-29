@@ -131,9 +131,7 @@ export default class GoalCuddleToy extends Goal {
         self.goalManager.deleteGoal(goalList.cuddleToy);
       }
       self.setPlan(planList.seekItem);
-      self
-        .getPlan()
-        .execute(self, adjectiveList.soft, null, goalList.cuddleToy);
+      self.getPlan().execute(self, adjectiveList.soft, goalList.cuddleToy);
     } else {
       if (self.queries.amIOnItem(self, target)) {
         this.decrementTicks();

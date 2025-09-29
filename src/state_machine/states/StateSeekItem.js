@@ -11,7 +11,7 @@ export default class StateSeekItem extends State {
     this.suppressEmotionDecay.push(emotionList.angry);
   }
 
-  execute(self, motive) {
+  execute(self) {
     const goal = self.goalManager.getGoals()[self.goalManager.getCurrentGoal()];
     if (!goal) {
       console.error(`Error: no valid goal found for ${this.name}`);
@@ -30,7 +30,8 @@ export default class StateSeekItem extends State {
       return;
     }
 
-    self.showMotive(motive ? motive : '');
+    const motiveIcon = goal.getMotiveIcon();
+    self.showMotive(motiveIcon ? motiveIcon : '');
 
     for (let emotion in emotions) {
       if (emotions[emotion] !== null) {

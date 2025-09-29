@@ -125,7 +125,7 @@ export default class GoalChewToy extends Goal {
         self.goalManager.deleteGoal(goalList.chewToy);
       }
       self.setPlan(planList.seekItem);
-      self.getPlan().execute(self, adjectiveList.chew, null, goalList.chewToy);
+      self.getPlan().execute(self, adjectiveList.chew, goalList.chewToy);
     } else {
       if (self.queries.amIOnItem(self, target)) {
         this.decrementTicks();

@@ -119,9 +119,7 @@ export default class GoalBounceToy extends Goal {
         self.goalManager.deleteGoal(goalList.bounceToy);
       }
       self.setPlan(planList.seekItem);
-      self
-        .getPlan()
-        .execute(self, adjectiveList.bounce, null, goalList.bounceToy);
+      self.getPlan().execute(self, adjectiveList.bounce, goalList.bounceToy);
     } else {
       if (self.queries.amIOnItem(self, target)) {
         this.decrementTicks();

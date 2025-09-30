@@ -2,7 +2,9 @@ import { utilities } from '../../src/utils/Utilities';
 
 test('generateGUID produces dash-separated string', () => {
   const guid = utilities.generateGUID();
-  expect(guid).toMatch(/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i);
+  expect(guid).toMatch(
+    /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i
+  );
 });
 
 describe('rand', () => {
@@ -13,7 +15,7 @@ describe('rand', () => {
     expect(Number.isInteger(result)).toBe(true);
   });
 
-  test ('rand is greater than or equal to 0', () => {
+  test('rand is greater than or equal to 0', () => {
     expect(result).toBeGreaterThanOrEqual(0);
   });
 

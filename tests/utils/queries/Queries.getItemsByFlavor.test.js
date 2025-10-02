@@ -1,6 +1,4 @@
-import {
-  flavorList,
-} from '../../../src/defaults';
+import { flavorList } from '../../../src/defaults';
 import { creatureBuilder } from '../../helpers/creatureBuilder';
 import { worldBuilder } from '../../helpers/worldBuilder';
 import { itemBuilder } from '../../helpers/itemBuilder';

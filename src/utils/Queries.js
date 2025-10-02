@@ -59,6 +59,9 @@ export const queries = {
   },
   getItemsByAdjective(self, adj) {
     const world = worldManager.getWorld(self.getWorld());
+    if (!world) {
+      return [];
+    }
     const items = world.getItems();
 
     let interestingItems = [];

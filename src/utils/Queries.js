@@ -59,10 +59,10 @@ export const queries = {
   },
   getItemsByAdjective(self, adj) {
     const world = worldManager.getWorld(self.getWorld());
-    const entities = world.getEntities();
+    const items = world.getItems();
 
     let interestingItems = [];
-    entities.items.forEach((item) => {
+    items.forEach((item) => {
       if (item.getAdjectives().includes(adj)) {
         interestingItems.push(item);
       }
@@ -71,10 +71,14 @@ export const queries = {
   },
   getItemsByFlavor(self, flavor) {
     const world = worldManager.getWorld(self.getWorld());
-    const entities = world.getEntities();
+    if (!world) {
+      return [];
+    }
+
+    const items = world.getItems();
 
     let interestingItems = [];
-    entities.items.forEach((item) => {
+    items.forEach((item) => {
       if (item.getFlavors().includes(flavor)) {
         interestingItems.push(item);
       }

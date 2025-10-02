@@ -1,7 +1,20 @@
-import { motiveList, personalityValueList } from '../../src/defaults';
+import {
+  motiveList,
+  personalityValueList,
+  flavorList,
+} from '../../src/defaults';
 import { selfBuilder } from '../helpers/selfBuilder';
+import { worldBuilder } from '../helpers/worldBuilder';
+import { itemBuilder } from '../helpers/itemBuilder';
 import { directions } from '../helpers/directions';
 import { queries } from '../../src/utils/Queries';
+import worldManager from '../../src/managers/WorldManager';
+
+jest.mock('../../src/managers/WorldManager.js', () => ({
+  __esModule: true,
+  default: { getWorld: jest.fn() },
+}));
+beforeEach(() => jest.clearAllMocks());
 
 describe('amIThirsty', () => {
   test('returns false if threshold is falsy', () => {
@@ -117,7 +130,50 @@ describe('amIFinicky', () => {
 });
 
 describe('getItemsByFlavor', () => {
-    jest.mock('../../src/managers/WorldManager.js', () => ({ __esModule: true, default: {getWorld: jest.fn()} }));
+  test('returns an empty array if no valid world passed', () => {
+    worldManager.getWorld.mockReturnValue(undefined);
+    const id = 'w-missing';
+    const self = selfBuilder({ world: id });
+
+    const items = queries.getItemsByFlavor(self, flavorList.chicken);
+    expect(worldManager.getWorld).toHaveBeenCalledWith(id);
+    expect(items).toEqual([]);
+  });
+
+  test('returns array of valid items if flavor present', () => {
+    const id = 'w-1';
+    const chicken = itemBuilder({
+      properties: { flavors: [flavorList.chicken] },
+    });
+    const beef = itemBuilder({ properties: { flavors: [flavorList.beef] } });
+    worldManager.getWorld.mockReturnValue(
+      worldBuilder({
+        entities: { items: [chicken, beef] },
+      })
+    );
+    const self = selfBuilder({ world: id });
+
+    const items = queries.getItemsByFlavor(self, flavorList.chicken);
+    expect(worldManager.getWorld).toHaveBeenCalledWith(id);
+    expect(items).toHaveLength(1);
+    expect(items[0].getFlavors()).toContain(flavorList.chicken);
+  });
+
+  test('returns empty array if flavour not present', () => {
+    const id = 'w-1';
+    const beef = itemBuilder({ properties: { flavors: [flavorList.beef] } });
+    const fish = itemBuilder({ properties: { flavors: [flavorList.fish] } });
+    worldManager.getWorld.mockReturnValue(
+      worldBuilder({
+        entities: { items: [beef, fish] },
+      })
+    );
+    const self = selfBuilder({ world: id });
+
+    const items = queries.getItemsByFlavor(self, flavorList.chicken);
+    expect(worldManager.getWorld).toHaveBeenCalledWith(id);
+    expect(items).toEqual([]);
+  });
 });
 
 describe('getValidDirections', () => {

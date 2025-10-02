@@ -5,6 +5,7 @@ export function selfBuilder({
   maxMotive = 100,
   position = { x: 0, y: 0 },
   bounds = { x: 15, y: 15 },
+  world = 'w-1',
 } = {}) {
   return {
     getDesireThreshold: (m) => thresholdByMotive[m],
@@ -13,5 +14,6 @@ export function selfBuilder({
     getMaxMotive: () => maxMotive,
     getPosition: () => position,
     getBounds: () => bounds,
+    getWorld: () => world,
   };
 }

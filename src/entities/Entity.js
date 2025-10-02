@@ -50,6 +50,10 @@ export default class Entity {
     world.displayEntity(this.outputs.icon);
   }
 
+  getWorld() {
+    return this.world;
+  }
+
   getGUID() {
     return this.guid;
   }

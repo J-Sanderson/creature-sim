@@ -58,7 +58,7 @@ export const queries = {
     return Math.random() <= ratio;
   },
   getItemsByAdjective(self, adj) {
-    const world = worldManager.getWorld(self.world);
+    const world = worldManager.getWorld(self.getWorld());
     const entities = world.getEntities();
 
     let interestingItems = [];
@@ -70,7 +70,7 @@ export const queries = {
     return interestingItems;
   },
   getItemsByFlavor(self, flavor) {
-    const world = worldManager.getWorld(self.world);
+    const world = worldManager.getWorld(self.getWorld());
     const entities = world.getEntities();
 
     let interestingItems = [];
@@ -82,12 +82,12 @@ export const queries = {
     return interestingItems;
   },
   getItemFromWorld(self, id) {
-    const world = worldManager.getWorld(self.world);
+    const world = worldManager.getWorld(self.getWorld());
     const items = world.getItems();
     return items.get(id);
   },
   getItemIAmOn(self) {
-    const world = worldManager.getWorld(self.world);
+    const world = worldManager.getWorld(self.getWorld());
     const items = world.getItems();
     const pos = self.getPosition();
 

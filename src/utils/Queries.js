@@ -90,6 +90,9 @@ export const queries = {
   },
   getItemFromWorld(self, id) {
     const world = worldManager.getWorld(self.getWorld());
+    if (!world) {
+      return null;
+    }
     const items = world.getItems();
     return items.get(id);
   },

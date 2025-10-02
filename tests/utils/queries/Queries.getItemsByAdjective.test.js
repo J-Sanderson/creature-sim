@@ -25,9 +25,11 @@ describe('getItemsByAdjective', () => {
     test('returns array of valid items if adjective present', () => {
         const id = 'w-1';
         const chew = itemBuilder({
+            id: 'chew-1',
             properties: { adjectives: [adjectiveList.chew] },
         });
         const bounce = itemBuilder({
+            id: 'bounce-1',
             properties: { adjectives: [adjectiveList.bounce] },
         });
         worldManager.getWorld.mockReturnValue(
@@ -46,9 +48,11 @@ describe('getItemsByAdjective', () => {
     test('returns empty array if adjective not present', () => {
         const id = 'w-1';
         const bounce = itemBuilder({
+            id: 'bounce-1',
             properties: { adjectives: [adjectiveList.bounce] },
         });
         const soft = itemBuilder({
+            id: 'soft-1',
             properties: { adjectives: [adjectiveList.soft] },
         });
         worldManager.getWorld.mockReturnValue(

@@ -1,4 +1,4 @@
-export function selfBuilder({
+export function creatureBuilder({
   thresholdByMotive = {},
   motiveByMotive = {},
   personalityByValue = {},

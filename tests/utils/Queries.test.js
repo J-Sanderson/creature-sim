@@ -3,7 +3,7 @@ import {
   personalityValueList,
   flavorList,
 } from '../../src/defaults';
-import { selfBuilder } from '../helpers/selfBuilder';
+import { creatureBuilder } from '../helpers/creatureBuilder';
 import { worldBuilder } from '../helpers/worldBuilder';
 import { itemBuilder } from '../helpers/itemBuilder';
 import { directions } from '../helpers/directions';
@@ -18,12 +18,12 @@ beforeEach(() => jest.clearAllMocks());
 
 describe('amIThirsty', () => {
   test('returns false if threshold is falsy', () => {
-    const self = selfBuilder({});
+    const self = creatureBuilder({});
     expect(queries.amIThirsty(self)).toBe(false);
   });
 
   test('returns true if hydration is below threshold', () => {
-    const self = selfBuilder({
+    const self = creatureBuilder({
       thresholdByMotive: { [motiveList.hydration]: 50 },
       motiveByMotive: { [motiveList.hydration]: 49 },
     });
@@ -31,7 +31,7 @@ describe('amIThirsty', () => {
   });
 
   test('returns false if hydration is equal to threshold', () => {
-    const self = selfBuilder({
+    const self = creatureBuilder({
       thresholdByMotive: { [motiveList.hydration]: 50 },
       motiveByMotive: { [motiveList.hydration]: 50 },
     });
@@ -39,7 +39,7 @@ describe('amIThirsty', () => {
   });
 
   test('returns false if hydration is greater than threshold', () => {
-    const self = selfBuilder({
+    const self = creatureBuilder({
       thresholdByMotive: { [motiveList.hydration]: 50 },
       motiveByMotive: { [motiveList.hydration]: 51 },
     });
@@ -49,7 +49,7 @@ describe('amIThirsty', () => {
 
 describe('amITired', () => {
   test('returns false if threshold is falsy', () => {
-    const self = selfBuilder({
+    const self = creatureBuilder({
       thresholdByMotive: {},
       motiveByMotive: {},
     });
@@ -57,7 +57,7 @@ describe('amITired', () => {
   });
 
   test('returns true if energy is below threshold', () => {
-    const self = selfBuilder({
+    const self = creatureBuilder({
       thresholdByMotive: { [motiveList.energy]: 50 },
       motiveByMotive: { [motiveList.energy]: 49 },
     });
@@ -65,7 +65,7 @@ describe('amITired', () => {
   });
 
   test('returns false if energy is equal to threshold', () => {
-    const self = selfBuilder({
+    const self = creatureBuilder({
       thresholdByMotive: { [motiveList.energy]: 50 },
       motiveByMotive: { [motiveList.energy]: 50 },
     });
@@ -73,7 +73,7 @@ describe('amITired', () => {
   });
 
   test('returns false if energy is greater than threshold', () => {
-    const self = selfBuilder({
+    const self = creatureBuilder({
       thresholdByMotive: { [motiveList.energy]: 50 },
       motiveByMotive: { [motiveList.energy]: 51 },
     });
@@ -83,12 +83,12 @@ describe('amITired', () => {
 
 describe('amIFinicky', () => {
   test('returns false if finickiness is falsy', () => {
-    const self = selfBuilder({});
+    const self = creatureBuilder({});
     expect(queries.amIFinicky(self)).toBe(false);
   });
 
   test('returns false if maxMotive is falsy', () => {
-    const self = selfBuilder({
+    const self = creatureBuilder({
       personalityByValue: { [personalityValueList.finickiness]: 25 },
       maxMotive: 0,
     });
@@ -96,7 +96,7 @@ describe('amIFinicky', () => {
   });
 
   test('returns false if random roll is greater than ratio', () => {
-    const self = selfBuilder({
+    const self = creatureBuilder({
       personalityByValue: { [personalityValueList.finickiness]: 25 },
       maxMotive: 100,
     });
@@ -107,7 +107,7 @@ describe('amIFinicky', () => {
   });
 
   test('returns true if random roll is equal to ratio', () => {
-    const self = selfBuilder({
+    const self = creatureBuilder({
       personalityByValue: { [personalityValueList.finickiness]: 25 },
       maxMotive: 100,
     });
@@ -118,7 +118,7 @@ describe('amIFinicky', () => {
   });
 
   test('returns true if random roll is less than ratio', () => {
-    const self = selfBuilder({
+    const self = creatureBuilder({
       personalityByValue: { [personalityValueList.finickiness]: 25 },
       maxMotive: 100,
     });
@@ -133,7 +133,7 @@ describe('getItemsByFlavor', () => {
   test('returns an empty array if no valid world passed', () => {
     worldManager.getWorld.mockReturnValue(undefined);
     const id = 'w-missing';
-    const self = selfBuilder({ world: id });
+    const self = creatureBuilder({ world: id });
 
     const items = queries.getItemsByFlavor(self, flavorList.chicken);
     expect(worldManager.getWorld).toHaveBeenCalledWith(id);
@@ -151,7 +151,7 @@ describe('getItemsByFlavor', () => {
         entities: { items: [chicken, beef] },
       })
     );
-    const self = selfBuilder({ world: id });
+    const self = creatureBuilder({ world: id });
 
     const items = queries.getItemsByFlavor(self, flavorList.chicken);
     expect(worldManager.getWorld).toHaveBeenCalledWith(id);
@@ -168,7 +168,7 @@ describe('getItemsByFlavor', () => {
         entities: { items: [beef, fish] },
       })
     );
-    const self = selfBuilder({ world: id });
+    const self = creatureBuilder({ world: id });
 
     const items = queries.getItemsByFlavor(self, flavorList.chicken);
     expect(worldManager.getWorld).toHaveBeenCalledWith(id);
@@ -178,7 +178,7 @@ describe('getItemsByFlavor', () => {
 
 describe('getValidDirections', () => {
   test('returns all eight directions if not on an edge square', () => {
-    const self = selfBuilder({
+    const self = creatureBuilder({
       position: { x: 5, y: 5 },
     });
 
@@ -190,7 +190,7 @@ describe('getValidDirections', () => {
   });
 
   test('returns E, SE, S from top left', () => {
-    const self = selfBuilder({});
+    const self = creatureBuilder({});
 
     const dirs = queries.getValidDirections(self);
     expect(dirs).toHaveLength(3);
@@ -209,7 +209,7 @@ describe('getValidDirections', () => {
   });
 
   test('returns W, SW, S from top right', () => {
-    const self = selfBuilder({
+    const self = creatureBuilder({
       position: { x: 14, y: 0 },
     });
 
@@ -230,7 +230,7 @@ describe('getValidDirections', () => {
   });
 
   test('returns N, NW, W from bottom right', () => {
-    const self = selfBuilder({
+    const self = creatureBuilder({
       position: { x: 14, y: 14 },
     });
 
@@ -251,7 +251,7 @@ describe('getValidDirections', () => {
   });
 
   test('returns N, NE, E from bottom left', () => {
-    const self = selfBuilder({
+    const self = creatureBuilder({
       position: { x: 0, y: 14 },
     });
 
@@ -272,7 +272,7 @@ describe('getValidDirections', () => {
   });
 
   test('returns W, SW, S, SE, E from top edge', () => {
-    const self = selfBuilder({
+    const self = creatureBuilder({
       position: { x: 5, y: 0 },
     });
 
@@ -293,7 +293,7 @@ describe('getValidDirections', () => {
   });
 
   test('returns N, NW, W, SW, S from right edge', () => {
-    const self = selfBuilder({
+    const self = creatureBuilder({
       position: { x: 14, y: 5 },
     });
 
@@ -314,7 +314,7 @@ describe('getValidDirections', () => {
   });
 
   test('returns W, NW, N, NE, E from bottom edge', () => {
-    const self = selfBuilder({
+    const self = creatureBuilder({
       position: { x: 5, y: 14 },
     });
 
@@ -335,7 +335,7 @@ describe('getValidDirections', () => {
   });
 
   test('returns N, NE, E, SE, S from left edge', () => {
-    const self = selfBuilder({
+    const self = creatureBuilder({
       position: { x: 0, y: 5 },
     });
 
@@ -356,7 +356,7 @@ describe('getValidDirections', () => {
   });
 
   test('returns no valid directions if creature fully out of bounds', () => {
-    const self = selfBuilder({
+    const self = creatureBuilder({
       position: { x: 16, y: 16 },
     });
 
@@ -365,7 +365,7 @@ describe('getValidDirections', () => {
   });
 
   test('returns no valid directions on a 1x1 grid', () => {
-    const self = selfBuilder({
+    const self = creatureBuilder({
       bounds: { x: 1, y: 1 },
     });
 
@@ -374,7 +374,7 @@ describe('getValidDirections', () => {
   });
 
   test('every returned direction leads to an in-bounds tile', () => {
-    const self = selfBuilder({
+    const self = creatureBuilder({
       position: { x: 1, y: 1 },
       bounds: { x: 3, y: 2 },
     });

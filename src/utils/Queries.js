@@ -21,7 +21,7 @@ export const queries = {
       self,
       self.getFavorites().flavor
     );
-    let threshold = self.getDesireThreshold(motiveList.energy);
+    let threshold = self.getDesireThreshold(motiveList.fullness);
     if (!threshold) {
       return false;
     }

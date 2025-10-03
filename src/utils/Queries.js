@@ -12,11 +12,9 @@ export const queries = {
       return false;
     }
 
+    const pos = self.getPosition();
     const itemPos = item.getPosition();
-    return (
-      self.status.position.x === itemPos.x &&
-      self.status.position.y === itemPos.y
-    );
+    return pos.x === itemPos.x && pos.y === itemPos.y;
   },
   amIHungry(self) {
     const faves = self.queries.getItemsByFlavor(
@@ -98,14 +96,19 @@ export const queries = {
   },
   getItemIAmOn(self) {
     const world = worldManager.getWorld(self.getWorld());
+    if (!world) {
+      return null;
+    }
     const items = world.getItems();
     const pos = self.getPosition();
 
     let foundItem;
     items.forEach((item) => {
-      const itemPos = item.getPosition();
-      if (pos.x === itemPos.x && pos.y === itemPos.y) {
-        foundItem = item;
+      if (!foundItem) {
+        const itemPos = item.getPosition();
+        if (pos.x === itemPos.x && pos.y === itemPos.y) {
+          foundItem = item;
+        }
       }
     });
     return foundItem;

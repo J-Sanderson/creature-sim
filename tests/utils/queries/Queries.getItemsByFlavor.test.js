@@ -28,7 +28,10 @@ describe('getItemsByFlavor', () => {
       id: 'chicken-1',
       properties: { flavors: [flavorList.chicken] },
     });
-    const beef = itemBuilder({ id: 'beef-1', properties: { flavors: [flavorList.beef] } });
+    const beef = itemBuilder({
+      id: 'beef-1',
+      properties: { flavors: [flavorList.beef] },
+    });
     worldManager.getWorld.mockReturnValue(
       worldBuilder({
         entities: { items: [chicken, beef] },
@@ -44,8 +47,14 @@ describe('getItemsByFlavor', () => {
 
   test('returns empty array if flavour not present', () => {
     const id = 'w-1';
-    const beef = itemBuilder({ id:'beef-1', properties: { flavors: [flavorList.beef] } });
-    const fish = itemBuilder({ id: 'fish-1', properties: { flavors: [flavorList.fish] } });
+    const beef = itemBuilder({
+      id: 'beef-1',
+      properties: { flavors: [flavorList.beef] },
+    });
+    const fish = itemBuilder({
+      id: 'fish-1',
+      properties: { flavors: [flavorList.fish] },
+    });
     worldManager.getWorld.mockReturnValue(
       worldBuilder({
         entities: { items: [beef, fish] },

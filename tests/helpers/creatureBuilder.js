@@ -6,6 +6,7 @@ export function creatureBuilder({
   position = { x: 0, y: 0 },
   bounds = { x: 15, y: 15 },
   world = 'w-1',
+  queries = {},
 } = {}) {
   return {
     getDesireThreshold: (m) => thresholdByMotive[m],
@@ -15,5 +16,6 @@ export function creatureBuilder({
     getPosition: () => position,
     getBounds: () => bounds,
     getWorld: () => world,
+    queries,
   };
 }

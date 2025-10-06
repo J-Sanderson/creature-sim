@@ -441,16 +441,7 @@ export class World {
   }
 
   getItem(id) {
-    let item;
-    for (let [key, val] of this.entities.items.entries()) {
-      if (val.getGUID() === id);
-      item = val;
-    }
-    if (!item) {
-      console.error(`Error: world ${this.guid} has no item ${id}`);
-      return;
-    }
-    return item;
+    return this.entities.items.get(id);
   }
 
   getCreatures() {

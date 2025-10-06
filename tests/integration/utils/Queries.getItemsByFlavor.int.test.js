@@ -13,8 +13,8 @@ import { creatureBuilder } from '../../helpers/creatureBuilder';
 describe('getItemsByFlavor', () => {
   test('integrates WM→World→(item of requested flavor)', () => {
     const world = new World(document.createElement('div'));
-    world.addEntity(Chicken, {xPos: 5, yPos: 5});
-    world.addEntity(Steak, {xPos: 6, yPos: 6});
+    world.addEntity(Chicken, { xPos: 5, yPos: 5 });
+    world.addEntity(Steak, { xPos: 6, yPos: 6 });
 
     const self = creatureBuilder({ world: world.getGUID() });
     const flavor = flavorList.chicken;

@@ -13,8 +13,8 @@ import { creatureBuilder } from '../../helpers/creatureBuilder';
 describe('getItemsByAdjective', () => {
   test('integrates WM→World→(item of requested adjective)', () => {
     const world = new World(document.createElement('div'));
-    world.addEntity(TeddyBear, {xPos: 5, yPos: 5});
-    world.addEntity(Bone, {xPos: 6, yPos: 6});
+    world.addEntity(TeddyBear, { xPos: 5, yPos: 5 });
+    world.addEntity(Bone, { xPos: 6, yPos: 6 });
 
     const self = creatureBuilder({ world: world.getGUID() });
     const adjective = adjectiveList.soft;

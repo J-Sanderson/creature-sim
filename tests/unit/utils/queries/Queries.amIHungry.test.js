@@ -63,10 +63,10 @@ describe('amIHungry', () => {
 
   test('returns true if faves present and fullness is less than to modified threshold', () => {
     const getItemsByFlavor = jest.fn().mockReturnValue([
-        itemBuilder({
-            id: 'chicken-1',
-            properties: { flavors: [flavorList.chicken] },
-        })
+      itemBuilder({
+        id: 'chicken-1',
+        properties: { flavors: [flavorList.chicken] },
+      }),
     ]);
     const self = creatureBuilder({
       thresholdByMotive: { [motiveList.fullness]: 50 }, // modded threshold is 55
@@ -82,10 +82,10 @@ describe('amIHungry', () => {
 
   test('returns false if faves present and fullness is equal to modified threshold', () => {
     const getItemsByFlavor = jest.fn().mockReturnValue([
-        itemBuilder({
-            id: 'chicken-1',
-            properties: { flavors: [flavorList.chicken] },
-        })
+      itemBuilder({
+        id: 'chicken-1',
+        properties: { flavors: [flavorList.chicken] },
+      }),
     ]);
     const self = creatureBuilder({
       thresholdByMotive: { [motiveList.fullness]: 50 }, // modded threshold is 55
@@ -101,10 +101,10 @@ describe('amIHungry', () => {
 
   test('returns false if faves present and fullness is greater than modified threshold', () => {
     const getItemsByFlavor = jest.fn().mockReturnValue([
-        itemBuilder({
-            id: 'chicken-1',
-            properties: { flavors: [flavorList.chicken] },
-        })
+      itemBuilder({
+        id: 'chicken-1',
+        properties: { flavors: [flavorList.chicken] },
+      }),
     ]);
     const self = creatureBuilder({
       thresholdByMotive: { [motiveList.fullness]: 50 }, // modded threshold is 55

@@ -26,7 +26,7 @@ export const queries = {
       return false;
     }
     if (faves.length) {
-      threshold  = Math.round(threshold * 1.1);
+      threshold = Math.round(threshold * 1.1);
     }
     return self.getMotive(motiveList.fullness) < threshold;
   },

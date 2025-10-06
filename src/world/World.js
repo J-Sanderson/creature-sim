@@ -162,27 +162,8 @@ export class World {
       });
       this.deleteEntity(entityId);
     } else {
-      let existingItems = this.getItems();
-      let placed = false;
-      let xPos, yPos;
-
-      while (!placed) {
-        xPos = utilities.rand(this.params.width);
-        yPos = utilities.rand(this.params.height);
-        let spaceFree = true;
-        existingItems.forEach((existingItem) => {
-          let existingPos = existingItem.getPosition();
-          if (existingPos.x === xPos && existingPos.y === yPos) {
-            spaceFree = false;
-          }
-        });
-        placed = spaceFree;
-      }
-
-      let newItem = new item(this.guid, {
-        xPos,
-        yPos,
-      });
+      let position = this.findEmptyPosition();
+      let newItem = new item(this.guid, position);
       entityId = newItem.getGUID();
       this.entities.items.set(entityId, newItem);
       button.classList.add('item-active');
@@ -399,6 +380,25 @@ export class World {
     }
     this.entities[type].get(id).outputs.icon.remove();
     this.entities[type].delete(id);
+  }
+
+  findEmptyPosition(maxAttempts = 10000) {
+    let existingItems = this.getItems();
+    for(let i = 0; i < maxAttempts; i++) {
+      const xPos = utilities.rand(this.params.width);
+      const yPos = utilities.rand(this.params.height);
+      let spaceFree = true;
+      existingItems.forEach((existingItem) => {
+        let existingPos = existingItem.getPosition();
+        if (existingPos.x === xPos && existingPos.y === yPos) {
+          spaceFree = false;
+        }
+      });
+      if (spaceFree) {
+        return {xPos, yPos};
+      }
+    }
+    console.error('Error: no free space found');
   }
 
   getParam(param) {

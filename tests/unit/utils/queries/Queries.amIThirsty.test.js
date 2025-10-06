@@ -1,6 +1,6 @@
-import { motiveList } from '../../../src/defaults';
-import { creatureBuilder } from '../../helpers/creatureBuilder';
-import { queries } from '../../../src/utils/Queries';
+import { motiveList } from '../../../../src/defaults';
+import { creatureBuilder } from '../../../helpers/creatureBuilder';
+import { queries } from '../../../../src/utils/Queries';
 
 describe('amIThirsty', () => {
   test('returns false if threshold is falsy', () => {

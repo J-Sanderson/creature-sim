@@ -1,6 +1,6 @@
-import { creatureBuilder } from '../../helpers/creatureBuilder';
-import { queries } from '../../../src/utils/Queries';
-import { directions } from '../../helpers/directions';
+import { creatureBuilder } from '../../../helpers/creatureBuilder';
+import { queries } from '../../../../src/utils/Queries';
+import { directions } from '../../../helpers/directions';
 
 describe('getValidDirections', () => {
   test('returns all eight directions if not on an edge square', () => {

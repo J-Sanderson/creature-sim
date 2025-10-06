@@ -1,6 +1,6 @@
-import { creatureBuilder } from '../../helpers/creatureBuilder';
-import { queries } from '../../../src/utils/Queries';
-import { itemBuilder } from '../../helpers/itemBuilder';
+import { creatureBuilder } from '../../../helpers/creatureBuilder';
+import { queries } from '../../../../src/utils/Queries';
+import { itemBuilder } from '../../../helpers/itemBuilder';
 
 beforeEach(() => jest.clearAllMocks());
 

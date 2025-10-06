@@ -1,11 +1,11 @@
-import { adjectiveList } from '../../../src/defaults';
-import { creatureBuilder } from '../../helpers/creatureBuilder';
-import { worldBuilder } from '../../helpers/worldBuilder';
-import { itemBuilder } from '../../helpers/itemBuilder';
-import { queries } from '../../../src/utils/Queries';
-import worldManager from '../../../src/managers/WorldManager';
+import { adjectiveList } from '../../../../src/defaults';
+import { creatureBuilder } from '../../../helpers/creatureBuilder';
+import { worldBuilder } from '../../../helpers/worldBuilder';
+import { itemBuilder } from '../../../helpers/itemBuilder';
+import { queries } from '../../../../src/utils/Queries';
+import worldManager from '../../../../src/managers/WorldManager';
 
-jest.mock('../../../src/managers/WorldManager.js', () => ({
+jest.mock('../../../../src/managers/WorldManager.js', () => ({
   __esModule: true,
   default: { getWorld: jest.fn() },
 }));

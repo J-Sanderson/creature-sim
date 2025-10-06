@@ -1,7 +1,7 @@
-import { motiveList, flavorList } from '../../../src/defaults';
-import { creatureBuilder } from '../../helpers/creatureBuilder';
-import { itemBuilder } from '../../helpers/itemBuilder';
-import { queries } from '../../../src/utils/Queries';
+import { motiveList, flavorList } from '../../../../src/defaults';
+import { creatureBuilder } from '../../../helpers/creatureBuilder';
+import { itemBuilder } from '../../../helpers/itemBuilder';
+import { queries } from '../../../../src/utils/Queries';
 
 beforeEach(() => jest.clearAllMocks());
 

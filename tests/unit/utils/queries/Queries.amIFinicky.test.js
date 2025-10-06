@@ -1,6 +1,6 @@
-import { personalityValueList } from '../../../src/defaults';
-import { creatureBuilder } from '../../helpers/creatureBuilder';
-import { queries } from '../../../src/utils/Queries';
+import { personalityValueList } from '../../../../src/defaults';
+import { creatureBuilder } from '../../../helpers/creatureBuilder';
+import { queries } from '../../../../src/utils/Queries';
 
 describe('amIFinicky', () => {
   test('returns false if finickiness is falsy', () => {

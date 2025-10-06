@@ -1,4 +1,4 @@
-import { utilities } from '../../src/utils/Utilities';
+import { utilities } from '../../../src/utils/Utilities';
 
 test('generateGUID produces dash-separated string', () => {
   const guid = utilities.generateGUID();

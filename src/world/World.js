@@ -417,6 +417,10 @@ export class World {
     return this.elements[element];
   }
 
+  getGUID() {
+    return this.guid;
+  }
+
   getEntities() {
     return this.entities;
   }

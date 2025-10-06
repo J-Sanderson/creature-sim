@@ -86,11 +86,14 @@ export class World {
       this.elements.toybox.appendChild(button);
     });
 
-    let creature = new Creature(this.guid, {
-      xPos: utilities.rand(this.params.width),
-      yPos: utilities.rand(this.params.height),
-    });
-    this.entities.creatures.set(creature.getGUID(), creature);
+    this.addEntity(
+      Creature,
+      {
+        xPos: utilities.rand(this.params.width),
+        yPos: utilities.rand(this.params.height),
+      },
+      'creatures'
+    );
 
     if (this.params.showStatus) {
       this.entities.creatures.forEach((creature) => {
@@ -163,16 +166,16 @@ export class World {
       this.deleteEntity(entityId);
     } else {
       let position = this.findEmptyPosition();
-      let newItem = new item(this.guid, position);
-      entityId = newItem.getGUID();
-      this.entities.items.set(entityId, newItem);
-      button.classList.add('item-active');
-      button.dataset.entityId = entityId;
-      if (isUserClick) {
-        const event = new CustomEvent('addItem', { detail: entityId });
-        creatures.forEach((creature) => {
-          creature.getOutputs().icon.dispatchEvent(event);
-        });
+      if (position) {
+        const newItem = this.addEntity(item, position);
+        button.classList.add('item-active');
+        button.dataset.entityId = newItem;
+        if (isUserClick) {
+          const event = new CustomEvent('addItem', { detail: newItem });
+          creatures.forEach((creature) => {
+            creature.getOutputs().icon.dispatchEvent(event);
+          });
+        }
       }
     }
   }
@@ -359,6 +362,13 @@ export class World {
     }
   }
 
+  addEntity(entityClass, position, entityType = 'items') {
+    let newItem = new entityClass(this.getGUID(), position);
+    const entityId = newItem.getGUID();
+    this.entities[entityType].set(entityId, newItem);
+    return entityId;
+  }
+
   displayEntity(icon) {
     this.elements.canvasWrapper.appendChild(icon);
   }
@@ -384,7 +394,7 @@ export class World {
 
   findEmptyPosition(maxAttempts = 10000) {
     let existingItems = this.getItems();
-    for(let i = 0; i < maxAttempts; i++) {
+    for (let i = 0; i < maxAttempts; i++) {
       const xPos = utilities.rand(this.params.width);
       const yPos = utilities.rand(this.params.height);
       let spaceFree = true;
@@ -395,10 +405,11 @@ export class World {
         }
       });
       if (spaceFree) {
-        return {xPos, yPos};
+        return { xPos, yPos };
       }
     }
     console.error('Error: no free space found');
+    return null;
   }
 
   getParam(param) {

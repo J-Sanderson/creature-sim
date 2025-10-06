@@ -156,14 +156,10 @@ export class World {
   }
 
   toggleItem(button, item, isUserClick) {
-    const creatures = this.getCreatures();
     let entityId = button.dataset.entityId;
     if (entityId) {
-      const event = new CustomEvent('deleteItem', { detail: entityId });
-      creatures.forEach((creature) => {
-        creature.getOutputs().icon.dispatchEvent(event);
-      });
       this.deleteEntity(entityId);
+      this.broadcast('deleteItem', { detail: entityId });
     } else {
       let position = this.findEmptyPosition();
       if (position) {
@@ -171,13 +167,17 @@ export class World {
         button.classList.add('item-active');
         button.dataset.entityId = newItem;
         if (isUserClick) {
-          const event = new CustomEvent('addItem', { detail: newItem });
-          creatures.forEach((creature) => {
-            creature.getOutputs().icon.dispatchEvent(event);
-          });
+          this.broadcast('addItem', { detail: newItem });
         }
       }
     }
+  }
+
+  broadcast(eventName, params = {}) {
+    const event = new CustomEvent(eventName, params);
+    this.getCreatures().forEach((creature) => {
+      creature.getOutputs().icon.dispatchEvent(event);
+    });
   }
 
   showCreatureStatus(creature) {

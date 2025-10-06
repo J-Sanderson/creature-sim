@@ -448,6 +448,10 @@ export class World {
     return this.entities.creatures;
   }
 
+  getCreature(id) {
+    return this.entities.creatures.get(id);
+  }
+
   getBounds() {
     return { x: this.params.width, y: this.params.height };
   }

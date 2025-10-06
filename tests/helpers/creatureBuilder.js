@@ -6,6 +6,7 @@ export function creatureBuilder({
   position = { x: 0, y: 0 },
   bounds = { x: 15, y: 15 },
   world = 'w-1',
+  favorites = { flavor: '' },
   queries = {},
 } = {}) {
   return {
@@ -16,6 +17,7 @@ export function creatureBuilder({
     getPosition: () => position,
     getBounds: () => bounds,
     getWorld: () => world,
+    getFavorites: () => favorites,
     queries,
   };
 }

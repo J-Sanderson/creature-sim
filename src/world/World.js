@@ -1,5 +1,6 @@
 import { utilities } from '../utils/Utilities';
 import worldManager from '../managers/WorldManager';
+import { DebugManager } from '../managers/DebugManager';
 import items from '../entities/items';
 import Creature from '../entities/Creature';
 
@@ -15,9 +16,6 @@ export class World {
     showSliders: false,
     showPersonality: false,
   };
-
-  static statusOutputs = ['plan', 'state'];
-  static goalOutputs = ['goals', 'currentGoalName'];
 
   constructor(el, params = {}) {
     if (!(el instanceof HTMLElement)) {
@@ -44,6 +42,8 @@ export class World {
     this.guid = utilities.generateGUID();
     worldManager.addWorld(this.guid, this);
 
+    this.debugManager = new DebugManager();
+
     this.init();
   }
 
@@ -66,11 +66,7 @@ export class World {
     this.elements.toybox = toybox;
 
     if (this.params.showStatus) {
-      let statusWrapper = document.createElement('div');
-      statusWrapper.classList.add('status-wrapper');
-      statusWrapper.innerHTML = '<p>Status</p>';
-      this.elements.root.appendChild(statusWrapper);
-      this.elements.statusWrapper = statusWrapper;
+      this.debugManager.showStatusWrapper(this);
     }
 
     items.forEach((item) => {
@@ -97,21 +93,21 @@ export class World {
 
     if (this.params.showStatus) {
       this.entities.creatures.forEach((creature) => {
-        this.showCreatureStatus(creature);
-        this.updateCreatureStatus(creature);
+        this.debugManager.showCreatureStatus(this, creature);
+        this.debugManager.updateCreatureStatus(creature);
       });
     }
 
     if (this.params.showSliders) {
       this.entities.creatures.forEach((creature) => {
-        this.showCreatureSliders(creature);
-        this.updateCreatureSliders(creature);
+        this.debugManager.showCreatureSliders(this, creature);
+        this.debugManager.updateCreatureSliders(creature);
       });
     }
 
     if (this.params.showPersonality) {
       this.entities.creatures.forEach((creature) => {
-        this.showCreaturePersonality(creature);
+        this.debugManager.showCreaturePersonality(this, creature);
       });
     }
 
@@ -147,11 +143,18 @@ export class World {
     this.entities.creatures.forEach((creature) => {
       creature.update();
       if (this.params.showStatus) {
-        this.updateCreatureStatus(creature);
+        this.debugManager.updateCreatureStatus(creature);
       }
       if (this.params.showSliders) {
-        this.updateCreatureSliders(creature);
+        this.debugManager.updateCreatureSliders(creature);
       }
+    });
+  }
+
+  broadcast(eventName, params = {}) {
+    const event = new CustomEvent(eventName, params);
+    this.getCreatures().forEach((creature) => {
+      creature.getOutputs().icon.dispatchEvent(event);
     });
   }
 
@@ -169,195 +172,6 @@ export class World {
         if (isUserClick) {
           this.broadcast('addItem', { detail: newItem });
         }
-      }
-    }
-  }
-
-  broadcast(eventName, params = {}) {
-    const event = new CustomEvent(eventName, params);
-    this.getCreatures().forEach((creature) => {
-      creature.getOutputs().icon.dispatchEvent(event);
-    });
-  }
-
-  showCreatureStatus(creature) {
-    if (!this.params.showStatus) {
-      return;
-    }
-
-    let status = document.createElement('p');
-    status.classList.add('status');
-    status.innerHTML = `Creature: ${creature.getGUID()}`;
-
-    const motives = creature.getMotives();
-    for (let motive in motives) {
-      let span = document.createElement('span');
-      span.classList.add('status-item');
-      let output = document.createElement('output');
-      span.innerHTML = `${motive}: `;
-      span.appendChild(output);
-      status.appendChild(document.createElement('br'));
-      status.appendChild(span);
-      creature.setOutputEl(motive, output);
-    }
-
-    World.goalOutputs.forEach((item) => {
-      let span = document.createElement('span');
-      span.classList.add('status-item');
-      let output = document.createElement('output');
-      span.innerHTML = `${item}: `;
-      span.appendChild(output);
-      status.appendChild(document.createElement('br'));
-      status.appendChild(span);
-      creature.setOutputEl(item, output);
-    });
-
-    World.statusOutputs.forEach((item) => {
-      let span = document.createElement('span');
-      span.classList.add('status-item');
-      let output = document.createElement('output');
-      span.innerHTML = `${item}: `;
-      span.appendChild(output);
-      status.appendChild(document.createElement('br'));
-      status.appendChild(span);
-      creature.setOutputEl(item, output);
-    });
-
-    this.elements.statusWrapper.appendChild(status);
-  }
-
-  showCreatureSliders(creature) {
-    if (!this.params.showSliders) {
-      return;
-    }
-
-    let motiveSliders = document.createElement('fieldset');
-    motiveSliders.classList.add('sliders');
-
-    const motives = creature.getMotives();
-    for (let motive in motives) {
-      let span = document.createElement('span');
-      span.classList.add('slider-item');
-      let slider = document.createElement('input');
-      slider.setAttribute('type', 'range');
-      slider.setAttribute('min', 0);
-      slider.setAttribute('max', this.params.maxMotive);
-      slider.setAttribute('step', 1);
-      slider.value = motives[motive];
-      span.innerHTML = `${motive}: `;
-      span.appendChild(slider);
-      motiveSliders.appendChild(span);
-      creature.setOutputEl(`slider-${motive}`, slider);
-
-      slider.addEventListener('change', (e) => {
-        creature.setMotive(motive, parseInt(e.target.value));
-      });
-    }
-
-    this.elements.statusWrapper.appendChild(motiveSliders);
-
-    let emotionSliders = document.createElement('fieldset');
-    emotionSliders.classList.add('sliders');
-
-    const emotions = creature.getEmotions();
-    for (let emotion in emotions) {
-      let span = document.createElement('span');
-      span.classList.add('slider-item');
-      let slider = document.createElement('input');
-      slider.setAttribute('type', 'range');
-      slider.setAttribute('min', 0);
-      slider.setAttribute('max', this.params.maxMotive);
-      slider.setAttribute('step', 1);
-      slider.value = emotions[emotion];
-      span.innerHTML = `${emotion}: `;
-      span.appendChild(slider);
-      emotionSliders.appendChild(span);
-      creature.setOutputEl(`slider-${emotion}`, slider);
-
-      slider.addEventListener('change', (e) => {
-        creature.emotionManager.setEmotion(
-          creature,
-          emotion,
-          parseInt(e.target.value)
-        );
-      });
-    }
-
-    this.elements.statusWrapper.appendChild(emotionSliders);
-  }
-
-  showCreaturePersonality(creature) {
-    if (!this.params.showPersonality) {
-      return;
-    }
-
-    let personality = document.createElement('p');
-    const personalityValues = creature.getPersonalityValues();
-    for (let value in personalityValues) {
-      let span = document.createElement('span');
-      span.innerHTML = `${value}: ${personalityValues[value]}`;
-      personality.appendChild(span);
-      personality.appendChild(document.createElement('br'));
-    }
-
-    this.elements.statusWrapper.appendChild(personality);
-
-    let favorites = document.createElement('p');
-    const favoriteValues = creature.getFavorites();
-    for (let value in favoriteValues) {
-      let span = document.createElement('span');
-      span.innerHTML = `${value}: ${favoriteValues[value]}`;
-      favorites.appendChild(span);
-      favorites.appendChild(document.createElement('br'));
-    }
-
-    this.elements.statusWrapper.appendChild(favorites);
-  }
-
-  updateCreatureStatus(creature) {
-    if (!this.params.showStatus) {
-      return;
-    }
-
-    const status = creature.getStatus();
-    for (let motive in status.motives) {
-      if (status.motives.hasOwnProperty(motive)) {
-        creature.setOutput(motive, status.motives[motive]);
-      }
-    }
-
-    const goal = creature.getCurrentGoalName();
-    creature.setOutput('currentGoalName', goal);
-
-    const plan = creature.getPlan();
-    if (plan && plan.name) {
-      creature.setOutput('plan', plan.name);
-    }
-
-    const state = creature.getState();
-    if (state && state.name) {
-      creature.setOutput('state', state.name);
-    }
-
-    const goals = creature.getGoals();
-    creature.setOutput('goals', goals);
-  }
-
-  updateCreatureSliders(creature) {
-    if (!this.params.showSliders) {
-      return;
-    }
-
-    const status = creature.getStatus();
-    for (let motive in status.motives) {
-      if (status.motives.hasOwnProperty(motive)) {
-        creature.setOutput(`slider-${motive}`, status.motives[motive], true);
-      }
-    }
-
-    for (let emotion in status.emotions) {
-      if (status.emotions.hasOwnProperty(emotion)) {
-        creature.setOutput(`slider-${emotion}`, status.emotions[emotion], true);
       }
     }
   }

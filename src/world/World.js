@@ -65,14 +65,11 @@ export class World {
     this.elements.root.appendChild(toybox);
     this.elements.toybox = toybox;
 
-    if (this.params.showStatus) {
-      this.debugManager.showStatusWrapper(this);
-    }
-
     items.forEach((item) => {
       let button = document.createElement('button');
       button.innerHTML = item.icon;
       button.style['font-size'] = `${this.params.cellSize}px`;
+      button.id = `btn-${item.className}`;
       button.dataset.adjectives = item.adjectives;
       button.dataset.flavors = item.flavors ? item.flavors : [];
       button.dataset.colors = item.colors ? item.colors : [];
@@ -92,6 +89,7 @@ export class World {
     );
 
     if (this.params.showStatus) {
+      this.debugManager.showStatusWrapper(this);
       this.entities.creatures.forEach((creature) => {
         this.debugManager.showCreatureStatus(this, creature);
         this.debugManager.updateCreatureStatus(creature);

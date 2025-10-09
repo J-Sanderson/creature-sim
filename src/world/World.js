@@ -197,7 +197,7 @@ export class World {
   deleteEntity(id, type = 'items') {
     let button = this.elements.toybox.querySelector(`[data-entity-id="${id}"]`);
     if (button) {
-      button.dataset.entityId = '';
+      delete button.dataset.entityId;
       button.classList.remove('item-active');
     }
     this.entities[type].get(id).outputs.icon.remove();

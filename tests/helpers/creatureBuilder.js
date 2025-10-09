@@ -18,6 +18,7 @@ export function creatureBuilder({
     getBounds: () => bounds,
     getWorld: () => world,
     getFavorites: () => favorites,
+    update: () => {},
     queries,
   };
 }

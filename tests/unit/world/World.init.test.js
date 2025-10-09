@@ -28,53 +28,53 @@ beforeEach(() => jest.clearAllMocks());
 afterEach(() => jest.restoreAllMocks());
 
 describe('init', () => {
-  describe('canvas setup', () => {     
+  describe('canvas setup', () => {
     test('creates canvas elements and calls drawWorld', () => {
-        jest.spyOn(World.prototype, 'drawWorld').mockImplementation(() => {});
-        jest.spyOn(World.prototype, 'addEntity').mockImplementation(() => {});
-        jest.spyOn(World.prototype, 'tick').mockImplementation(() => {});
-        const el = document.createElement('div');
-        const world = new World(el);
+      jest.spyOn(World.prototype, 'drawWorld').mockImplementation(() => {});
+      jest.spyOn(World.prototype, 'addEntity').mockImplementation(() => {});
+      jest.spyOn(World.prototype, 'tick').mockImplementation(() => {});
+      const el = document.createElement('div');
+      const world = new World(el);
 
-        expect(world.elements.canvasWrapper).toBeInstanceOf(HTMLDivElement);
-        expect(world.elements.canvas).toBeInstanceOf(HTMLCanvasElement);
+      expect(world.elements.canvasWrapper).toBeInstanceOf(HTMLDivElement);
+      expect(world.elements.canvas).toBeInstanceOf(HTMLCanvasElement);
 
-        expect(Array.from(world.elements.canvasWrapper.classList)).toContain(
+      expect(Array.from(world.elements.canvasWrapper.classList)).toContain(
         'world-wrapper'
-        );
-        expect(Array.from(world.elements.canvas.classList)).toContain(
+      );
+      expect(Array.from(world.elements.canvas.classList)).toContain(
         'world-canvas'
-        );
+      );
 
-        expect(world.elements.canvasWrapper.parentElement).toBe(
+      expect(world.elements.canvasWrapper.parentElement).toBe(
         world.elements.root
-        );
-        expect(world.elements.canvas.parentElement).toBe(
+      );
+      expect(world.elements.canvas.parentElement).toBe(
         world.elements.canvasWrapper
-        );
+      );
     });
 
     test('sets world.ctx to canvas context', () => {
-        jest.spyOn(World.prototype, 'drawWorld').mockImplementation(() => {});
-        jest.spyOn(World.prototype, 'addEntity').mockImplementation(() => {});
-        jest.spyOn(World.prototype, 'tick').mockImplementation(() => {});
-        const el = document.createElement('div');
-        const world = new World(el);
+      jest.spyOn(World.prototype, 'drawWorld').mockImplementation(() => {});
+      jest.spyOn(World.prototype, 'addEntity').mockImplementation(() => {});
+      jest.spyOn(World.prototype, 'tick').mockImplementation(() => {});
+      const el = document.createElement('div');
+      const world = new World(el);
 
-        expect(world.ctx).toBeInstanceOf(CanvasRenderingContext2D);
+      expect(world.ctx).toBeInstanceOf(CanvasRenderingContext2D);
     });
 
     test('calls drawWorld after ctx set', () => {
-        const drawWorld = jest
+      const drawWorld = jest
         .spyOn(World.prototype, 'drawWorld')
         .mockImplementation(() => {});
-        jest.spyOn(World.prototype, 'addEntity').mockImplementation(() => {});
-        jest.spyOn(World.prototype, 'tick').mockImplementation(() => {});
-        const el = document.createElement('div');
-        const world = new World(el);
+      jest.spyOn(World.prototype, 'addEntity').mockImplementation(() => {});
+      jest.spyOn(World.prototype, 'tick').mockImplementation(() => {});
+      const el = document.createElement('div');
+      const world = new World(el);
 
-        expect(world.ctx).toBeDefined();
-        expect(drawWorld).toHaveBeenCalledTimes(1);
+      expect(world.ctx).toBeDefined();
+      expect(drawWorld).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -111,7 +111,9 @@ describe('init', () => {
         expect(button.style['font-size']).toBe(`${world.params.cellSize}px`);
         ['adjectives', 'flavors', 'colors'].forEach((attribute) => {
           if (item[attribute]) {
-            expect(button.dataset[attribute].split(',')).toEqual(item[attribute]);
+            expect(button.dataset[attribute].split(',')).toEqual(
+              item[attribute]
+            );
           } else {
             expect(button.dataset[attribute]).toBe('');
           }
@@ -214,7 +216,9 @@ describe('init', () => {
         );
         world.debugManager.showCreatureStatus.mockClear();
 
-        expect(world.debugManager.updateCreatureStatus).toHaveBeenCalledTimes(1);
+        expect(world.debugManager.updateCreatureStatus).toHaveBeenCalledTimes(
+          1
+        );
         expect(world.debugManager.updateCreatureStatus).toHaveBeenCalledWith(
           creature
         );
@@ -245,7 +249,9 @@ describe('init', () => {
         );
         world.debugManager.showCreatureSliders.mockClear();
 
-        expect(world.debugManager.updateCreatureSliders).toHaveBeenCalledTimes(1);
+        expect(world.debugManager.updateCreatureSliders).toHaveBeenCalledTimes(
+          1
+        );
         expect(world.debugManager.updateCreatureSliders).toHaveBeenCalledWith(
           creature
         );
@@ -270,9 +276,9 @@ describe('init', () => {
       const world = new World(el, { showPersonality: true });
 
       world.entities.creatures.forEach((creature) => {
-        expect(world.debugManager.showCreaturePersonality).toHaveBeenCalledTimes(
-          1
-        );
+        expect(
+          world.debugManager.showCreaturePersonality
+        ).toHaveBeenCalledTimes(1);
         expect(world.debugManager.showCreaturePersonality).toHaveBeenCalledWith(
           world,
           creature
@@ -301,7 +307,7 @@ describe('init', () => {
 
       const el = document.createElement('div');
       const speed = 100;
-      const world = new World(el, {speed});
+      const world = new World(el, { speed });
 
       expect(setInterval).toHaveBeenCalledTimes(1);
       expect(setInterval).toHaveBeenCalledWith(expect.any(Function), speed);
@@ -309,20 +315,22 @@ describe('init', () => {
     });
 
     test('calls tick function by timer', () => {
-      jest.useFakeTimers(); 
+      jest.useFakeTimers();
       jest.spyOn(World.prototype, 'drawWorld').mockImplementation(() => {});
       jest.spyOn(World.prototype, 'addEntity').mockImplementation(() => {});
-      const tick = jest.spyOn(World.prototype, 'tick').mockImplementation(() => {});
+      const tick = jest
+        .spyOn(World.prototype, 'tick')
+        .mockImplementation(() => {});
       const el = document.createElement('div');
       const speed = 100;
-      const world = new World(el, {speed});
+      const world = new World(el, { speed });
 
       expect(world.motion).toBeDefined();
       expect(tick).not.toHaveBeenCalled();
 
       for (let i = 1; i <= 3; i++) {
-          jest.advanceTimersByTime(speed);
-          expect(tick).toHaveBeenCalledTimes(i);
+        jest.advanceTimersByTime(speed);
+        expect(tick).toHaveBeenCalledTimes(i);
       }
     });
   });

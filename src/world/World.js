@@ -121,8 +121,8 @@ export class World {
     );
     this.elements.canvas.width = this.params.width * this.params.cellSize;
     this.elements.canvas.height = this.params.height * this.params.cellSize;
-    for (var i = 0; i < this.params.height; i++) {
-      for (var j = 0; j < this.params.width; j++) {
+    for (let i = 0; i < this.params.height; i++) {
+      for (let j = 0; j < this.params.width; j++) {
         this.ctx.beginPath();
         this.ctx.strokeStyle = '#000';
         this.ctx.lineWidth = this.params.lineWidth;

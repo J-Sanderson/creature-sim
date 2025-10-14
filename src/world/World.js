@@ -186,6 +186,13 @@ export class World {
   }
 
   displayEntity(icon) {
+    if (
+      !(icon instanceof HTMLDivElement) ||
+      !icon.classList.contains('entity')
+    ) {
+      console.error('Error: invalid icon element');
+      return;
+    }
     this.elements.canvasWrapper.appendChild(icon);
   }
 

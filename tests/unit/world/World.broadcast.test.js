@@ -25,8 +25,9 @@ describe('broadcast', () => {
   test('dispatches event to all creatures', () => {
     const creature1 = dispatchableCreature();
     const creature2 = dispatchableCreature();
-    // todo make this a map
-    const creatures = [creature1, creature2];
+    const creatures = new Map();
+    creatures.set('c-1', creature1);
+    creatures.set('c-2', creature2);
     jest.spyOn(World.prototype, 'getCreatures').mockReturnValue(creatures);
 
     const eventName = 'event-1';
@@ -43,8 +44,8 @@ describe('broadcast', () => {
       expect(ev.detail).toBe(eventDetail.detail);
     });
 
-    expect(creatures[0].dispatchSpy.mock.calls[0][0]).not.toBe(
-      creatures[1].dispatchSpy.mock.calls[0][0]
+    expect(creatures.get('c-1').dispatchSpy.mock.calls[0][0]).not.toBe(
+      creatures.get('c-2').dispatchSpy.mock.calls[0][0]
     );
   });
 });

@@ -25,6 +25,7 @@ describe('broadcast', () => {
   test('dispatches event to all creatures', () => {
     const creature1 = dispatchableCreature();
     const creature2 = dispatchableCreature();
+    // todo make this a map
     const creatures = [creature1, creature2];
     jest.spyOn(World.prototype, 'getCreatures').mockReturnValue(creatures);
 

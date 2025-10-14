@@ -190,6 +190,13 @@ export class World {
   }
 
   moveEntity(icon, position) {
+    if (
+      !(icon instanceof HTMLDivElement) ||
+      !icon.classList.contains('entity')
+    ) {
+      console.error('Error: invalid icon element');
+      return;
+    }
     icon.style.left = `${
       position.x * this.params.cellSize + this.params.lineWidth
     }px`;

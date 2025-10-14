@@ -175,6 +175,10 @@ export class World {
   }
 
   addEntity(entityClass, position, entityType = 'items') {
+    if (!this.entities.hasOwnProperty(entityType)) {
+      console.error('Error: invalid entity type');
+      return;
+    }
     let newItem = new entityClass(this.getGUID(), position);
     const entityId = newItem.getGUID();
     this.entities[entityType].set(entityId, newItem);

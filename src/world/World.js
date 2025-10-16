@@ -212,14 +212,23 @@ export class World {
     }px`;
   }
 
-  deleteEntity(id, type = 'items') {
+  deleteEntity(id, entityType = 'items') {
+    if (!this.entities.hasOwnProperty(entityType)) {
+      console.error('Error: invalid entity type');
+      return;
+    }
+    const entity = this.entities[entityType].get(id);
+    if (!entity) {
+      console.error(`Error: no entity found for id ${id} in type ${entityType}`);
+      return;
+    }
     let button = this.elements.toybox.querySelector(`[data-entity-id="${id}"]`);
     if (button) {
       delete button.dataset.entityId;
       button.classList.remove('item-active');
     }
-    this.entities[type].get(id).outputs.icon.remove();
-    this.entities[type].delete(id);
+    entity.outputs.icon.remove();
+    this.entities[entityType].delete(id);
   }
 
   findEmptyPosition(maxAttempts = 10000) {

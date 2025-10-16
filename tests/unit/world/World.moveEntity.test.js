@@ -3,6 +3,7 @@
  */
 import 'jest-canvas-mock';
 import { World } from '../../../src/world/World';
+
 beforeEach(() => {
   jest.clearAllMocks();
   jest.spyOn(World.prototype, 'init').mockImplementation(function () {});

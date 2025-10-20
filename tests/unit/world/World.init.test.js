@@ -200,7 +200,10 @@ describe('init', () => {
 
     test('calls debug manager status functions where specified', () => {
       jest.spyOn(World.prototype, 'drawWorld').mockImplementation(() => {});
-      jest.spyOn(World.prototype, 'addEntity').mockImplementation(() => {});
+      jest.spyOn(World.prototype, 'addEntity').mockImplementation(function() {
+          this.entities.creatures.set('c-1', {id: 'c-1'});
+          this.entities.creatures.set('c-2', {id: 'c-2'});
+      });
       jest.spyOn(World.prototype, 'tick').mockImplementation(() => {});
       const el = document.createElement('div');
       const world = new World(el, { showStatus: true });
@@ -209,21 +212,18 @@ describe('init', () => {
       expect(world.debugManager.showStatusWrapper).toHaveBeenCalledWith(world);
 
       world.entities.creatures.forEach((creature) => {
-        expect(world.debugManager.showCreatureStatus).toHaveBeenCalledTimes(1);
         expect(world.debugManager.showCreatureStatus).toHaveBeenCalledWith(
           world,
           creature
         );
-        world.debugManager.showCreatureStatus.mockClear();
-
-        expect(world.debugManager.updateCreatureStatus).toHaveBeenCalledTimes(
-          1
-        );
         expect(world.debugManager.updateCreatureStatus).toHaveBeenCalledWith(
           creature
         );
-        world.debugManager.updateCreatureStatus.mockClear();
       });
+
+      const numCreatures = world.entities.creatures.size;
+      expect(world.debugManager.showCreatureStatus).toHaveBeenCalledTimes(numCreatures);
+      expect(world.debugManager.updateCreatureStatus).toHaveBeenCalledTimes(numCreatures);
 
       [
         'showCreatureSliders',
@@ -236,27 +236,27 @@ describe('init', () => {
 
     test('calls debug manager slider functions where specified', () => {
       jest.spyOn(World.prototype, 'drawWorld').mockImplementation(() => {});
-      jest.spyOn(World.prototype, 'addEntity').mockImplementation(() => {});
+      jest.spyOn(World.prototype, 'addEntity').mockImplementation(function() {
+          this.entities.creatures.set('c-1', {id: 'c-1'});
+          this.entities.creatures.set('c-2', {id: 'c-2'});
+      });
       jest.spyOn(World.prototype, 'tick').mockImplementation(() => {});
       const el = document.createElement('div');
       const world = new World(el, { showSliders: true });
 
       world.entities.creatures.forEach((creature) => {
-        expect(world.debugManager.showCreatureSliders).toHaveBeenCalledTimes(1);
         expect(world.debugManager.showCreatureSliders).toHaveBeenCalledWith(
           world,
           creature
         );
-        world.debugManager.showCreatureSliders.mockClear();
-
-        expect(world.debugManager.updateCreatureSliders).toHaveBeenCalledTimes(
-          1
-        );
         expect(world.debugManager.updateCreatureSliders).toHaveBeenCalledWith(
           creature
         );
-        world.debugManager.updateCreatureSliders.mockClear();
       });
+
+      const numCreatures = world.entities.creatures.size;
+      expect(world.debugManager.showCreatureSliders).toHaveBeenCalledTimes(numCreatures);
+      expect(world.debugManager.updateCreatureSliders).toHaveBeenCalledTimes(numCreatures);
 
       [
         'showStatusWrapper',
@@ -270,21 +270,23 @@ describe('init', () => {
 
     test('calls debug manager personality functions where specified', () => {
       jest.spyOn(World.prototype, 'drawWorld').mockImplementation(() => {});
-      jest.spyOn(World.prototype, 'addEntity').mockImplementation(() => {});
+      jest.spyOn(World.prototype, 'addEntity').mockImplementation(function() {
+          this.entities.creatures.set('c-1', {id: 'c-1'});
+          this.entities.creatures.set('c-2', {id: 'c-2'});
+      });
       jest.spyOn(World.prototype, 'tick').mockImplementation(() => {});
       const el = document.createElement('div');
       const world = new World(el, { showPersonality: true });
 
       world.entities.creatures.forEach((creature) => {
-        expect(
-          world.debugManager.showCreaturePersonality
-        ).toHaveBeenCalledTimes(1);
         expect(world.debugManager.showCreaturePersonality).toHaveBeenCalledWith(
           world,
           creature
         );
-        world.debugManager.showCreaturePersonality.mockClear();
       });
+
+      const numCreatures = world.entities.creatures.size;
+      expect(world.debugManager.showCreaturePersonality).toHaveBeenCalledTimes(numCreatures);
 
       [
         'showStatusWrapper',

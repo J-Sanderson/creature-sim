@@ -7,7 +7,7 @@ import { World } from '../../../src/world/World';
 function entityWithIcon() {
   let icon = document.createElement('div');
   icon.classList.add('entity');
-  return {outputs: {icon}};
+  return { outputs: { icon } };
 }
 
 beforeEach(() => {
@@ -41,14 +41,16 @@ describe('deleteEntity', () => {
     const id = 'item-3';
     const el = document.createElement('div');
     const world = new World(el);
-    items.forEach(item => {
-        world.entities.items.set(item, entityWithIcon());
+    items.forEach((item) => {
+      world.entities.items.set(item, entityWithIcon());
     });
 
     world.deleteEntity(id);
 
     expect(error).toHaveBeenCalledTimes(1);
-    expect(error).toHaveBeenCalledWith(`Error: no entity found for id ${id} in type items`);
+    expect(error).toHaveBeenCalledWith(
+      `Error: no entity found for id ${id} in type items`
+    );
   });
 
   test('displays error if entity does not exist in given type', () => {
@@ -58,14 +60,16 @@ describe('deleteEntity', () => {
     const items = ['item-1', 'item-2'];
     const el = document.createElement('div');
     const world = new World(el);
-    items.forEach(item => {
-        world.entities.items.set(item, entityWithIcon());
+    items.forEach((item) => {
+      world.entities.items.set(item, entityWithIcon());
     });
 
     world.deleteEntity(items[0], 'creatures');
 
     expect(error).toHaveBeenCalledTimes(1);
-    expect(error).toHaveBeenCalledWith(`Error: no entity found for id ${items[0]} in type creatures`);
+    expect(error).toHaveBeenCalledWith(
+      `Error: no entity found for id ${items[0]} in type creatures`
+    );
   });
 
   test('clears associated button if present', () => {
@@ -74,13 +78,13 @@ describe('deleteEntity', () => {
     const el = document.createElement('div');
     const world = new World(el);
 
-    items.forEach(item => {
-        let button = document.createElement('button');
-        button.dataset.entityId = item;
-        button.classList.add(activeClass);
-        world.elements.toybox.appendChild(button);
+    items.forEach((item) => {
+      let button = document.createElement('button');
+      button.dataset.entityId = item;
+      button.classList.add(activeClass);
+      world.elements.toybox.appendChild(button);
 
-        world.entities.items.set(item, entityWithIcon());
+      world.entities.items.set(item, entityWithIcon());
     });
 
     const buttons = world.elements.toybox.querySelectorAll('button');
@@ -95,8 +99,8 @@ describe('deleteEntity', () => {
     const items = ['item-1', 'item-2'];
     const el = document.createElement('div');
     const world = new World(el);
-    items.forEach(item => {
-        world.entities.items.set(item, entityWithIcon());
+    items.forEach((item) => {
+      world.entities.items.set(item, entityWithIcon());
     });
     const entity1 = world.entities.items.get(items[0]);
     const removeSpy1 = jest.spyOn(entity1.outputs.icon, 'remove');

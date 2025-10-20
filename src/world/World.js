@@ -219,7 +219,9 @@ export class World {
     }
     const entity = this.entities[entityType].get(id);
     if (!entity) {
-      console.error(`Error: no entity found for id ${id} in type ${entityType}`);
+      console.error(
+        `Error: no entity found for id ${id} in type ${entityType}`
+      );
       return;
     }
     let button = this.elements.toybox.querySelector(`[data-entity-id="${id}"]`);

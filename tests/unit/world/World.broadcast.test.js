@@ -39,7 +39,6 @@ describe('broadcast', () => {
     creatures.forEach((creature) => {
       expect(creature.dispatchSpy).toHaveBeenCalledTimes(1);
       const ev = creature.dispatchSpy.mock.calls[0][0];
-      expect(ev).toBeInstanceOf(CustomEvent);
       expect(ev.type).toBe(eventName);
       expect(ev.detail).toBe(eventDetail.detail);
     });

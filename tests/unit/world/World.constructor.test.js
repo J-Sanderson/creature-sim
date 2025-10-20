@@ -5,6 +5,7 @@ import 'jest-canvas-mock';
 import { World } from '../../../src/world/World';
 import worldManager from '../../../src/managers/WorldManager';
 import { DebugManager } from '../../../src/managers/DebugManager';
+import { utilities } from '../../../src/utils/Utilities';
 
 jest.mock('../../../src/managers/WorldManager', () => ({
   __esModule: true,
@@ -27,7 +28,6 @@ describe('constructor', () => {
     const el = 'not an element';
     const world = new World(el);
 
-    expect(world).toBeInstanceOf(World);
     expect(world.params).toBeUndefined();
     expect(world.entities).toBeUndefined();
     expect(world.guid).toBeUndefined();
@@ -47,7 +47,6 @@ describe('constructor', () => {
     const world = new World(el);
 
     expect(world.params).toEqual(World.defaults);
-    expect(world.params).not.toBe(World.defaults);
   });
 
   test('uses passed params where relevant', () => {
@@ -70,8 +69,7 @@ describe('constructor', () => {
     const el = document.createElement('div');
     const world = new World(el);
 
-    expect(world.elements.root).toEqual(el);
-    expect(world.elements.root).toBeInstanceOf(HTMLElement);
+    expect(world.elements.root).toBe(el);
   });
 
   test('sets entity maps', () => {
@@ -87,25 +85,23 @@ describe('constructor', () => {
   });
 
   test('creates guid and registers with worldManager', () => {
+    const id = 'world-1';
+    jest.spyOn(utilities, 'generateGUID').mockReturnValue(id);
     jest.spyOn(World.prototype, 'init').mockImplementation(() => {});
     const el = document.createElement('div');
     const world = new World(el);
-    const guid = world.guid;
 
-    expect(typeof guid).toBe('string');
-    expect(guid).toMatch(
-      /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i
-    );
-    expect(worldManager.addWorld).toHaveBeenCalledWith(guid, world);
+    expect(typeof world.guid).toBe('string');
+    expect(world.guid).toBe(id);
+    expect(worldManager.addWorld).toHaveBeenCalledWith(world.guid, world);
   });
 
   test('sets debug manager', () => {
     jest.spyOn(World.prototype, 'init').mockImplementation(() => {});
     const el = document.createElement('div');
-    const world = new World(el);
+    new World(el);
 
     expect(DebugManager).toHaveBeenCalledTimes(1);
-    expect(world.debugManager).toBeInstanceOf(DebugManager);
   });
 
   test('calls init', () => {

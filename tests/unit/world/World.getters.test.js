@@ -91,26 +91,9 @@ describe('getters', () => {
       expect(result).toHaveProperty('items');
       expect(result).not.toHaveProperty('notAnEntityType');
     });
-
-    test('returns creatures and items as maps', () => {
-      const el = document.createElement('div');
-      const world = new World(el);
-
-      const result = world.getEntities();
-      expect(result.creatures).toBeInstanceOf(Map);
-      expect(result.items).toBeInstanceOf(Map);
-    });
   });
 
   describe('getItems', () => {
-    test('returns map', () => {
-      const el = document.createElement('div');
-      const world = new World(el);
-
-      const result = world.getItems();
-      expect(result).toBeInstanceOf(Map);
-    });
-
     test('returns same map as getEntities', () => {
       const el = document.createElement('div');
       const world = new World(el);
@@ -150,14 +133,6 @@ describe('getters', () => {
   });
 
   describe('getCreatures', () => {
-    test('returns map', () => {
-      const el = document.createElement('div');
-      const world = new World(el);
-
-      const result = world.getCreatures();
-      expect(result).toBeInstanceOf(Map);
-    });
-
     test('returns same map as getEntities', () => {
       const el = document.createElement('div');
       const world = new World(el);

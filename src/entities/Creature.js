@@ -172,10 +172,6 @@ export default class Creature extends Entity {
     this.outputs.bubble.style.display = 'block';
   }
 
-  getOutputs() {
-    return this.outputs;
-  }
-
   getPersonalityValues() {
     return this.personality.values;
   }

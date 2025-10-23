@@ -83,6 +83,10 @@ export default class Entity {
     return this.status;
   }
 
+  getOutputs() {
+    return this.outputs;
+  }
+
   getMaxMotive() {
     return this.maxMotive;
   }
@@ -115,6 +119,14 @@ export default class Entity {
     this.outputs.icon.prepend(span);
     this.outputs.icon.style['font-size'] = `${cellSize}px`;
     this.outputs.icon.style['z-index'] = this.order;
+  }
+
+  getIcon() {
+    const outputs = this.getOutputs();
+    if(!outputs.hasOwnProperty('icon')) {
+      console.error(`Error: no icon found for entity ${this.getGUID()}`);
+    }
+    return outputs.icon;
   }
 
   setXPosition(pos) {

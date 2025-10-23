@@ -152,7 +152,7 @@ export class World {
   broadcast(eventName, params = {}) {
     this.getCreatures().forEach((creature) => {
       const event = new CustomEvent(eventName, params);
-      creature.getOutputs().icon.dispatchEvent(event);
+      creature.getIcon().dispatchEvent(event);
     });
   }
 

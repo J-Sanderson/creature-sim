@@ -9,8 +9,8 @@ const dispatchableCreature = () => {
   return {
     icon,
     dispatchSpy: jest.spyOn(icon, 'dispatchEvent'),
-    getOutputs() {
-      return { icon };
+    getIcon() {
+      return icon;
     },
   };
 };

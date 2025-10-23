@@ -75,6 +75,34 @@ describe('init', () => {
     expect(btn.dataset.entityId).toBe(item.getGUID());
   });
 
+  test('clicking active toybox button removes item from entities', () => {
+    const el = document.createElement('div');
+    const world = new World(el);
+
+    world.entities.items.clear();
+    const toybox = world.getElement('toybox');
+    const btn = toybox.querySelector('#btn-Water');
+    btn.click();
+    btn.click();
+
+    const items = world.getItems();
+    expect(items.size).toBe(0);
+  });
+
+  test('clicking active toybox button removes button class and dataset', () => {
+    const el = document.createElement('div');
+    const world = new World(el);
+
+    world.entities.items.clear();
+    const toybox = world.getElement('toybox');
+    const btn = toybox.querySelector('#btn-Water');
+    btn.click();
+    btn.click();
+
+    expect(Array.from(btn.classList)).not.toContain('item-active');
+    expect(btn.dataset.entityId).toBeUndefined();
+  });
+
   test('adds a single creature', () => {
     const el = document.createElement('div');
     const world = new World(el);

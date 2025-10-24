@@ -22,7 +22,7 @@ export default class Entity {
       colors: [],
     };
 
-    this.maxMotive = worldManager.getWorld(this.world).getParam('maxMotive');
+    this.maxMotive = worldObj.getParam('maxMotive');
     this.status = {
       position: {
         x: params.hasOwnProperty('xPos') ? params.xPos : 0,
@@ -123,7 +123,7 @@ export default class Entity {
 
   getIcon() {
     const outputs = this.getOutputs();
-    if(!outputs.hasOwnProperty('icon')) {
+    if (!outputs.hasOwnProperty('icon')) {
       console.error(`Error: no icon found for entity ${this.getGUID()}`);
     }
     return outputs.icon;

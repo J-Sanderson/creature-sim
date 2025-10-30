@@ -105,9 +105,19 @@ export default class Entity {
 
   setMotive(motive, value) {
     if (!this.status.motives.hasOwnProperty(motive)) {
-      console.error('Invalid motive');
+      console.error(`Error: Invalid motive ${motive}`);
       return;
     }
+
+    if (value < 0) {
+      this.status.motives[motive] = 0;
+      return;
+    }
+    if (value > this.maxMotive) {
+      this.status.motives[motive] = this.maxMotive;
+      return;
+    }
+
     this.status.motives[motive] = value;
   }
 

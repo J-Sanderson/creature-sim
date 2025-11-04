@@ -145,10 +145,32 @@ export default class Entity {
   }
 
   setXPosition(pos) {
+    if (pos < 0) {
+      this.status.position.x = 0;
+      return;
+    }
+
+    const bounds = this.getBounds();
+    if (pos > bounds.x) {
+      this.status.position.x = bounds.x;
+      return;
+    }
+
     this.status.position.x = pos;
   }
 
   setYPosition(pos) {
+    if (pos < 0) {
+      this.status.position.y = 0;
+      return;
+    }
+
+    const bounds = this.getBounds();
+    if (pos > bounds.y) {
+      this.status.position.y = bounds.y;
+      return;
+    }
+
     this.status.position.y = pos;
   }
 }

@@ -22,6 +22,12 @@ export default class Entity {
       colors: [],
     };
 
+    const worldBounds = worldObj.getBounds();
+    this.bounds = {
+      x: worldBounds.x,
+      y: worldBounds.y,
+    }
+
     this.maxMotive = worldObj.getParam('maxMotive');
     this.status = {
       position: {
@@ -75,8 +81,7 @@ export default class Entity {
   }
 
   getBounds() {
-    const world = worldManager.getWorld(this.world);
-    return world.getBounds();
+    return this.bounds;
   }
 
   getStatus() {

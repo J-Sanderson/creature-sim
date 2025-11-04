@@ -13,6 +13,9 @@ jest.mock('../../../src/world/World', () => {
     displayEntity() {
       return jest.fn();
     }
+    getBounds() {
+      return {x: 5, y: 5}
+    }
   };
   return { __esModule: true, World: MockWorld };
 });

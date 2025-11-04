@@ -1,4 +1,6 @@
 const maxMotive = 100;
+const x = 5;
+const y = 6;
 jest.mock('../../../src/world/World', () => {
   const MockWorld = class World {
     constructor() {
@@ -6,6 +8,9 @@ jest.mock('../../../src/world/World', () => {
     }
     getParam(param) {
       return this.params[param];
+    }
+    getBounds() {
+      return {x, y}
     }
   };
   return { __esModule: true, World: MockWorld };
@@ -92,6 +97,13 @@ describe('constructor', () => {
       colors: [],
     };
     expect(entity.properties).toEqual(properties);
+  });
+
+  test('stores bounds from world', () => {
+    jest.spyOn(worldManager, 'getWorld').mockReturnValue(new MockWorld());
+    const entity = new Entity('w-1');
+
+    expect(entity.bounds).toEqual({x, y});
   });
 
   test('sets max motive', () => {

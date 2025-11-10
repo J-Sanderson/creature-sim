@@ -26,7 +26,7 @@ export default class Entity {
     this.bounds = {
       x: worldBounds.x,
       y: worldBounds.y,
-    }
+    };
 
     this.maxMotive = worldObj.getParam('maxMotive');
     this.status = {

@@ -12,7 +12,7 @@ jest.mock('../../../src/world/World', () => {
       return this.params[param];
     }
     getBounds() {
-      return {x: 5, y: 5}
+      return { x: 5, y: 5 };
     }
   };
   return { __esModule: true, World: MockWorld };

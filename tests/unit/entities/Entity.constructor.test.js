@@ -10,7 +10,7 @@ jest.mock('../../../src/world/World', () => {
       return this.params[param];
     }
     getBounds() {
-      return {x, y}
+      return { x, y };
     }
   };
   return { __esModule: true, World: MockWorld };
@@ -103,7 +103,7 @@ describe('constructor', () => {
     jest.spyOn(worldManager, 'getWorld').mockReturnValue(new MockWorld());
     const entity = new Entity('w-1');
 
-    expect(entity.bounds).toEqual({x, y});
+    expect(entity.bounds).toEqual({ x, y });
   });
 
   test('sets max motive', () => {

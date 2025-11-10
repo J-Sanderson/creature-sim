@@ -21,7 +21,8 @@ export default class Steak extends Item {
     this.properties.colors.push(...Steak.colors);
     this.icon = Steak.icon;
 
-    this.status.motives[motiveList.amount] = this.maxMotive * Steak.amountModifier;
+    this.status.motives[motiveList.amount] =
+      this.maxMotive * Steak.amountModifier;
 
     this.setIcon();
   }

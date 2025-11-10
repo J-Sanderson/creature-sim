@@ -27,33 +27,33 @@ import { motiveList } from '../../../../src/defaults';
 
 describe.each(items)('%s constructor', (ItemClass) => {
   test('applies static adjectives where applicable', () => {
-    if(ItemClass.adjectives) {
+    if (ItemClass.adjectives) {
       jest.spyOn(worldManager, 'getWorld').mockReturnValue(new MockWorld());
       const item = new ItemClass('w-1');
 
-      ItemClass.adjectives.forEach(adjective => {
+      ItemClass.adjectives.forEach((adjective) => {
         expect(item.getAdjectives()).toContain(adjective);
       });
     }
   });
 
   test('applies static colors where applicable', () => {
-    if(ItemClass.colors) {
+    if (ItemClass.colors) {
       jest.spyOn(worldManager, 'getWorld').mockReturnValue(new MockWorld());
       const item = new ItemClass('w-1');
 
-      ItemClass.colors.forEach(color => {
+      ItemClass.colors.forEach((color) => {
         expect(item.getColors()).toContain(color);
       });
     }
   });
 
   test('applies static flavors where applicable', () => {
-    if(ItemClass.flavors) {
+    if (ItemClass.flavors) {
       jest.spyOn(worldManager, 'getWorld').mockReturnValue(new MockWorld());
       const item = new ItemClass('w-1');
 
-      ItemClass.flavors.forEach(flavor => {
+      ItemClass.flavors.forEach((flavor) => {
         expect(item.getFlavors()).toContain(flavor);
       });
     }
@@ -67,12 +67,14 @@ describe.each(items)('%s constructor', (ItemClass) => {
   });
 
   test('adds amount motive to status if modifier present', () => {
-    if(ItemClass.amountModifier) {
+    if (ItemClass.amountModifier) {
       jest.spyOn(worldManager, 'getWorld').mockReturnValue(new MockWorld());
       const item = new ItemClass('w-1');
 
       expect(item.getMotives()).toHaveProperty(motiveList.amount);
-      expect(item.getMotive(motiveList.amount)).toEqual(item.maxMotive * ItemClass.amountModifier);
+      expect(item.getMotive(motiveList.amount)).toEqual(
+        item.maxMotive * ItemClass.amountModifier
+      );
     }
   });
 

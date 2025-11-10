@@ -21,7 +21,8 @@ export default class Chicken extends Item {
     this.properties.colors.push(...Chicken.colors);
     this.icon = Chicken.icon;
 
-    this.status.motives[motiveList.amount] = this.maxMotive * Chicken.amountModifier;
+    this.status.motives[motiveList.amount] =
+      this.maxMotive * Chicken.amountModifier;
 
     this.setIcon();
   }

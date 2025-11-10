@@ -25,17 +25,17 @@ import { Item } from '../../../../src/entities/items/Item';
 import { adjectiveList } from '../../../../src/defaults';
 
 describe('constructor', () => {
-    test('contains inanimate adjective', () => {
-        jest.spyOn(worldManager, 'getWorld').mockReturnValue(new MockWorld());
-        const item = new Item('w-1');
+  test('contains inanimate adjective', () => {
+    jest.spyOn(worldManager, 'getWorld').mockReturnValue(new MockWorld());
+    const item = new Item('w-1');
 
-        expect(item.getAdjectives()).toContain(adjectiveList.inanimate);
-    });
+    expect(item.getAdjectives()).toContain(adjectiveList.inanimate);
+  });
 
-    test('does not contain animate adjective', () => {
-        jest.spyOn(worldManager, 'getWorld').mockReturnValue(new MockWorld());
-        const item = new Item('w-1');
-        
-        expect(item.getAdjectives()).not.toContain(adjectiveList.animate);
-    });
+  test('does not contain animate adjective', () => {
+    jest.spyOn(worldManager, 'getWorld').mockReturnValue(new MockWorld());
+    const item = new Item('w-1');
+
+    expect(item.getAdjectives()).not.toContain(adjectiveList.animate);
+  });
 });

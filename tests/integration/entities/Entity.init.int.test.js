@@ -15,7 +15,9 @@ describe('init', () => {
   });
 
   test('calls world.displayEntity', () => {
-    const displayEntity = jest.spyOn(World.prototype, 'displayEntity').mockImplementation(() => {});
+    const displayEntity = jest
+      .spyOn(World.prototype, 'displayEntity')
+      .mockImplementation(() => {});
     const el = document.createElement('div');
     const world = new World(el);
 

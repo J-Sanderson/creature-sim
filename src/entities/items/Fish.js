@@ -21,7 +21,8 @@ export default class Fish extends Item {
     this.properties.colors.push(...Fish.colors);
     this.icon = Fish.icon;
 
-    this.status.motives[motiveList.amount] = this.maxMotive * Fish.amountModifier;
+    this.status.motives[motiveList.amount] =
+      this.maxMotive * Fish.amountModifier;
 
     this.setIcon();
   }

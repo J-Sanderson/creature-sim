@@ -21,7 +21,8 @@ export default class Water extends Item {
     this.properties.colors.push(...Water.colors);
     this.icon = Water.icon;
 
-    this.status.motives[motiveList.amount] = this.maxMotive * Water.amountModifier;
+    this.status.motives[motiveList.amount] =
+      this.maxMotive * Water.amountModifier;
 
     this.setIcon();
   }

@@ -140,6 +140,7 @@ export default class Entity {
     const outputs = this.getOutputs();
     if (!outputs.hasOwnProperty('icon')) {
       console.error(`Error: no icon found for entity ${this.getGUID()}`);
+      return;
     }
     return outputs.icon;
   }

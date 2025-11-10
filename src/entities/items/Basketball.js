@@ -10,6 +10,7 @@ export default class Basketball extends Item {
   constructor(world, params = {}) {
     super(world, params);
     this.properties.adjectives.push(...Basketball.adjectives);
+    this.properties.colors.push(...Basketball.colors);
     this.icon = Basketball.icon;
 
     this.setIcon();

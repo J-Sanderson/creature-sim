@@ -10,6 +10,7 @@ export default class Disc extends Item {
   constructor(world, params = {}) {
     super(world, params);
     this.properties.adjectives.push(...Disc.adjectives);
+    this.properties.colors.push(...Disc.colors);
     this.icon = Disc.icon;
 
     this.setIcon();

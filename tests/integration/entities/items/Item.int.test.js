@@ -7,7 +7,7 @@ import { World } from '../../../../src/world/World';
 import Entity from '../../../../src/entities/Entity';
 import { Item } from '../../../../src/entities/items/Item';
 
-describe('init', () => {
+describe('constructor', () => {
     test('item is an instance of Entity', () => {
         const el = document.createElement('div');
         const world = new World(el);

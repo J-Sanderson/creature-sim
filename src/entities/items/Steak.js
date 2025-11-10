@@ -12,6 +12,7 @@ export default class Steak extends Item {
   static adjectives = [adjectiveList.tasty];
   static flavors = [flavorList.beef];
   static colors = [colorList.red];
+  static amountModifier = 1.5;
 
   constructor(world, params = {}) {
     super(world, params);
@@ -20,7 +21,7 @@ export default class Steak extends Item {
     this.properties.colors.push(...Steak.colors);
     this.icon = Steak.icon;
 
-    this.status.motives[motiveList.amount] = this.maxMotive * 1.5;
+    this.status.motives[motiveList.amount] = this.maxMotive * Steak.amountModifier;
 
     this.setIcon();
   }

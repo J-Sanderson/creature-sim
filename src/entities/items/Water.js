@@ -12,6 +12,7 @@ export default class Water extends Item {
   static adjectives = [adjectiveList.wet];
   static flavors = [flavorList.water];
   static colors = [colorList.blue];
+  static amountModifier = 2.5;
 
   constructor(world, params = {}) {
     super(world, params);
@@ -20,7 +21,7 @@ export default class Water extends Item {
     this.properties.colors.push(...Water.colors);
     this.icon = Water.icon;
 
-    this.status.motives[motiveList.amount] = this.maxMotive * 2.5;
+    this.status.motives[motiveList.amount] = this.maxMotive * Water.amountModifier;
 
     this.setIcon();
   }

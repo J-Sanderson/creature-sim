@@ -10,6 +10,7 @@ export default class TennisBall extends Item {
   constructor(world, params = {}) {
     super(world, params);
     this.properties.adjectives.push(...TennisBall.adjectives);
+    this.properties.colors.push(...TennisBall.colors);
     this.icon = TennisBall.icon;
 
     this.setIcon();

@@ -12,6 +12,7 @@ export default class Chicken extends Item {
   static adjectives = [adjectiveList.tasty];
   static flavors = [flavorList.chicken];
   static colors = [colorList.white, colorList.brown];
+  static amountModifier = 1.5;
 
   constructor(world, params = {}) {
     super(world, params);
@@ -20,7 +21,7 @@ export default class Chicken extends Item {
     this.properties.colors.push(...Chicken.colors);
     this.icon = Chicken.icon;
 
-    this.status.motives[motiveList.amount] = this.maxMotive * 1.5;
+    this.status.motives[motiveList.amount] = this.maxMotive * Chicken.amountModifier;
 
     this.setIcon();
   }

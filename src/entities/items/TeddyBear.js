@@ -10,6 +10,7 @@ export default class TeddyBear extends Item {
   constructor(world, params = {}) {
     super(world, params);
     this.properties.adjectives.push(...TeddyBear.adjectives);
+    this.properties.colors.push(...TeddyBear.colors);
     this.icon = TeddyBear.icon;
 
     this.setIcon();

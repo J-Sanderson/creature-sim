@@ -14,6 +14,7 @@ export default class Yarn extends Item {
   constructor(world, params = {}) {
     super(world, params);
     this.properties.adjectives.push(...Yarn.adjectives);
+    this.properties.colors.push(...Yarn.colors);
     this.icon = Yarn.icon;
 
     this.setIcon();

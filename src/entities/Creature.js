@@ -245,6 +245,10 @@ export default class Creature extends Entity {
   }
 
   setOutput(type, val, setVal = false) {
+    if (!this.outputs.hasOwnProperty(type)) {
+      console.error(`Error: no output of type ${type}`);
+      return;
+    }
     if (type === 'goals') {
       let table = document.createElement('table');
       let tr = document.createElement('tr');

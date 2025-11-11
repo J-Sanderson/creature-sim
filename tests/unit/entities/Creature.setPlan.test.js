@@ -76,7 +76,7 @@ describe('setPlan', () => {
     creature.setPlan(planList.wander);
     const plan = creature.status.plan;
     creature.setPlan(planList.wander);
-  
+
     expect(creature.status.plan).toBe(plan);
   });
 });

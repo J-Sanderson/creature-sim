@@ -237,6 +237,10 @@ export default class Creature extends Entity {
   }
 
   setOutputEl(type, el) {
+    if (!(el instanceof HTMLElement)) {
+      console.error(`Error: ${el} is not a valid HTML element`);
+      return;
+    }
     this.outputs[type] = el;
   }
 

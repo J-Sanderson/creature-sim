@@ -174,6 +174,7 @@ export default class Creature extends Entity {
 
   showMotive(motive) {
     if (!motive) {
+      this.outputs.bubble.innerHTML = '';
       this.outputs.bubble.style.display = 'none';
       return;
     }

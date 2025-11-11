@@ -42,6 +42,17 @@ export default class Creature extends Entity {
     emotionList.angry,
   ];
 
+  static validPersonalityValues = [
+    personalityValueList.liveliness,
+    personalityValueList.patience,
+    personalityValueList.naughtiness,
+    personalityValueList.metabolism,
+    personalityValueList.playfulness,
+    personalityValueList.finickiness,
+    personalityValueList.kindness,
+    personalityValueList.independence,
+  ];
+
   static adjectives = [adjectiveList.animate];
 
   constructor(world, params = {}) {
@@ -55,6 +66,10 @@ export default class Creature extends Entity {
     this.outputs.bubble = bubble;
 
     this.order = 2;
+    this.icon = '&#x1F415;';
+    this.setIcon();
+
+    this.outputs.motives = {};
 
     this.properties.adjectives.push(...Creature.adjectives);
 
@@ -71,15 +86,13 @@ export default class Creature extends Entity {
       values: {},
       favorites: {
         flavor: '',
+        color: '',
       },
     };
 
-    for (let value in personalityValueList) {
-      this.personality.values[personalityValueList[value]] = utilities.rand(
-        this.maxMotive
-      );
-    }
-    let personalityValues = this.getPersonalityValues();
+    Creature.validPersonalityValues.forEach((value) => {
+      this.personality.values[value] = utilities.rand(this.maxMotive);
+    });
 
     this.personality.favorites.flavor =
       flavorList[
@@ -99,15 +112,11 @@ export default class Creature extends Entity {
     this.goals = goals;
     this.queries = queries;
 
-    this.outputs.motives = {};
-
-    this.icon = '&#x1F415;';
-    this.setIcon();
     this.setEventHandlers();
 
     this.goalManager = new GoalManager();
     this.metabolismManager = new MetabolismManager({
-      personalityValues,
+      personalityValues: this.getPersonalityValues(),
       maxMotive: this.maxMotive,
     });
     this.emotionManager = new EmotionManager();

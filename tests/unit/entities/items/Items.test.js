@@ -83,7 +83,7 @@ describe.each(items)('%s constructor', (ItemClass) => {
       .spyOn(Entity.prototype, 'setIcon')
       .mockImplementation(() => {});
     jest.spyOn(worldManager, 'getWorld').mockReturnValue(new MockWorld());
-    const item = new ItemClass('w-1');
+    new ItemClass('w-1');
 
     expect(setIcon).toHaveBeenCalledTimes(1);
   });

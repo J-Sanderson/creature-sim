@@ -49,6 +49,10 @@ describe('constructor', () => {
     jest.spyOn(worldManager, 'getWorld').mockReturnValue(new MockWorld());
   });
 
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   describe('outputs setup', () => {
     test('adds creature class to icon', () => {
       const creature = new Creature('w-1');

@@ -196,6 +196,7 @@ export class GoalManager {
 
   deleteGoal(goalName) {
     delete this.goals[goalName];
+    this.currentGoalName = '';
   }
 
   getGoals() {

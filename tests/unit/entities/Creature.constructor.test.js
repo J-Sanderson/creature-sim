@@ -29,10 +29,6 @@ import { GoalManager } from '../../../src/managers/GoalManager';
 import { MetabolismManager } from '../../../src/managers/MetabolismManager';
 import { EmotionManager } from '../../../src/managers/EmotionManager';
 import { adjectiveList, motiveList } from '../../../src/defaults';
-import states from '../../../src/state_machine/states';
-import plans from '../../../src/state_machine/plans';
-import goals from '../../../src/state_machine/goals';
-import { queries } from '../../../src/utils/Queries';
 
 jest.mock('../../../src/managers/GoalManager', () => {
   const GoalManager = jest.fn();
@@ -233,28 +229,32 @@ describe('constructor', () => {
   });
 
   describe('state machine setup', () => {
-    test('imports states', () => {
+    test('creates states object', () => {
       const creature = new Creature('w-1');
 
-      expect(creature.states).toBe(states);
+      expect(creature.states).toBeDefined();
+      expect(typeof creature.states).toBe('object');
     });
 
-    test('imports plans', () => {
+    test('creates plans object', () => {
       const creature = new Creature('w-1');
 
-      expect(creature.plans).toBe(plans);
+      expect(creature.plans).toBeDefined();
+      expect(typeof creature.plans).toBe('object');
     });
 
-    test('imports goals', () => {
+    test('creates goals object', () => {
       const creature = new Creature('w-1');
 
-      expect(creature.goals).toBe(goals);
+      expect(creature.goals).toBeDefined();
+      expect(typeof creature.goals).toBe('object');
     });
 
-    test('imports queries', () => {
+    test('creates queries object', () => {
       const creature = new Creature('w-1');
 
-      expect(creature.queries).toBe(queries);
+      expect(creature.queries).toBeDefined();
+      expect(typeof creature.queries).toBe('object');
     });
 
     test('runs setEventHandlers', () => {

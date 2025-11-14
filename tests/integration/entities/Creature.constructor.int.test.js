@@ -14,14 +14,6 @@ import goals from '../../../src/state_machine/goals';
 import { queries } from '../../../src/utils/Queries';
 
 describe('constructor', () => {
-  test('outputs.bubble is div element', () => {
-    const el = document.createElement('div');
-    const world = new World(el);
-
-    const creature = new Creature(world.getGUID());
-    expect(creature.getOutputs().bubble).toBeInstanceOf(HTMLDivElement);
-  });
-
   test('creates managers of correct type', () => {
     const el = document.createElement('div');
     const world = new World(el);

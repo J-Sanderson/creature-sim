@@ -46,6 +46,14 @@ describe('init', () => {
     expect(Array.from(entity.outputs.icon.classList)).toContain('entity');
   });
 
+  test('icon is HTML div element', () => {
+    jest.spyOn(worldManager, 'getWorld').mockReturnValue(new MockWorld());
+    const world = 'w-1';
+    const entity = new Entity(world);
+
+    expect(entity.outputs.icon).toBeInstanceOf(HTMLDivElement);
+  });
+
   test('sets correct icon size', () => {
     jest.spyOn(worldManager, 'getWorld').mockReturnValue(new MockWorld());
     const world = 'w-1';

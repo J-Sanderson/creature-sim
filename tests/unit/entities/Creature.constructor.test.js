@@ -72,6 +72,12 @@ describe('constructor', () => {
       expect(creature.outputs.bubble.classList.contains('bubble')).toBe(true);
     });
 
+    test('bubble is div element', () => {
+      const creature = new Creature('w-1');
+
+      expect(creature.getOutputs().bubble).toBeInstanceOf(HTMLDivElement);
+    });
+
     test('bubble element is child of icon', () => {
       const creature = new Creature('w-1');
 

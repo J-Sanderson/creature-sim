@@ -70,18 +70,18 @@ describe('constructor', () => {
     const world = new World(el);
 
     expect(world.elements.root).toBe(el);
+    expect(world.elements.root).toBeInstanceOf(HTMLDivElement);
   });
 
   test('sets entity maps', () => {
     jest.spyOn(World.prototype, 'init').mockImplementation(() => {});
-    const entities = {
-      items: new Map(),
-      creatures: new Map(),
-    };
     const el = document.createElement('div');
     const world = new World(el);
 
-    expect(world.entities).toEqual(entities);
+    expect(world.entities).toHaveProperty('items');
+    expect(world.entities).toHaveProperty('creatures');
+    expect(world.entities.items).toBeInstanceOf(Map);
+    expect(world.entities.creatures).toBeInstanceOf(Map);
   });
 
   test('creates guid and registers with worldManager', () => {

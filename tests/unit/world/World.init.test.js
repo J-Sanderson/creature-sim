@@ -57,6 +57,15 @@ describe('init', () => {
       );
     });
 
+    test('creates canvas elements of correct type', () => {
+      defaultMocks();
+      const el = document.createElement('div');
+      const world = new World(el);
+
+      expect(world.getElement('canvasWrapper')).toBeInstanceOf(HTMLDivElement);
+      expect(world.getElement('canvas')).toBeInstanceOf(HTMLCanvasElement);
+    });
+
     test('sets correct canvas element relationships', () => {
       defaultMocks();
       const el = document.createElement('div');
@@ -68,6 +77,14 @@ describe('init', () => {
       expect(world.elements.canvas.parentElement).toBe(
         world.elements.canvasWrapper
       );
+    });
+
+    test('sets world.ctx to canvas context', () => {
+      defaultMocks();
+      const el = document.createElement('div');
+      const world = new World(el);
+
+      expect(world.ctx).toBeInstanceOf(CanvasRenderingContext2D);
     });
 
     test('calls drawWorld after ctx set', () => {
@@ -94,6 +111,14 @@ describe('init', () => {
       expect(Array.from(world.elements.toybox.classList)).toContain('toybox');
       expect(world.elements.toybox.parentElement).toBe(world.elements.root);
       expect(world.elements.toybox.dataset.world).toBe(world.guid);
+    });
+
+    test('sets toybox to div element', () => {
+      defaultMocks();
+      const el = document.createElement('div');
+      const world = new World(el);
+
+      expect(world.getElement('toybox')).toBeInstanceOf(HTMLDivElement);
     });
 
     test('creates toybox button element for each item', () => {
@@ -124,6 +149,18 @@ describe('init', () => {
       expect(world.elements.toybox.querySelectorAll('button')).toHaveLength(
         items.length
       );
+    });
+
+    test('sets toybox buttons to button elements', () => {
+      defaultMocks();
+      const el = document.createElement('div');
+      const world = new World(el);
+
+      const toybox = world.getElement('toybox');
+      items.forEach((item) => {
+        const button = toybox.querySelector(`#btn-${item.className}`);
+        expect(button).toBeInstanceOf(HTMLButtonElement);
+      });
     });
 
     test('clicking toybox button fires toggleItem', () => {

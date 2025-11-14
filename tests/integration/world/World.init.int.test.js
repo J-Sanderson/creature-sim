@@ -17,43 +17,6 @@ beforeEach(() => {
 afterEach(() => jest.restoreAllMocks());
 
 describe('init', () => {
-  describe('canvas setup', () => {
-    test('creates canvas elements of correct type', () => {
-      const el = document.createElement('div');
-      const world = new World(el);
-
-      expect(world.getElement('canvasWrapper')).toBeInstanceOf(HTMLDivElement);
-      expect(world.getElement('canvas')).toBeInstanceOf(HTMLCanvasElement);
-    });
-
-    test('sets world.ctx to canvas context', () => {
-      const el = document.createElement('div');
-      const world = new World(el);
-
-      expect(world.ctx).toBeInstanceOf(CanvasRenderingContext2D);
-    });
-  });
-
-  describe('toybox setup', () => {
-    test('sets toybox to div element', () => {
-      const el = document.createElement('div');
-      const world = new World(el);
-
-      expect(world.getElement('toybox')).toBeInstanceOf(HTMLDivElement);
-    });
-
-    test('sets toybox buttons to button elements', () => {
-      const el = document.createElement('div');
-      const world = new World(el);
-
-      const toybox = world.getElement('toybox');
-      items.forEach((item) => {
-        const button = toybox.querySelector(`#btn-${item.className}`);
-        expect(button).toBeInstanceOf(HTMLButtonElement);
-      });
-    });
-  });
-
   describe('toybox functionality', () => {
     test('clicking toybox button adds item to entities', () => {
       const el = document.createElement('div');

@@ -6,14 +6,6 @@ import { World } from '../../../src/world/World';
 import Entity from '../../../src/entities/Entity';
 
 describe('init', () => {
-  test('icon is HTML div element', () => {
-    const el = document.createElement('div');
-    const world = new World(el);
-
-    const entity = new Entity(world.getGUID());
-    expect(entity.outputs.icon).toBeInstanceOf(HTMLDivElement);
-  });
-
   test('calls world.displayEntity', () => {
     const displayEntity = jest
       .spyOn(World.prototype, 'displayEntity')

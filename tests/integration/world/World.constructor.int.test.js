@@ -10,21 +10,6 @@ describe('constructor', () => {
   beforeEach(() => jest.clearAllMocks());
   afterEach(() => jest.restoreAllMocks());
 
-  test('root is html element', () => {
-    const el = document.createElement('div');
-    const world = new World(el);
-
-    expect(world.getElement('root')).toBeInstanceOf(HTMLDivElement);
-  });
-
-  test('creates entity maps', () => {
-    const el = document.createElement('div');
-    const world = new World(el);
-
-    expect(world.getItems()).toBeInstanceOf(Map);
-    expect(world.getCreatures()).toBeInstanceOf(Map);
-  });
-
   test('adds world to world manager', () => {
     const el = document.createElement('div');
     const world = new World(el);

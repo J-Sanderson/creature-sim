@@ -38,7 +38,7 @@ describe('getItemsByAdjective', () => {
     });
     worldManager.getWorld.mockReturnValue(
       worldBuilder({
-        entities: { items: [chew, bounce] },
+        entities: { items: [chew, bounce], creatures: [] },
       })
     );
     const self = creatureBuilder({ world: id });
@@ -61,7 +61,7 @@ describe('getItemsByAdjective', () => {
     });
     worldManager.getWorld.mockReturnValue(
       worldBuilder({
-        entities: { items: [bounce, soft] },
+        entities: { items: [bounce, soft], creatures: [] },
       })
     );
     const self = creatureBuilder({ world: id });

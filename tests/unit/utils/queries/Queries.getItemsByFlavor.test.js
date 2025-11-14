@@ -38,7 +38,7 @@ describe('getItemsByFlavor', () => {
     });
     worldManager.getWorld.mockReturnValue(
       worldBuilder({
-        entities: { items: [chicken, beef] },
+        entities: { items: [chicken, beef], creatures: [] },
       })
     );
     const self = creatureBuilder({ world: id });
@@ -61,7 +61,7 @@ describe('getItemsByFlavor', () => {
     });
     worldManager.getWorld.mockReturnValue(
       worldBuilder({
-        entities: { items: [beef, fish] },
+        entities: { items: [beef, fish], creatures: [] },
       })
     );
     const self = creatureBuilder({ world: id });

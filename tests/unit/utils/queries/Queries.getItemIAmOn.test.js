@@ -28,7 +28,7 @@ describe('getItemIAmOn', () => {
   test('returns undefined if no items present', () => {
     worldManager.getWorld.mockReturnValue(
       worldBuilder({
-        entities: { items: [] },
+        entities: { items: [], creatures: [] },
       })
     );
     const worldId = 'w-1';
@@ -45,7 +45,7 @@ describe('getItemIAmOn', () => {
     const item2 = itemBuilder({ id: 'item-2', position: { x: 4, y: 4 } });
     worldManager.getWorld.mockReturnValue(
       worldBuilder({
-        entities: { items: [item1, item2] },
+        entities: { items: [item1, item2], creatures: [] },
       })
     );
     const self = creatureBuilder({
@@ -64,7 +64,7 @@ describe('getItemIAmOn', () => {
     const item2 = itemBuilder({ id: 'item-2', position: { x: 4, y: 5 } });
     worldManager.getWorld.mockReturnValue(
       worldBuilder({
-        entities: { items: [item1, item2] },
+        entities: { items: [item1, item2], creatures: [] },
       })
     );
     const self = creatureBuilder({
@@ -84,7 +84,7 @@ describe('getItemIAmOn', () => {
     const item2 = itemBuilder({ id: 'item-2', position: { x: 5, y: 5 } });
     worldManager.getWorld.mockReturnValue(
       worldBuilder({
-        entities: { items: [item1, item2] },
+        entities: { items: [item1, item2], creatures: [] },
       })
     );
 

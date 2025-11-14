@@ -32,7 +32,7 @@ describe('getItemFromWorld', () => {
     const item2 = itemBuilder({ id: 'item-2' });
     worldManager.getWorld.mockReturnValue(
       worldBuilder({
-        entities: { items: [item1, item2] },
+        entities: { items: [item1, item2], creatures: [] },
       })
     );
     const self = creatureBuilder({ world: worldId });
@@ -49,7 +49,7 @@ describe('getItemFromWorld', () => {
     const item3 = itemBuilder({ id: 'item-3' });
     worldManager.getWorld.mockReturnValue(
       worldBuilder({
-        entities: { items: [item2, item3] },
+        entities: { items: [item2, item3], creatures: [] },
       })
     );
     const self = creatureBuilder({ world: worldId });

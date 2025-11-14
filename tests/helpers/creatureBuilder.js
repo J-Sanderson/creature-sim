@@ -1,4 +1,5 @@
 export function creatureBuilder({
+  id = 'c-1',
   thresholdByMotive = {},
   motiveByMotive = {},
   personalityByValue = {},
@@ -10,6 +11,7 @@ export function creatureBuilder({
   queries = {},
 } = {}) {
   return {
+    getGUID: () => id,
     getDesireThreshold: (m) => thresholdByMotive[m],
     getMotive: (m) => motiveByMotive[m],
     getPersonalityValue: (v) => personalityByValue[v],

@@ -1,3 +1,7 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import { adjectiveList } from '../../../../src/defaults';
 import { creatureBuilder } from '../../../helpers/creatureBuilder';
 import { worldBuilder } from '../../../helpers/worldBuilder';

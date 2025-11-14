@@ -7,5 +7,8 @@ export function worldBuilder({ entities = { items: [] } }) {
   return {
     getEntities: () => _entities,
     getItems: () => _entities.items,
+    elements: {
+      root: document.createElement('div'),
+    },
   };
 }

@@ -1,3 +1,7 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import { creatureBuilder } from '../../../helpers/creatureBuilder';
 import { worldBuilder } from '../../../helpers/worldBuilder';
 import { itemBuilder } from '../../../helpers/itemBuilder';
@@ -83,6 +87,7 @@ describe('getItemIAmOn', () => {
         entities: { items: [item1, item2] },
       })
     );
+
     const self = creatureBuilder({
       world: worldId,
       position: { x: 5, y: 5 },

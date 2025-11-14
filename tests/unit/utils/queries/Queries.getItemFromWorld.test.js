@@ -1,3 +1,7 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import { creatureBuilder } from '../../../helpers/creatureBuilder';
 import { worldBuilder } from '../../../helpers/worldBuilder';
 import { itemBuilder } from '../../../helpers/itemBuilder';

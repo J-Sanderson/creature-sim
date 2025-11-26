@@ -15,6 +15,7 @@ export function creatureBuilder({
     getDesireThreshold: (m) => thresholdByMotive[m],
     getMotives: () => motiveByMotive,
     getMotive: (m) => motiveByMotive[m],
+    getPersonalityValues: () => personalityByValue,
     getPersonalityValue: (v) => personalityByValue[v],
     getMaxMotive: () => maxMotive,
     getPosition: () => position,

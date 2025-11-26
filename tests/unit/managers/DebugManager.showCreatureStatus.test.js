@@ -76,7 +76,7 @@ describe('showCreatureStatus', () => {
         const statusItems = status.querySelectorAll(
           '.status-item.status-item-motive'
         );
-        statusItems.forEach(statusItem => {
+        statusItems.forEach((statusItem) => {
           expect(statusItem).toBeInstanceOf(HTMLSpanElement);
           expect(statusItem.parentElement).toBe(status);
         });
@@ -224,7 +224,10 @@ describe('showCreatureStatus', () => {
 
         DebugManager.statusOutputs.forEach((statusOutput, j) => {
           const output = statusItems[j].querySelector('output');
-          expect(creature.setOutputEl).toHaveBeenCalledWith(statusOutput, output);
+          expect(creature.setOutputEl).toHaveBeenCalledWith(
+            statusOutput,
+            output
+          );
         });
 
         i++;

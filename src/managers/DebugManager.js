@@ -153,9 +153,12 @@ export class DebugManager {
 
   showCreaturePersonality(world, creature) {
     let personality = document.createElement('p');
+    personality.classList.add('personality');
     const personalityValues = creature.getPersonalityValues();
     for (let value in personalityValues) {
       let span = document.createElement('span');
+      span.classList.add('personality-item');
+      span.classList.add('personality-item-personality');
       span.innerHTML = `${value}: ${personalityValues[value]}`;
       personality.appendChild(span);
       personality.appendChild(document.createElement('br'));
@@ -164,9 +167,12 @@ export class DebugManager {
     world.elements.statusWrapper.appendChild(personality);
 
     let favorites = document.createElement('p');
+    favorites.classList.add('favorites');
     const favoriteValues = creature.getFavorites();
     for (let value in favoriteValues) {
       let span = document.createElement('span');
+      span.classList.add('personality-item');
+      span.classList.add('personality-item-favorite');
       span.innerHTML = `${value}: ${favoriteValues[value]}`;
       favorites.appendChild(span);
       favorites.appendChild(document.createElement('br'));

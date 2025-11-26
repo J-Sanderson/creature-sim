@@ -13,6 +13,7 @@ export function creatureBuilder({
   return {
     getGUID: () => id,
     getDesireThreshold: (m) => thresholdByMotive[m],
+    getMotives: () => motiveByMotive,
     getMotive: (m) => motiveByMotive[m],
     getPersonalityValue: (v) => personalityByValue[v],
     getMaxMotive: () => maxMotive,
@@ -21,6 +22,7 @@ export function creatureBuilder({
     getWorld: () => world,
     getFavorites: () => favorites,
     update: () => {},
+    setOutputEl: () => jest.fn(),
     queries,
   };
 }

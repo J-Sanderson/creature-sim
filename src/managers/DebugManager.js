@@ -11,7 +11,7 @@ export class DebugManager {
   }
 
   showCreatureStatus(world, creature) {
-    let status = document.createElement('p');
+    let status = document.createElement('div');
     status.classList.add('status');
     status.innerHTML = `Creature: ${creature.getGUID()}`;
 
@@ -19,6 +19,7 @@ export class DebugManager {
     for (let motive in motives) {
       let span = document.createElement('span');
       span.classList.add('status-item');
+      span.classList.add('status-item-motive');
       let output = document.createElement('output');
       span.innerHTML = `${motive}: `;
       span.appendChild(output);
@@ -30,6 +31,7 @@ export class DebugManager {
     DebugManager.goalOutputs.forEach((item) => {
       let span = document.createElement('span');
       span.classList.add('status-item');
+      span.classList.add('status-item-goal');
       let output = document.createElement('output');
       span.innerHTML = `${item}: `;
       span.appendChild(output);
@@ -41,6 +43,7 @@ export class DebugManager {
     DebugManager.statusOutputs.forEach((item) => {
       let span = document.createElement('span');
       span.classList.add('status-item');
+      span.classList.add('status-item-status');
       let output = document.createElement('output');
       span.innerHTML = `${item}: `;
       span.appendChild(output);

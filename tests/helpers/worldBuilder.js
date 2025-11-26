@@ -1,3 +1,4 @@
+// todo: do not force all tests to pass entities if not required
 export function worldBuilder({ entities = { items: [], creatures: [] } }) {
   const iMap =
     entities && entities.items.length
@@ -11,6 +12,7 @@ export function worldBuilder({ entities = { items: [], creatures: [] } }) {
   return {
     getEntities: () => _entities,
     getItems: () => _entities.items,
+    getCreatures: () => _entities.creatures,
     elements: {
       root: document.createElement('div'),
     },

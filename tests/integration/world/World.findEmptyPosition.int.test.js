@@ -6,6 +6,7 @@ import { World } from '../../../src/world/World';
 import { utilities } from '../../../src/utils/Utilities';
 import Water from '../../../src/entities/items/Water';
 
+// todo mock errors
 describe('findEmptyPosition', () => {
   test('returns null if no free spaces', () => {
     const el = document.createElement('div');

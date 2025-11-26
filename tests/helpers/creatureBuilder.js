@@ -14,6 +14,12 @@ export function creatureBuilder({
   return {
     getGUID: () => id,
     getDesireThreshold: (m) => thresholdByMotive[m],
+    getStatus: () => {
+      return {
+        motives: motiveByMotive,
+        emotions: emotionByValue,
+      };
+    },
     getMotives: () => motiveByMotive,
     getMotive: (m) => motiveByMotive[m],
     getPersonalityValues: () => personalityByValue,
@@ -25,6 +31,7 @@ export function creatureBuilder({
     getWorld: () => world,
     getFavorites: () => favorites,
     update: () => {},
+    setOutput: () => jest.fn(),
     setOutputEl: () => jest.fn(),
     setMotive: () => jest.fn(),
     emotionManager: {

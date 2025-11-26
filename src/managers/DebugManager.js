@@ -144,15 +144,11 @@ export class DebugManager {
   updateCreatureSliders(creature) {
     const status = creature.getStatus();
     for (let motive in status.motives) {
-      if (status.motives.hasOwnProperty(motive)) {
-        creature.setOutput(`slider-${motive}`, status.motives[motive], true);
-      }
+      creature.setOutput(`slider-${motive}`, status.motives[motive], true);
     }
 
     for (let emotion in status.emotions) {
-      if (status.emotions.hasOwnProperty(emotion)) {
-        creature.setOutput(`slider-${emotion}`, status.emotions[emotion], true);
-      }
+      creature.setOutput(`slider-${emotion}`, status.emotions[emotion], true);
     }
   }
 

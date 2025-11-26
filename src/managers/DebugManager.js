@@ -58,9 +58,7 @@ export class DebugManager {
   updateCreatureStatus(creature) {
     const status = creature.getStatus();
     for (let motive in status.motives) {
-      if (status.motives.hasOwnProperty(motive)) {
-        creature.setOutput(motive, status.motives[motive]);
-      }
+      creature.setOutput(motive, status.motives[motive]);
     }
 
     const goal = creature.getCurrentGoalName();

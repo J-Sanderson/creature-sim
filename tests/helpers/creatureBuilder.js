@@ -3,6 +3,7 @@ export function creatureBuilder({
   thresholdByMotive = {},
   motiveByMotive = {},
   personalityByValue = {},
+  emotionByValue = {},
   maxMotive = 100,
   position = { x: 0, y: 0 },
   bounds = { x: 15, y: 15 },
@@ -17,6 +18,7 @@ export function creatureBuilder({
     getMotive: (m) => motiveByMotive[m],
     getPersonalityValues: () => personalityByValue,
     getPersonalityValue: (v) => personalityByValue[v],
+    getEmotions: () => emotionByValue,
     getMaxMotive: () => maxMotive,
     getPosition: () => position,
     getBounds: () => bounds,
@@ -24,6 +26,10 @@ export function creatureBuilder({
     getFavorites: () => favorites,
     update: () => {},
     setOutputEl: () => jest.fn(),
+    setMotive: () => jest.fn(),
+    emotionManager: {
+      setEmotion: () => jest.fn(),
+    },
     queries,
   };
 }

@@ -81,13 +81,16 @@ export class DebugManager {
   }
 
   showCreatureSliders(world, creature) {
+    // todo use labels for each slider
     let motiveSliders = document.createElement('fieldset');
     motiveSliders.classList.add('sliders');
+    motiveSliders.classList.add('sliders-motives');
 
     const motives = creature.getMotives();
     for (let motive in motives) {
       let span = document.createElement('span');
       span.classList.add('slider-item');
+      span.classList.add('slider-item-motive');
       let slider = document.createElement('input');
       slider.setAttribute('type', 'range');
       slider.setAttribute('min', 0);
@@ -108,11 +111,13 @@ export class DebugManager {
 
     let emotionSliders = document.createElement('fieldset');
     emotionSliders.classList.add('sliders');
+    emotionSliders.classList.add('sliders-emotions');
 
     const emotions = creature.getEmotions();
     for (let emotion in emotions) {
       let span = document.createElement('span');
       span.classList.add('slider-item');
+      span.classList.add('slider-item-emotion');
       let slider = document.createElement('input');
       slider.setAttribute('type', 'range');
       slider.setAttribute('min', 0);

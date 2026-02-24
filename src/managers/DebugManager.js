@@ -20,6 +20,7 @@ export class DebugManager {
       let span = document.createElement('span');
       span.classList.add('status-item');
       span.classList.add('status-item-motive');
+      span.classList.add(`status-item-${motive}`);
       let output = document.createElement('output');
       span.innerHTML = `${motive}: `;
       span.appendChild(output);
@@ -44,6 +45,7 @@ export class DebugManager {
       let span = document.createElement('span');
       span.classList.add('status-item');
       span.classList.add('status-item-status');
+      span.classList.add(`status-item-${item}`);
       let output = document.createElement('output');
       span.innerHTML = `${item}: `;
       span.appendChild(output);

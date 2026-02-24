@@ -3,7 +3,6 @@
  */
 import 'jest-canvas-mock';
 import { World } from '../../../src/world/World';
-import items from '../../../src/entities/items';
 import Water from '../../../src/entities/items/Water';
 import Creature from '../../../src/entities/Creature';
 import { goalList } from '../../../src/defaults';

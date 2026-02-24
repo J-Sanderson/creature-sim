@@ -278,6 +278,7 @@ export default class Creature extends Entity {
       this.outputs[type].innerHTML = '';
       this.outputs[type].appendChild(table);
     } else {
+      // TODO - is setVal still needed?
       if (setVal) {
         this.outputs[type].value = val;
       } else {

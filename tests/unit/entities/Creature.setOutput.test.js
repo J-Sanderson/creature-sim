@@ -67,7 +67,10 @@ describe('setOutput', () => {
     const table = creature.outputs[outputType].querySelector('table');
     expect(table).not.toBeNull();
 
-    const headers = Array.from(table.querySelectorAll('th')).map(
+    const header = table.querySelector('thead');
+    const rows = table.querySelectorAll('tbody tr');
+
+    const headers = Array.from(header.querySelectorAll('th')).map(
       (th) => th.textContent
     );
     expect(headers).toEqual([
@@ -79,15 +82,14 @@ describe('setOutput', () => {
       'target',
     ]);
 
-    const rows = table.querySelectorAll('tr');
-    expect(rows.length).toBe(1 + Object.keys(goals).length);
+    expect(rows.length).toBe(Object.keys(goals).length);
 
-    const rowFirst = Array.from(rows[1].querySelectorAll('td')).map(
+    const rowFirst = Array.from(rows[0].querySelectorAll('td')).map(
       (td) => td.textContent
     );
     expect(rowFirst).toEqual(['goal1', '1', 'true', '5', '', '']);
 
-    const rowSecond = Array.from(rows[2].querySelectorAll('td')).map(
+    const rowSecond = Array.from(rows[1].querySelectorAll('td')).map(
       (td) => td.textContent
     );
     expect(rowSecond).toEqual([
@@ -142,8 +144,10 @@ describe('setOutput', () => {
     creature.outputs.goals = el;
 
     creature.setOutput('goals', {});
-    const rows = el.querySelectorAll('tr');
-    expect(rows.length).toBe(1);
+    const headers = el.querySelectorAll('thead');
+    const rows = el.querySelectorAll('tbody tr');
+    expect(headers).toHaveLength(1);
+    expect(rows).toHaveLength(0);
   });
 
   test('sets innerHTML for non-goal output when setVal=false', () => {

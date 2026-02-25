@@ -250,16 +250,18 @@ export default class Creature extends Entity {
       return;
     }
     if (type === 'goals') {
+      // TODO - just update the body
       let table = document.createElement('table');
-      let tr = document.createElement('tr');
+      let thead = document.createElement('thead');
       ['name', 'priority', 'suspended', 'ticks', 'calledBy', 'target'].forEach(
         (item) => {
           let th = document.createElement('th');
           th.innerHTML = item;
-          tr.appendChild(th);
-          table.appendChild(tr);
+          thead.appendChild(th);
+          table.appendChild(thead);
         }
       );
+      let tbody = document.createElement('tbody');
       for (let goal in val) {
         let tr = document.createElement('tr');
         let td = document.createElement('td');
@@ -273,8 +275,9 @@ export default class Creature extends Entity {
         td = document.createElement('td');
         td.innerHTML = val[goal].worldToken.target;
         tr.appendChild(td);
-        table.appendChild(tr);
+        tbody.appendChild(tr);
       }
+      table.appendChild(tbody);
       this.outputs[type].innerHTML = '';
       this.outputs[type].appendChild(table);
     } else {

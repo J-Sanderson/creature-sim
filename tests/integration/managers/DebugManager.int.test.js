@@ -121,10 +121,16 @@ describe('debugManager', () => {
       });
 
       const currentGoal = creature.goalManager.getCurrentGoalName();
-      const output = status.querySelector(
+      const outputGoal = status.querySelector(
         '.status-item-currentGoalName output'
       );
-      expect(output.innerHTML).toEqual(currentGoal);
+      expect(outputGoal.innerHTML).toEqual(currentGoal);
+
+      const outputPlan = status.querySelector('.status-item-plan output');
+      expect(outputPlan.innerHTML).toMatch(/^plan.*$/);
+
+      const outputState = status.querySelector('.status-item-state output');
+      expect(outputState.innerHTML).toMatch(/^state.*$/);
 
       i++;
     });

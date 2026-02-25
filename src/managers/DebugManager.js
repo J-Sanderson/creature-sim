@@ -33,6 +33,7 @@ export class DebugManager {
       let span = document.createElement('span');
       span.classList.add('status-item');
       span.classList.add('status-item-goal');
+      span.classList.add(`status-item-${item}`);
       let output = document.createElement('output');
       span.innerHTML = `${item}: `;
       span.appendChild(output);

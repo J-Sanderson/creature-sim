@@ -29,16 +29,11 @@ describe('debugManager', () => {
       );
 
       // no current goals/plan/state on init
-      // TODO better name goal outputs rather than using index
-      const goalOutputs = status.querySelectorAll(
-        '.status-item.status-item-goal output'
-      );
-      const table = goalOutputs[0].querySelector('table');
+      const table = status.querySelector('.status-item-goals table');
       expect(table.querySelectorAll('thead')).toHaveLength(1);
       expect(table.querySelectorAll('tbody tr')).toHaveLength(0);
-      // TODO - improve after evaluating use of setVal, fold into below
-      expect(goalOutputs[1].innerHTML).toEqual('');
-      ['plan', 'state'].forEach((item) => {
+
+      ['currentGoalName', 'plan', 'state'].forEach((item) => {
         const output = status.querySelector(`.status-item-${item} output`);
         expect(output.innerHTML).toEqual('');
       });

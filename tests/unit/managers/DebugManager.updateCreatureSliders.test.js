@@ -65,8 +65,7 @@ describe('updateCreatureSliders', () => {
       for (let motive in motives) {
         expect(creature.setOutput).toHaveBeenCalledWith(
           `slider-${motive}`,
-          motives[motive],
-          true
+          motives[motive]
         );
       }
     });
@@ -79,8 +78,7 @@ describe('updateCreatureSliders', () => {
       for (let emotion in emotions) {
         expect(creature.setOutput).toHaveBeenCalledWith(
           `slider-${emotion}`,
-          emotions[emotion],
-          true
+          emotions[emotion]
         );
       }
     });

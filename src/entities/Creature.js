@@ -244,7 +244,7 @@ export default class Creature extends Entity {
     this.outputs[type] = el;
   }
 
-  setOutput(type, val, setVal = false) {
+  setOutput(type, val) {
     if (!this.outputs.hasOwnProperty(type)) {
       console.error(`Error: no output of type ${type}`);
       return;
@@ -281,12 +281,7 @@ export default class Creature extends Entity {
       this.outputs[type].innerHTML = '';
       this.outputs[type].appendChild(table);
     } else {
-      // TODO - is setVal still needed?
-      if (setVal) {
-        this.outputs[type].value = val;
-      } else {
-        this.outputs[type].innerHTML = JSON.stringify(val);
-      }
+      this.outputs[type].value = val;
     }
   }
 }

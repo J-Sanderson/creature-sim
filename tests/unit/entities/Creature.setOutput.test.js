@@ -150,25 +150,14 @@ describe('setOutput', () => {
     expect(rows).toHaveLength(0);
   });
 
-  test('sets innerHTML for non-goal output when setVal=false', () => {
-    const creature = new Creature('w-1');
-    const outputType = 'status';
-    const el = document.createElement('div');
-    const status = { a: 1 };
-    creature.outputs[outputType] = el;
-
-    creature.setOutput(outputType, status);
-    expect(el.innerHTML).toBe(JSON.stringify(status));
-  });
-
-  test('sets value for non-goal output when setVal=true', () => {
+  test('sets value for non-goal output', () => {
     const creature = new Creature('w-1');
     const outputType = 'status';
     const el = document.createElement('output');
     const status = 42;
     creature.outputs[outputType] = el;
 
-    creature.setOutput(outputType, status, true);
+    creature.setOutput(outputType, status);
 
     expect(parseInt(el.value)).toBe(status);
   });

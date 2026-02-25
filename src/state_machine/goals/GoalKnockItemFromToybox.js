@@ -1,4 +1,5 @@
 import Goal from './Goal';
+import worldManager from '../../managers/WorldManager';
 import {
   adjectiveList,
   personalityValueList,
@@ -63,7 +64,8 @@ export default class GoalKnockItemFromToybox extends Goal {
       ) {
         return -1;
       }
-      let toybox = document.querySelector(`[data-world="${self.world}"]`);
+      const world = worldManager.getWorld(self.getWorld());
+      const toybox = world.getElement('toybox');
       let buttons = Array.from(toybox.querySelectorAll('button'));
       if (buttons.every((button) => button.classList.contains('item-active'))) {
         return -1;

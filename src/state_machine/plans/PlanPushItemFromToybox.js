@@ -1,4 +1,5 @@
 import Plan from './Plan';
+import worldManager from '../../managers/WorldManager';
 import { utilities } from '../../utils/Utilities';
 import { adjectiveList, goalList, planList, stateList } from '../../defaults';
 
@@ -38,7 +39,8 @@ export default class PlanPushItemFromToybox extends Plan {
       default:
     }
 
-    let toybox = document.querySelector(`[data-world="${self.world}"]`);
+    const world = worldManager.getWorld(self.getWorld());
+    const toybox = world.getElement('toybox');
     let buttons = Array.from(toybox.querySelectorAll('button'));
     if (adj) {
       let pref;

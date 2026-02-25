@@ -14,7 +14,11 @@ describe('debugManager', () => {
     jest.spyOn(World.prototype, 'tick').mockImplementation(() => {});
 
     const el = document.createElement('div');
-    const world = new World(el, { showStatus: true, showSliders: true, showPersonality: true });
+    const world = new World(el, {
+      showStatus: true,
+      showSliders: true,
+      showPersonality: true,
+    });
 
     const creatures = world.getCreatures();
     const statusWrapper = world.getElement('statusWrapper');
@@ -48,24 +52,30 @@ describe('debugManager', () => {
         const output = status.querySelector(`.status-item-${motive} output`);
         expect(parseInt(output.innerHTML)).toBe(motives[motive]);
 
-        const slider = motiveSliders[i].querySelector(`.slider-item-${motive} input`);
+        const slider = motiveSliders[i].querySelector(
+          `.slider-item-${motive} input`
+        );
         expect(parseInt(slider.value)).toBe(motives[motive]);
       }
 
       const emotions = creature.getEmotions();
-      for(let emotion in emotions) {
-        const slider = emotionSliders[i].querySelector(`.slider-item-${emotion} input`);
+      for (let emotion in emotions) {
+        const slider = emotionSliders[i].querySelector(
+          `.slider-item-${emotion} input`
+        );
         expect(parseInt(slider.value)).toBe(emotions[emotion]);
       }
 
       const personalityValues = creature.getPersonalityValues();
       for (let value in personalityValues) {
-        const output = personalities[0].querySelector(`.personality-item-${value}`);
+        const output = personalities[0].querySelector(
+          `.personality-item-${value}`
+        );
         expect(output.innerHTML).toBe(`${value}: ${personalityValues[value]}`);
       }
 
       const favoriteValues = creature.getFavorites();
-      for(let value in favoriteValues) {
+      for (let value in favoriteValues) {
         const output = favorites[0].querySelector(`.personality-item-${value}`);
         expect(output.innerHTML).toBe(`${value}: ${favoriteValues[value]}`);
       }
@@ -79,15 +89,14 @@ describe('debugManager', () => {
 
     const el = document.createElement('div');
     const world = new World(el, { showStatus: true });
+    world.tick();
 
     const creatures = world.getCreatures();
     const statusWrapper = world.getElement('statusWrapper');
     const statuses = statusWrapper.querySelectorAll('.status');
-    
+
     let i = 0;
     creatures.forEach((creature) => {
-      // TODO - this appears to fail if the goal is GoalKnockItemFromToybox (toybox does not exist?)
-      world.tick();
       const goals = creature.goalManager.getGoals();
       const status = statuses[i];
 
@@ -95,8 +104,10 @@ describe('debugManager', () => {
       const rows = table.querySelectorAll('tbody tr');
       expect(Object.keys(goals).length).toBe(rows.length);
 
-      rows.forEach(row => {
-        const entries = Array.from(row.querySelectorAll('td')).map(td => td.textContent);
+      rows.forEach((row) => {
+        const entries = Array.from(row.querySelectorAll('td')).map(
+          (td) => td.textContent
+        );
         const name = entries[0];
         const goal = goals[name];
         expect(entries).toEqual([
@@ -110,7 +121,9 @@ describe('debugManager', () => {
       });
 
       const currentGoal = creature.goalManager.getCurrentGoalName();
-      const output = status.querySelector('.status-item-currentGoalName output');
+      const output = status.querySelector(
+        '.status-item-currentGoalName output'
+      );
       expect(output.innerHTML).toEqual(currentGoal);
 
       i++;

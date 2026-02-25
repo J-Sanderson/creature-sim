@@ -92,6 +92,7 @@ export class DebugManager {
       let span = document.createElement('span');
       span.classList.add('slider-item');
       span.classList.add('slider-item-motive');
+      span.classList.add(`slider-item-${motive}`);
       let slider = document.createElement('input');
       slider.setAttribute('type', 'range');
       slider.setAttribute('min', 0);
@@ -119,6 +120,7 @@ export class DebugManager {
       let span = document.createElement('span');
       span.classList.add('slider-item');
       span.classList.add('slider-item-emotion');
+      span.classList.add(`slider-item-${emotion}`);
       let slider = document.createElement('input');
       slider.setAttribute('type', 'range');
       slider.setAttribute('min', 0);
@@ -161,6 +163,7 @@ export class DebugManager {
       let span = document.createElement('span');
       span.classList.add('personality-item');
       span.classList.add('personality-item-personality');
+      span.classList.add(`personality-item-${value}`);
       span.innerHTML = `${value}: ${personalityValues[value]}`;
       personality.appendChild(span);
       personality.appendChild(document.createElement('br'));
@@ -175,6 +178,7 @@ export class DebugManager {
       let span = document.createElement('span');
       span.classList.add('personality-item');
       span.classList.add('personality-item-favorite');
+      span.classList.add(`personality-item-${value}`);
       span.innerHTML = `${value}: ${favoriteValues[value]}`;
       favorites.appendChild(span);
       favorites.appendChild(document.createElement('br'));

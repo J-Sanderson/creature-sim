@@ -6,9 +6,9 @@ import { World } from '../../../src/world/World';
 import { utilities } from '../../../src/utils/Utilities';
 import Water from '../../../src/entities/items/Water';
 
-// todo mock errors
 describe('findEmptyPosition', () => {
   test('returns null if no free spaces', () => {
+    const err = jest.spyOn(console, 'error').mockImplementation(() => {});
     const el = document.createElement('div');
     const world = new World(el, { width: 1, height: 2 });
     world.addEntity(Water, { xPos: 0, yPos: 0 });
@@ -17,9 +17,11 @@ describe('findEmptyPosition', () => {
     const attempts = 10;
     const pos = world.findEmptyPosition(attempts);
     expect(pos).toBeNull();
+    expect(err).toHaveBeenCalledWith('Error: no free space found');
   });
 
   test('returns null if no free spaces found after max attempts', () => {
+    const err = jest.spyOn(console, 'error').mockImplementation(() => {});
     const el = document.createElement('div');
     const world = new World(el, { width: 1, height: 2 });
     world.addEntity(Water, { xPos: 0, yPos: 0 });
@@ -28,6 +30,7 @@ describe('findEmptyPosition', () => {
     const attempts = 10;
     const pos = world.findEmptyPosition(attempts);
     expect(pos).toBeNull();
+    expect(err).toHaveBeenCalledWith('Error: no free space found');
   });
 
   test('returns position object if space found', () => {

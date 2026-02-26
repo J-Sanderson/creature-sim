@@ -148,6 +148,7 @@ describe('debugManager', () => {
     const creatures = world.getCreatures();
     const statusWrapper = world.getElement('statusWrapper');
     const statuses = statusWrapper.querySelectorAll('.status');
+    const motiveSliders = statusWrapper.querySelectorAll('.sliders-motives');
     const emotionSliders = statusWrapper.querySelectorAll('.sliders-emotions');
 
     let i = 0;
@@ -177,12 +178,17 @@ describe('debugManager', () => {
       expect(parseInt(outputFullness.innerHTML)).not.toBe(fullness);
       expect(parseInt(outputFullness.innerHTML)).toBe(fullnessNew);
 
-      // TODO also test fullness slider
-      const slider = emotionSliders[i].querySelector(
+      const sliderFullness = motiveSliders[i].querySelector(
+        `.slider-item-${motiveList.fullness} input`
+      );
+      expect(parseInt(sliderFullness.value)).not.toBe(fullness);
+      expect(parseInt(sliderFullness.value)).toBe(fullnessNew);
+
+      const sliderHappiness = emotionSliders[i].querySelector(
         `.slider-item-${emotionList.happy} input`
       );
-      expect(parseInt(slider.value)).not.toBe(happiness);
-      expect(parseInt(slider.value)).toBe(happinessNew);
+      expect(parseInt(sliderHappiness.value)).not.toBe(happiness);
+      expect(parseInt(sliderHappiness.value)).toBe(happinessNew);
 
       i++;
     });

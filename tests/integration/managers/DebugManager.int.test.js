@@ -192,7 +192,6 @@ describe('debugManager', () => {
     jest.spyOn(World.prototype, 'tick').mockImplementation(() => {});
     const el = document.createElement('div');
     const world = new World(el, {
-      showStatus: true, // TODO - test if fails when this is not present
       showSliders: true,
     });
 

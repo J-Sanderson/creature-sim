@@ -88,8 +88,15 @@ export class World {
       'creatures'
     );
 
-    if (this.params.showStatus) {
+    if (
+      this.params.showStatus ||
+      this.params.showSliders ||
+      this.params.showPersonality
+    ) {
       this.debugManager.showStatusWrapper(this);
+    }
+
+    if (this.params.showStatus) {
       this.entities.creatures.forEach((creature) => {
         this.debugManager.showCreatureStatus(this, creature);
         this.debugManager.updateCreatureStatus(creature);

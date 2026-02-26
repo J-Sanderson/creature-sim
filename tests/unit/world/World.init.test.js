@@ -301,7 +301,6 @@ describe('init', () => {
       );
 
       [
-        'showStatusWrapper',
         'showCreatureStatus',
         'updateCreatureStatus',
         'showCreaturePersonality',
@@ -333,7 +332,6 @@ describe('init', () => {
       );
 
       [
-        'showStatusWrapper',
         'showCreatureStatus',
         'updateCreatureStatus',
         'showCreatureSliders',

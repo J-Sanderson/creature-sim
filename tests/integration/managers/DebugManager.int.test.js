@@ -131,7 +131,7 @@ describe('debugManager', () => {
       expect(outputPlan.innerHTML).toMatch(/^plan.*$/);
 
       const outputState = status.querySelector('.status-item-state output');
-      expect(outputState.innerHTML).toMatch(/^state.*$/);
+      expect(outputState.innerHTML).toMatch(/^state.*$/); //TODO this is occasionally blank
 
       i++;
     });
@@ -155,28 +155,78 @@ describe('debugManager', () => {
       const fullness = creature.getMotive(motiveList.fullness);
       const happiness = creature.getEmotions()[emotionList.happy];
 
-      const maxMotive = creature.getMaxMotive()
+      const maxMotive = creature.getMaxMotive();
       const fullnessNew = fullness === maxMotive ? fullness - 1 : fullness + 1;
-      const happinessNew = happiness === maxMotive ? happiness - 1 : happiness + 1;
+      const happinessNew =
+        happiness === maxMotive ? happiness - 1 : happiness + 1;
 
       creature.setMotive(motiveList.fullness, fullnessNew);
-      creature.emotionManager.setEmotion(creature, emotionList.happy, happinessNew);
+      creature.emotionManager.setEmotion(
+        creature,
+        emotionList.happy,
+        happinessNew
+      );
 
       world.debugManager.updateCreatureStatus(creature);
       world.debugManager.updateCreatureSliders(creature);
 
       const status = statuses[i];
-      const outputFullness = status.querySelector(`.status-item-${motiveList.fullness} output`);
+      const outputFullness = status.querySelector(
+        `.status-item-${motiveList.fullness} output`
+      );
       expect(parseInt(outputFullness.innerHTML)).not.toBe(fullness);
       expect(parseInt(outputFullness.innerHTML)).toBe(fullnessNew);
 
+      // TODO also test fullness slider
       const slider = emotionSliders[i].querySelector(
         `.slider-item-${emotionList.happy} input`
       );
       expect(parseInt(slider.value)).not.toBe(happiness);
       expect(parseInt(slider.value)).toBe(happinessNew);
 
-      i++
+      i++;
+    });
+  });
+
+  test('updating sliders updates creature status', () => {
+    jest.spyOn(World.prototype, 'tick').mockImplementation(() => {});
+    const el = document.createElement('div');
+    const world = new World(el, {
+      showStatus: true, // TODO - test if fails when this is not present
+      showSliders: true,
+    });
+
+    const creatures = world.getCreatures();
+    const statusWrapper = world.getElement('statusWrapper');
+    const motiveSliders = statusWrapper.querySelectorAll('.sliders-motives');
+    const emotionSliders = statusWrapper.querySelectorAll('.sliders-emotions');
+
+    let i = 0;
+    creatures.forEach((creature) => {
+      const fullness = creature.getMotive(motiveList.fullness);
+      const happiness = creature.getEmotions()[emotionList.happy];
+      const maxMotive = creature.getMaxMotive();
+
+      const sliderFullness = motiveSliders[i].querySelector(
+        `.slider-item-${motiveList.fullness} input`
+      );
+      const fullnessNew = fullness === maxMotive ? fullness - 1 : fullness + 1;
+      sliderFullness.value = fullnessNew;
+      sliderFullness.dispatchEvent(new Event('change'));
+      expect(creature.getMotive(motiveList.fullness)).not.toBe(fullness);
+      expect(creature.getMotive(motiveList.fullness)).toBe(fullnessNew);
+
+      const sliderHappiness = emotionSliders[i].querySelector(
+        `.slider-item-${emotionList.happy} input`
+      );
+      const happinessNew =
+        happiness === maxMotive ? happiness - 1 : happiness + 1;
+      sliderHappiness.value = happinessNew;
+      sliderHappiness.dispatchEvent(new Event('change'));
+      expect(creature.getEmotions()[emotionList.happy]).not.toBe(happiness);
+      expect(creature.getEmotions()[emotionList.happy]).toBe(happinessNew);
+
+      i++;
     });
   });
 });

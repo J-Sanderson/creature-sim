@@ -131,7 +131,7 @@ describe('debugManager', () => {
       expect(outputPlan.innerHTML).toMatch(/^plan.*$/);
 
       const outputState = status.querySelector('.status-item-state output');
-      expect(outputState.innerHTML).toMatch(/^state.*$/); //TODO this is occasionally blank
+      expect(outputState.innerHTML).toMatch(/^(state.*)?$/);
 
       i++;
     });

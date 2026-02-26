@@ -3,6 +3,7 @@
  */
 import 'jest-canvas-mock';
 import { World } from '../../../src/world/World';
+import { emotionList, motiveList } from '../../../src/defaults';
 
 describe('debugManager', () => {
   beforeEach(() => {
@@ -133,6 +134,49 @@ describe('debugManager', () => {
       expect(outputState.innerHTML).toMatch(/^state.*$/);
 
       i++;
+    });
+  });
+
+  test('updates motive and emotion elements on change', () => {
+    jest.spyOn(World.prototype, 'tick').mockImplementation(() => {});
+    const el = document.createElement('div');
+    const world = new World(el, {
+      showStatus: true,
+      showSliders: true,
+    });
+
+    const creatures = world.getCreatures();
+    const statusWrapper = world.getElement('statusWrapper');
+    const statuses = statusWrapper.querySelectorAll('.status');
+    const emotionSliders = statusWrapper.querySelectorAll('.sliders-emotions');
+
+    let i = 0;
+    creatures.forEach((creature) => {
+      const fullness = creature.getMotive(motiveList.fullness);
+      const happiness = creature.getEmotions()[emotionList.happy];
+
+      const maxMotive = creature.getMaxMotive()
+      const fullnessNew = fullness === maxMotive ? fullness - 1 : fullness + 1;
+      const happinessNew = happiness === maxMotive ? happiness - 1 : happiness + 1;
+
+      creature.setMotive(motiveList.fullness, fullnessNew);
+      creature.emotionManager.setEmotion(creature, emotionList.happy, happinessNew);
+
+      world.debugManager.updateCreatureStatus(creature);
+      world.debugManager.updateCreatureSliders(creature);
+
+      const status = statuses[i];
+      const outputFullness = status.querySelector(`.status-item-${motiveList.fullness} output`);
+      expect(parseInt(outputFullness.innerHTML)).not.toBe(fullness);
+      expect(parseInt(outputFullness.innerHTML)).toBe(fullnessNew);
+
+      const slider = emotionSliders[i].querySelector(
+        `.slider-item-${emotionList.happy} input`
+      );
+      expect(parseInt(slider.value)).not.toBe(happiness);
+      expect(parseInt(slider.value)).toBe(happinessNew);
+
+      i++
     });
   });
 });

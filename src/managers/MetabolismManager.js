@@ -58,19 +58,16 @@ export class MetabolismManager {
       motive: motiveList.fullness,
       checkGoal: 'amIHungry',
       goal: goalList.eat,
-      useSetMotive: true,
     },
     {
       motive: motiveList.hydration,
       checkGoal: 'amIThirsty',
       goal: goalList.drink,
-      useSetMotive: false,
     },
     {
       motive: motiveList.energy,
       checkGoal: 'amITired',
       goal: goalList.sleep,
-      useSetMotive: true,
     },
   ];
 
@@ -105,24 +102,25 @@ export class MetabolismManager {
     const state = self.getState();
 
     MetabolismManager.motiveDecayFormulas.forEach(
-      ({ motive, checkGoal, goal, useSetMotive }) => {
+      ({ motive, checkGoal, goal }) => {
         const threshold = decayThresholds[motive];
-        if (threshold === undefined) return;
+        if (threshold === undefined) {
+          console.error(`No valid decay threshold found for ${motive}`);
+          return;
+        }
 
         const suppressed = state?.suppressMotiveDecay?.includes(motive);
         const sleepDecayChance = 0.25;
+        const motiveVal = self.getMotives()[motive];
         const canDecay =
           !suppressed &&
-          self.status.motives[motive] > 0 &&
-          (state?.name !== stateList.sleep || Math.random() < sleepDecayChance) &&
+          motiveVal > 0 &&
+          (state?.name !== stateList.sleep ||
+            Math.random() < sleepDecayChance) &&
           Math.random() < threshold;
 
         if (canDecay) {
-          if (useSetMotive) {
-            self.setMotive(motive, self.status.motives[motive] - 1);
-          } else {
-            self.status.motives[motive]--;
-          }
+          self.setMotive(motive, motiveVal - 1);
         }
 
         const goals = self.goalManager.getGoals();

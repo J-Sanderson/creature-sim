@@ -53,6 +53,27 @@ export class MetabolismManager {
     },
   ];
 
+  static motiveDecayFormulas = [
+    {
+      motive: motiveList.fullness,
+      checkGoal: 'amIHungry',
+      goal: goalList.eat,
+      useSetMotive: true,
+    },
+    {
+      motive: motiveList.hydration,
+      checkGoal: 'amIThirsty',
+      goal: goalList.drink,
+      useSetMotive: false,
+    },
+    {
+      motive: motiveList.energy,
+      checkGoal: 'amITired',
+      goal: goalList.sleep,
+      useSetMotive: true,
+    },
+  ];
+
   constructor(params = {}) {
     if (
       !params.hasOwnProperty('personalityValues') ||
@@ -83,99 +104,45 @@ export class MetabolismManager {
     const decayThresholds = this.getDecayThresholds();
     const state = self.getState();
 
-    // fullness decay
-    if (decayThresholds.hasOwnProperty(motiveList.fullness)) {
-      if (state && !state.suppressMotiveDecay.includes(motiveList.fullness)) {
-        if (
-          ((state && state.name !== stateList.sleep) || Math.random() < 0.25) &&
-          self.status.motives[motiveList.fullness] > 0
-        ) {
-          if (Math.random() < decayThresholds[motiveList.fullness]) {
-            self.setMotive(
-              motiveList.fullness,
-              self.status.motives[motiveList.fullness] - 1
-            );
+    MetabolismManager.motiveDecayFormulas.forEach(
+      ({ motive, checkGoal, goal, useSetMotive }) => {
+        const threshold = decayThresholds[motive];
+        if (threshold === undefined) return;
+
+        const suppressed = state?.suppressMotiveDecay?.includes(motive);
+        const sleepDecayChance = 0.25;
+        const canDecay =
+          !suppressed &&
+          self.status.motives[motive] > 0 &&
+          (state?.name !== stateList.sleep || Math.random() < sleepDecayChance) &&
+          Math.random() < threshold;
+
+        if (canDecay) {
+          if (useSetMotive) {
+            self.setMotive(motive, self.status.motives[motive] - 1);
+          } else {
+            self.status.motives[motive]--;
           }
         }
-      }
-      if (
-        !(goalList.eat in self.goalManager.getGoals()) &&
-        self.queries.amIHungry(self)
-      ) {
-        self.goalManager.addGoal(
-          self,
-          goalList.eat,
-          {
-            tickModifiers: {
-              personality: self.getPersonalityValues(),
-              maxMotive: self.getMaxMotive(),
-            },
-          },
-          false
-        );
-      }
-    }
 
-    // hydration decay
-    if (decayThresholds.hasOwnProperty(motiveList.hydration)) {
-      if (state && !state.suppressMotiveDecay.includes(motiveList.hydration)) {
-        if (
-          ((state && state.name !== stateList.sleep) || Math.random() < 0.25) &&
-          self.status.motives[motiveList.hydration] > 0 &&
-          Math.random() < decayThresholds[motiveList.hydration]
-        ) {
-          self.status.motives[motiveList.hydration]--;
-        }
-      }
-      if (
-        !(goalList.drink in self.goalManager.getGoals()) &&
-        self.queries.amIThirsty(self)
-      ) {
-        self.goalManager.addGoal(
-          self,
-          goalList.drink,
-          {
-            tickModifiers: {
-              personality: self.getPersonalityValues(),
-              maxMotive: self.getMaxMotive(),
-            },
-          },
-          false
-        );
-      }
-    }
+        const goals = self.goalManager.getGoals();
+        const needsGoal = !(goal in goals) && self.queries[checkGoal](self);
 
-    // energy decay
-    if (decayThresholds.hasOwnProperty(motiveList.energy)) {
-      if (
-        state &&
-        !state.suppressMotiveDecay.includes(motiveList.energy) &&
-        self.status.motives[motiveList.energy] > 0
-      ) {
-        if (Math.random() < decayThresholds[motiveList.energy]) {
-          self.setMotive(
-            motiveList.energy,
-            self.status.motives[motiveList.energy] - 1
+        if (needsGoal) {
+          self.goalManager.addGoal(
+            self,
+            goal,
+            {
+              tickModifiers: {
+                personality: self.getPersonalityValues(),
+                maxMotive: self.getMaxMotive(),
+              },
+            },
+            false
           );
         }
       }
-      if (
-        !(goalList.sleep in self.goalManager.getGoals()) &&
-        self.queries.amITired(self)
-      ) {
-        self.goalManager.addGoal(
-          self,
-          goalList.sleep,
-          {
-            tickModifiers: {
-              personality: self.getPersonalityValues(),
-              maxMotive: self.getMaxMotive(),
-            },
-          },
-          false
-        );
-      }
-    }
+    );
   }
 
   getDecayThresholds() {

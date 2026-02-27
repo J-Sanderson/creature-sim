@@ -92,12 +92,10 @@ describe('update', () => {
 
   test('does not run setEmotion if state supresses decay for given emotion', () => {
     creatures.forEach((creature) => {
-      jest
-        .spyOn(creature, 'getState')
-        .mockReturnValue({
-          name: stateList.wander,
-          suppressEmotionDecay: [emotionList.angry],
-        });
+      jest.spyOn(creature, 'getState').mockReturnValue({
+        name: stateList.wander,
+        suppressEmotionDecay: [emotionList.angry],
+      });
       jest
         .spyOn(creature.emotionManager, 'setEmotion')
         .mockImplementation(() => {});

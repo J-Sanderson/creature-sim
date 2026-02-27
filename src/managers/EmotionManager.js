@@ -15,7 +15,7 @@ export class EmotionManager {
   setEmotion(self, emotion, value) {
     if (!emotion || !value || value < 0) return;
 
-    if (!self.status.emotions.hasOwnProperty(emotion)) {
+    if (!self.getEmotions().hasOwnProperty(emotion)) {
       console.error('Invalid emotion');
       return;
     }

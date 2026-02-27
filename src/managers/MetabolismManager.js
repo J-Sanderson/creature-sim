@@ -6,43 +6,74 @@ import {
 } from '../defaults';
 
 export class MetabolismManager {
+  static decayThresholdFormulas = [
+    {
+      motive: motiveList.fullness,
+      compute: ({ maxMotive, personalityValues }) =>
+        personalityValues[personalityValueList.metabolism] / maxMotive,
+    },
+    {
+      motive: motiveList.hydration,
+      compute: ({ maxMotive, personalityValues }) =>
+        0.4 +
+        personalityValues[personalityValueList.liveliness] / (maxMotive * 3),
+    },
+    {
+      motive: motiveList.energy,
+      compute: ({ maxMotive, personalityValues }) => {
+        const metabolismRatio =
+          personalityValues[personalityValueList.metabolism] / maxMotive;
+
+        const livelinessRatio =
+          personalityValues[personalityValueList.liveliness] / maxMotive;
+
+        return 1 - (1 - metabolismRatio) * (1 + livelinessRatio);
+      },
+    },
+  ];
+
+  static desireThresholdFormulas = [
+    {
+      motive: motiveList.energy,
+      personalityValue: personalityValueList.liveliness,
+      multiplier: 0.2,
+      divisor: 10,
+    },
+    {
+      motive: motiveList.fullness,
+      personalityValue: personalityValueList.metabolism,
+      multiplier: 0.4,
+      divisor: 10,
+    },
+    {
+      motive: motiveList.hydration,
+      personalityValue: personalityValueList.liveliness,
+      multiplier: 0.4,
+      divisor: 10,
+    },
+  ];
+
   constructor(params = {}) {
     if (
-      params.hasOwnProperty('personalityValues') &&
-      params.hasOwnProperty('maxMotive')
+      !params.hasOwnProperty('personalityValues') ||
+      !params.hasOwnProperty('maxMotive')
     ) {
-      this.decayThresholds[motiveList.fullness] =
-        params.personalityValues[personalityValueList.metabolism] /
-        params.maxMotive;
-      this.decayThresholds[motiveList.hydration] =
-        0.4 +
-        params.personalityValues[personalityValueList.liveliness] /
-          (params.maxMotive * 3);
-      this.decayThresholds[motiveList.energy] =
-        1 -
-        (1 -
-          params.personalityValues[personalityValueList.metabolism] /
-            params.maxMotive) *
-          (1 +
-            params.personalityValues[personalityValueList.liveliness] /
-              params.maxMotive);
-      for (let threshold in this.decayThresholds) {
-        this.decayThresholds[threshold] = Math.max(
-          0,
-          Math.min(1, this.decayThresholds[threshold])
-        );
-      }
-
-      this.desireThresholds[motiveList.energy] =
-        params.maxMotive * 0.2 -
-        params.personalityValues[personalityValueList.liveliness] / 10;
-      this.desireThresholds[motiveList.fullness] =
-        params.maxMotive * 0.4 +
-        params.personalityValues[personalityValueList.metabolism] / 10;
-      this.desireThresholds[motiveList.hydration] =
-        params.maxMotive * 0.4 +
-        params.personalityValues[personalityValueList.liveliness] / 10;
+      console.error('Error: missing personality values or maxMotive');
+      return;
     }
+
+    const clamp01 = (v) => Math.min(1, Math.max(0, v));
+    MetabolismManager.decayThresholdFormulas.forEach(({ motive, compute }) => {
+      this.decayThresholds[motive] = clamp01(compute(params));
+    });
+
+    MetabolismManager.desireThresholdFormulas.forEach(
+      ({ motive, personalityValue, multiplier, divisor }) => {
+        this.desireThresholds[motive] =
+          params.maxMotive * multiplier -
+          params.personalityValues[personalityValue] / divisor;
+      }
+    );
   }
 
   decayThresholds = {};

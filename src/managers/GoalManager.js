@@ -9,7 +9,7 @@ export class GoalManager {
 
   update(self) {
     this.updateGoalPriorities(self);
-    let current = this.goals[this.currentGoalName];
+    let current = this.getCurrentGoal();
     if (!current || current.getIsSuspended()) {
       // do I have other goals?
       if (Object.keys(this.goals).length) {
@@ -29,7 +29,7 @@ export class GoalManager {
         this.findInterestingGoals(self);
       }
     }
-    this.goals[this.currentGoalName].execute(self);
+    this.getCurrentGoal().execute(self);
   }
 
   updateGoalPriorities(self) {

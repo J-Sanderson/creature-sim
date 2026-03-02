@@ -8,6 +8,7 @@ import {
   motiveList,
   personalityValueList,
   stateList,
+  goalList,
 } from '../../../src/defaults';
 
 describe('update', () => {
@@ -316,5 +317,102 @@ describe('update', () => {
     });
   });
 
-  //TODO - goal setting
+  test('runs getGoals if motive should decay', () => {
+    creatures.forEach((creature) => {
+      jest.spyOn(Math, 'random').mockReturnValue(0);
+      jest.spyOn(creature.goalManager, 'getGoals').mockReturnValue({});
+      const metabolismManager = new MetabolismManager({
+        personalityValues: creature.getPersonalityValues(),
+        maxMotive: creature.getMaxMotive(),
+      });
+
+      metabolismManager.update(creature);
+      expect(creature.goalManager.getGoals).toHaveBeenCalledTimes(
+        Array.from(Object.keys(creature.getMotives())).length
+      );
+    });
+  });
+
+  test('does not run addGoal if required goal is already present', () => {
+    creatures.forEach((creature) => {
+      jest.spyOn(Math, 'random').mockReturnValue(0);
+      const goals = { [goalList.eat]: { name: goalList.eat } };
+      jest.spyOn(creature.goalManager, 'getGoals').mockReturnValue(goals);
+      const metabolismManager = new MetabolismManager({
+        personalityValues: creature.getPersonalityValues(),
+        maxMotive: creature.getMaxMotive(),
+      });
+
+      metabolismManager.update(creature);
+      expect(creature.goalManager.addGoal).not.toHaveBeenCalledWith(
+        creature,
+        goalList.eat,
+        {
+          tickModifiers: {
+            personality: creature.getPersonalityValues(),
+            maxMotive: creature.getMaxMotive(),
+          },
+        },
+        false
+      );
+    });
+  });
+
+  test('does not run addGoal if not required', () => {
+    creatures.forEach((creature) => {
+      jest.spyOn(Math, 'random').mockReturnValue(0);
+      jest.spyOn(creature.goalManager, 'getGoals').mockReturnValue({});
+      creature.queries = {
+        amIHungry: jest.fn().mockReturnValue(false),
+        amIThirsty: jest.fn().mockReturnValue(false),
+        amITired: jest.fn().mockReturnValue(false),
+      };
+      const metabolismManager = new MetabolismManager({
+        personalityValues: creature.getPersonalityValues(),
+        maxMotive: creature.getMaxMotive(),
+      });
+
+      metabolismManager.update(creature);
+      expect(creature.goalManager.addGoal).not.toHaveBeenCalledWith(
+        creature,
+        goalList.eat,
+        {
+          tickModifiers: {
+            personality: creature.getPersonalityValues(),
+            maxMotive: creature.getMaxMotive(),
+          },
+        },
+        false
+      );
+    });
+  });
+
+  test('runs addGoal if not present and required', () => {
+    creatures.forEach((creature) => {
+      jest.spyOn(Math, 'random').mockReturnValue(0);
+      jest.spyOn(creature.goalManager, 'getGoals').mockReturnValue({});
+      creature.queries = {
+        amIHungry: jest.fn().mockReturnValue(true),
+        amIThirsty: jest.fn().mockReturnValue(false),
+        amITired: jest.fn().mockReturnValue(false),
+      };
+      const metabolismManager = new MetabolismManager({
+        personalityValues: creature.getPersonalityValues(),
+        maxMotive: creature.getMaxMotive(),
+      });
+
+      metabolismManager.update(creature);
+      expect(creature.goalManager.addGoal).toHaveBeenCalledWith(
+        creature,
+        goalList.eat,
+        {
+          tickModifiers: {
+            personality: creature.getPersonalityValues(),
+            maxMotive: creature.getMaxMotive(),
+          },
+        },
+        false
+      );
+    });
+  });
 });

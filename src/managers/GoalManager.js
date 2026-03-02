@@ -34,13 +34,11 @@ export class GoalManager {
 
   updateGoalPriorities(self) {
     for (let goal in this.goals) {
-      if (goal) {
-        const priority = this.goals[goal].filter(self);
-        if (priority < 0) {
-          delete this.goals[goal];
-        } else {
-          this.goals[goal].setPriority(priority);
-        }
+      const priority = this.goals[goal].filter(self);
+      if (priority < 0) {
+        delete this.goals[goal];
+      } else {
+        this.goals[goal].setPriority(priority);
       }
     }
   }

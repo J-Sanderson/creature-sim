@@ -86,8 +86,7 @@ describe('update', () => {
       },
     };
 
-    const getTopPriorityGoal = jest
-      .spyOn(goalManager, 'getTopPriorityGoal')
+    const getTopPriorityGoal = jest.spyOn(goalManager, 'getTopPriorityGoal');
 
     goalManager.update(creature);
     expect(getTopPriorityGoal).toHaveBeenCalledWith(true);
@@ -116,10 +115,8 @@ describe('update', () => {
       },
     };
 
-    const getTopPriorityGoal = jest
-      .spyOn(goalManager, 'getTopPriorityGoal')
-    const unsuspendGoal = jest
-      .spyOn(goalManager, 'unsuspendGoal')
+    const getTopPriorityGoal = jest.spyOn(goalManager, 'getTopPriorityGoal');
+    const unsuspendGoal = jest.spyOn(goalManager, 'unsuspendGoal');
 
     goalManager.update(creature);
     expect(getTopPriorityGoal).toHaveBeenNthCalledWith(1, true);

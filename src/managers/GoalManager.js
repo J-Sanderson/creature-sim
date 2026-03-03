@@ -120,14 +120,15 @@ export class GoalManager {
   findGoalForItem(self, target) {
     let candidateGoals = [];
     const adjectives = target.getAdjectives();
-    if (adjectives.includes(adjectiveList.chew)) {
-      candidateGoals.push({ name: goalList.chewToy });
-    }
-    if (adjectives.includes(adjectiveList.bounce)) {
-      candidateGoals.push({ name: goalList.bounceToy });
-    }
-    if (adjectives.includes(adjectiveList.soft)) {
-      candidateGoals.push({ name: goalList.cuddleToy });
+    const associations = {
+      [adjectiveList.chew]: goalList.chewToy,
+      [adjectiveList.bounce]: goalList.bounceToy,
+      [adjectiveList.soft]: goalList.cuddleToy,
+    };
+    for (let adj in associations) {
+      if (adjectives.includes(adj)) {
+        candidateGoals.push({ name: associations[adj] });
+      }
     }
     if (!candidateGoals.length) return;
 
@@ -137,6 +138,8 @@ export class GoalManager {
       goal.priority = priority;
     });
     candidateGoals = candidateGoals.filter((goal) => goal.priority > 0);
+    if (!candidateGoals.length) return;
+
     candidateGoals.sort((a, b) => {
       if (a.priority < b.priority) return -1;
       if (a.priority > b.priority) return 1;
@@ -153,6 +156,7 @@ export class GoalManager {
         break;
       }
     }
+
     this.addGoal(self, chosenGoal, {
       ticks: 5,
       tickModifiers: {

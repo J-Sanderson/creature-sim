@@ -57,16 +57,14 @@ export class GoalManager {
     let highestPriorityGoal = null;
 
     for (let goal in this.goals) {
-      if (this.goals.hasOwnProperty(goal)) {
-        if (
-          !excludeSuspended ||
-          (excludeSuspended && !this.goals[goal].getIsSuspended())
-        ) {
-          const priority = this.goals[goal].getPriority();
-          if (priority < highestPriority) {
-            highestPriority = priority;
-            highestPriorityGoal = goal;
-          }
+      if (
+        !excludeSuspended ||
+        (excludeSuspended && !this.goals[goal].getIsSuspended())
+      ) {
+        const priority = this.goals[goal].getPriority();
+        if (priority < highestPriority) {
+          highestPriority = priority;
+          highestPriorityGoal = goal;
         }
       }
     }

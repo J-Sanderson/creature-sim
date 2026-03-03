@@ -196,8 +196,11 @@ export class GoalManager {
   }
 
   deleteGoal(goalName) {
-    delete this.goals[goalName];
-    this.currentGoalName = '';
+    let toDelete = this.goals[goalName];
+    if (toDelete) {
+      delete this.goals[goalName];
+      this.currentGoalName = '';
+    }
   }
 
   getGoals() {

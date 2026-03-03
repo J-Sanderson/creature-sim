@@ -89,6 +89,7 @@ export class GoalManager {
           maxMotive: self.getMaxMotive(),
         },
       });
+      return;
     }
     candidateGoals.sort((a, b) => {
       if (a.priority < b.priority) return -1;

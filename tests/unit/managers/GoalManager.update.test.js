@@ -6,6 +6,14 @@ import { GoalManager } from '../../../src/managers/GoalManager';
 import { goalList } from '../../../src/defaults';
 
 describe('update', () => {
+  const mockGoal = (name, priority, suspended = false) => ({
+    name,
+    getPriority: jest.fn(() => priority),
+    getIsSuspended: jest.fn(() => suspended),
+    execute: jest.fn(),
+    unsuspend: jest.fn(),
+  });
+
   let creature, goalManager, updateGoalPriorities;
   beforeEach(() => {
     jest.clearAllMocks();
@@ -20,11 +28,7 @@ describe('update', () => {
   test('runs updateGoalPriorities', () => {
     goalManager.currentGoalName = goalList.wander;
     goalManager.goals = {
-      [goalList.wander]: {
-        name: goalList.wander,
-        execute: jest.fn(),
-        getIsSuspended: jest.fn().mockReturnValue(false),
-      },
+      [goalList.wander]: mockGoal(goalList.wander, 1, false),
     };
 
     goalManager.update(creature);
@@ -34,11 +38,7 @@ describe('update', () => {
   test('executes current goal if present', () => {
     goalManager.currentGoalName = goalList.wander;
     goalManager.goals = {
-      [goalList.wander]: {
-        name: goalList.wander,
-        execute: jest.fn(),
-        getIsSuspended: jest.fn().mockReturnValue(false),
-      },
+      [goalList.wander]: mockGoal(goalList.wander, 1, false),
     };
 
     goalManager.update(creature);
@@ -54,10 +54,7 @@ describe('update', () => {
       .mockImplementation(() => {
         goalManager.currentGoalName = goalList.wander;
         goalManager.goals = {
-          [goalList.wander]: {
-            name: goalList.wander,
-            execute: jest.fn(),
-          },
+          [goalList.wander]: mockGoal(goalList.wander, 1, false),
         };
       });
 
@@ -72,20 +69,9 @@ describe('update', () => {
   test('executes valid unsuspended goal from list if current goal is suspended', () => {
     goalManager.currentGoalName = goalList.sleep;
     goalManager.goals = {
-      [goalList.sleep]: {
-        name: goalList.sleep,
-        execute: jest.fn(),
-        getIsSuspended: jest.fn().mockReturnValue(true),
-        getPriority: jest.fn().mockReturnValue(1),
-      },
-      [goalList.eat]: {
-        name: goalList.eat,
-        execute: jest.fn(),
-        getIsSuspended: jest.fn().mockReturnValue(false),
-        getPriority: jest.fn().mockReturnValue(2),
-      },
+      [goalList.sleep]: mockGoal(goalList.sleep, 1, true),
+      [goalList.eat]: mockGoal(goalList.eat, 2, false),
     };
-
     const getTopPriorityGoal = jest.spyOn(goalManager, 'getTopPriorityGoal');
 
     goalManager.update(creature);
@@ -100,21 +86,9 @@ describe('update', () => {
   test('unsuspends and executes valid suspended goal from list if current goal is suspended', () => {
     goalManager.currentGoalName = goalList.eat;
     goalManager.goals = {
-      [goalList.sleep]: {
-        name: goalList.sleep,
-        execute: jest.fn(),
-        getIsSuspended: jest.fn().mockReturnValue(true),
-        getPriority: jest.fn().mockReturnValue(1),
-        unsuspend: jest.fn(),
-      },
-      [goalList.eat]: {
-        name: goalList.eat,
-        execute: jest.fn(),
-        getIsSuspended: jest.fn().mockReturnValue(true),
-        getPriority: jest.fn().mockReturnValue(2),
-      },
+      [goalList.sleep]: mockGoal(goalList.sleep, 1, true),
+      [goalList.eat]: mockGoal(goalList.eat, 2, true),
     };
-
     const getTopPriorityGoal = jest.spyOn(goalManager, 'getTopPriorityGoal');
     const unsuspendGoal = jest.spyOn(goalManager, 'unsuspendGoal');
 

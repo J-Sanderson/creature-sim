@@ -6,6 +6,11 @@ import { GoalManager } from '../../../src/managers/GoalManager';
 import { goalList } from '../../../src/defaults';
 
 describe('getTopPriorityGoal', () => {
+  const mockGoal = (priority, suspended = false) => ({
+    getPriority: jest.fn(() => priority),
+    getIsSuspended: jest.fn(() => suspended),
+  });
+
   let goalManager;
   beforeEach(() => {
     jest.clearAllMocks();
@@ -22,14 +27,8 @@ describe('getTopPriorityGoal', () => {
 
   test('returns null if all goals are suspended and excludeSuspended is true', () => {
     goalManager.goals = {
-      [goalList.sleep]: {
-        name: goalList.sleep,
-        getIsSuspended: jest.fn().mockReturnValue(true),
-      },
-      [goalList.eat]: {
-        name: goalList.eat,
-        getIsSuspended: jest.fn().mockReturnValue(true),
-      },
+      [goalList.sleep]: mockGoal(1, true),
+      [goalList.eat]: mockGoal(2, true),
     };
 
     const result = goalManager.getTopPriorityGoal(true);
@@ -38,16 +37,8 @@ describe('getTopPriorityGoal', () => {
 
   test('runs getIsSuspended for all goals if excludeSuspended is true', () => {
     goalManager.goals = {
-      [goalList.sleep]: {
-        name: goalList.sleep,
-        getIsSuspended: jest.fn().mockReturnValue(true),
-        getPriority: jest.fn(),
-      },
-      [goalList.eat]: {
-        name: goalList.eat,
-        getIsSuspended: jest.fn().mockReturnValue(false),
-        getPriority: jest.fn(),
-      },
+      [goalList.sleep]: mockGoal(1, true),
+      [goalList.eat]: mockGoal(2, false),
     };
 
     goalManager.getTopPriorityGoal(true);
@@ -58,16 +49,8 @@ describe('getTopPriorityGoal', () => {
 
   test('does not run getIsSuspended for any goals if excludeSuspended is false', () => {
     goalManager.goals = {
-      [goalList.sleep]: {
-        name: goalList.sleep,
-        getIsSuspended: jest.fn().mockReturnValue(true),
-        getPriority: jest.fn(),
-      },
-      [goalList.eat]: {
-        name: goalList.eat,
-        getIsSuspended: jest.fn().mockReturnValue(false),
-        getPriority: jest.fn(),
-      },
+      [goalList.sleep]: mockGoal(1, true),
+      [goalList.eat]: mockGoal(2, false),
     };
 
     goalManager.getTopPriorityGoal();
@@ -78,16 +61,8 @@ describe('getTopPriorityGoal', () => {
 
   test('runs getPriority for unsuspended goals only if excludeSuspended is true', () => {
     goalManager.goals = {
-      [goalList.sleep]: {
-        name: goalList.sleep,
-        getIsSuspended: jest.fn().mockReturnValue(true),
-        getPriority: jest.fn(),
-      },
-      [goalList.eat]: {
-        name: goalList.eat,
-        getIsSuspended: jest.fn().mockReturnValue(false),
-        getPriority: jest.fn(),
-      },
+      [goalList.sleep]: mockGoal(1, true),
+      [goalList.eat]: mockGoal(2, false),
     };
 
     goalManager.getTopPriorityGoal(true);
@@ -101,16 +76,8 @@ describe('getTopPriorityGoal', () => {
 
   test('runs getPriority for all goals if excludeSuspended is false', () => {
     goalManager.goals = {
-      [goalList.sleep]: {
-        name: goalList.sleep,
-        getIsSuspended: jest.fn().mockReturnValue(true),
-        getPriority: jest.fn(),
-      },
-      [goalList.eat]: {
-        name: goalList.eat,
-        getIsSuspended: jest.fn().mockReturnValue(false),
-        getPriority: jest.fn(),
-      },
+      [goalList.sleep]: mockGoal(1, true),
+      [goalList.eat]: mockGoal(2, false),
     };
 
     goalManager.getTopPriorityGoal();
@@ -121,21 +88,9 @@ describe('getTopPriorityGoal', () => {
 
   test('returns highest priority unsuspended goal if excludeSuspended is true', () => {
     goalManager.goals = {
-      [goalList.sleep]: {
-        name: goalList.sleep,
-        getIsSuspended: jest.fn().mockReturnValue(true),
-        getPriority: jest.fn().mockReturnValue(1),
-      },
-      [goalList.eat]: {
-        name: goalList.eat,
-        getIsSuspended: jest.fn().mockReturnValue(false),
-        getPriority: jest.fn().mockReturnValue(2),
-      },
-      [goalList.eat]: {
-        name: goalList.wander,
-        getIsSuspended: jest.fn().mockReturnValue(false),
-        getPriority: jest.fn().mockReturnValue(3),
-      },
+      [goalList.sleep]: mockGoal(1, true),
+      [goalList.eat]: mockGoal(2, false),
+      [goalList.wander]: mockGoal(3, false),
     };
 
     const result = goalManager.getTopPriorityGoal(true);
@@ -144,21 +99,9 @@ describe('getTopPriorityGoal', () => {
 
   test('returns highest priority of all goals if excludeSuspended is false', () => {
     goalManager.goals = {
-      [goalList.sleep]: {
-        name: goalList.sleep,
-        getIsSuspended: jest.fn().mockReturnValue(true),
-        getPriority: jest.fn().mockReturnValue(1),
-      },
-      [goalList.eat]: {
-        name: goalList.eat,
-        getIsSuspended: jest.fn().mockReturnValue(false),
-        getPriority: jest.fn().mockReturnValue(2),
-      },
-      [goalList.wander]: {
-        name: goalList.wander,
-        getIsSuspended: jest.fn().mockReturnValue(false),
-        getPriority: jest.fn().mockReturnValue(3),
-      },
+      [goalList.sleep]: mockGoal(1, true),
+      [goalList.eat]: mockGoal(2, false),
+      [goalList.wander]: mockGoal(3, false),
     };
 
     const result = goalManager.getTopPriorityGoal();
@@ -167,16 +110,8 @@ describe('getTopPriorityGoal', () => {
 
   test('returns first of highest priority goals if tied', () => {
     goalManager.goals = {
-      [goalList.sleep]: {
-        name: goalList.sleep,
-        getIsSuspended: jest.fn().mockReturnValue(false),
-        getPriority: jest.fn().mockReturnValue(1),
-      },
-      [goalList.eat]: {
-        name: goalList.eat,
-        getIsSuspended: jest.fn().mockReturnValue(false),
-        getPriority: jest.fn().mockReturnValue(1),
-      },
+      [goalList.sleep]: mockGoal(1, false),
+      [goalList.eat]: mockGoal(1, false),
     };
 
     const result = goalManager.getTopPriorityGoal();

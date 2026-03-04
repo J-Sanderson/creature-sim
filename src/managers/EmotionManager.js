@@ -13,7 +13,7 @@ export class EmotionManager {
   }
 
   setEmotion(self, emotion, value) {
-    if (!emotion || !value || value < 0) return;
+    if (!emotion || value === null || value < 0) return;
 
     if (!self.getEmotions().hasOwnProperty(emotion)) {
       console.error('Invalid emotion');

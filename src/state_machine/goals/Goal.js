@@ -72,12 +72,10 @@ export default class Goal {
   }
 
   decrementTicks() {
-    const threshold = this.goalToken.decayThreshold;
-    if (
-      this.goalToken.ticks > 0 &&
-      (threshold === 1 || Math.random() <= threshold)
-    ) {
-      this.goalToken.ticks--;
+    const threshold = this.getDecayThreshold();
+    const ticks = this.getTicks();
+    if (ticks > 0 && (threshold === 1 || Math.random() <= threshold)) {
+      this.setTicks(ticks - 1);
     }
   }
 

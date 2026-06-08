@@ -205,7 +205,7 @@ export default class Goal {
   calculateEmotionModifier(self, emotionType, positive = true) {
     const emotions = self.getEmotions();
     const emotion = emotions[emotionType];
-    if (typeof emotion !== 'number') {
+    if (!emotions.hasOwnProperty(emotionType) || typeof emotion !== 'number') {
       console.error(`Error: no personality value found for ${emotionType}`);
       return 0;
     }

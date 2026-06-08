@@ -80,7 +80,7 @@ export class MetabolismManager {
       return;
     }
 
-    const clamp01 = (v) => Math.min(1, Math.max(0, v));
+    const clamp01 = (v) => Math.min(1, Math.max(0.1, v));
     MetabolismManager.decayThresholdFormulas.forEach(({ motive, compute }) => {
       this.decayThresholds[motive] = clamp01(compute(params));
     });

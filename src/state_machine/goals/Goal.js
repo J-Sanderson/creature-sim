@@ -183,7 +183,10 @@ export default class Goal {
   calculatePersonalityModifier(self, personalityType, positive = true) {
     const personalityValues = self.getPersonalityValues();
     const personalityValue = personalityValues[personalityType];
-    if (typeof personalityValue !== 'number') {
+    if (
+      !personalityValues.hasOwnProperty(personalityType) ||
+      typeof personalityValue !== 'number'
+    ) {
       console.error(`Error: no personality value found for ${personalityType}`);
       return 0;
     }

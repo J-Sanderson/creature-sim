@@ -58,10 +58,23 @@ describe('setters', () => {
       expect(goal.worldToken.direction).toEqual({ x, y });
     });
 
-    test('sets co-ordinate to 0 if not specified', () => {
+    test('sets y co-ordinate to 0 if not specified', () => {
       const x = 5;
       goal.setDirection(x);
       expect(goal.worldToken.direction.x).toBe(x);
+      expect(goal.worldToken.direction.y).toBe(0);
+    });
+
+    test('sets x co-ordinate to 0 if not specified', () => {
+      const y = 6;
+      goal.setDirection(undefined, y);
+      expect(goal.worldToken.direction.x).toBe(0);
+      expect(goal.worldToken.direction.y).toBe(y);
+    });
+
+    test('sets both coordinates to 0 if none passed', () => {
+      goal.setDirection();
+      expect(goal.worldToken.direction.x).toBe(0);
       expect(goal.worldToken.direction.y).toBe(0);
     });
   });
